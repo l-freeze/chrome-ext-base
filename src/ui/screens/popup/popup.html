@@ -1,0 +1,59 @@
+<p class="intro-copy">思いついたことを、忘れないうちに。</p>
+
+<section class="card bg-base-100 note-card" aria-labelledby="note-title">
+  <form id="note-form" class="card-body">
+    <div class="note-heading">
+      <label id="note-title" class="note-label" for="note">
+        <svg class="size-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m14 5 5 5M4 20l4.5-1 12-12a2.1 2.1 0 0 0-3-3l-12 12L4 20Z" />
+        </svg>
+        今日のメモ
+      </label>
+      <span class="badge badge-sm badge-soft badge-primary note-counter" id="note-count" aria-live="off">0 / 2,000</span>
+    </div>
+    <textarea id="note" name="note" class="textarea textarea-ghost note-editor" rows="5" maxlength="2000"
+      placeholder="次にやりたいこと、気になったこと。&#10;ここは、あなたの小さなメモ帳。"
+      aria-describedby="note-help note-count" disabled></textarea>
+    <div class="note-actions">
+      <p id="note-help" class="keyboard-hint"><kbd class="kbd kbd-xs">Ctrl / ⌘</kbd><kbd class="kbd kbd-xs">↵</kbd><span>で保存</span></p>
+      <button type="submit" class="btn btn-primary btn-sm save-button" disabled>
+        <span data-button-spinner class="loading loading-spinner loading-xs hidden" aria-hidden="true"></span>
+        <svg data-button-icon class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m5 12 4 4L19 6" />
+        </svg>
+        保存する
+      </button>
+    </div>
+  </form>
+</section>
+
+<div id="status" class="alert alert-soft alert-info feedback" role="status" aria-live="polite" aria-atomic="true" data-state="loading">
+  <span data-feedback-indicator class="loading loading-spinner loading-xs" aria-hidden="true"></span>
+  <span data-feedback-text>読み込み中…</span>
+</div>
+
+<section class="card sample-card" aria-labelledby="sample-title">
+  <div class="card-body">
+    <div class="sample-heading">
+      <div class="coffee-illustration" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 20h22v12a7 7 0 0 1-7 7h-8a7 7 0 0 1-7-7V20Z" />
+          <path d="M33 22h2a5 5 0 0 1 0 10h-2M8 41h29M17 15c-4-4 3-5 0-9M24 15c-4-4 3-5 0-9M31 15c-4-4 3-5 0-9" />
+        </svg>
+      </div>
+      <div class="sample-copy">
+        <p class="sample-eyebrow">A SMALL DOSE OF INSPIRATION</p>
+        <h2 id="sample-title">ひと息、コーヒーの話。</h2>
+        <p>SampleAPIs から、ひとつの小さな発見を。</p>
+      </div>
+    </div>
+    <button id="import-sample" class="btn btn-soft btn-sm sample-button" type="button" aria-describedby="sample-help" disabled>
+      <span data-button-spinner class="loading loading-spinner loading-xs hidden" aria-hidden="true"></span>
+      サンプルを取得して保存
+      <svg data-button-icon class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14m-5-5 5 5-5 5" />
+      </svg>
+    </button>
+    <p id="sample-help" class="sample-help">取得したコーヒー情報で、現在のメモを置き換えます。</p>
+  </div>
+</section>
