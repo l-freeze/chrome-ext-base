@@ -1,4 +1,4 @@
-import type { FetchCoffeeOutput } from "../../src/integrations/sampleapis/coffee/contracts";
+import type { FetchCoffeeOutput } from "../../src/integrations/sampleapis/coffee";
 
 // SampleAPIs の公開データ形式に基づく固定 fixture。テストは外部通信しない。
 export const coffee: FetchCoffeeOutput = {

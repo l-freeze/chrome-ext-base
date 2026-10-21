@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { createNoteStorage } from "../../../src/features/notes/adapters/outbound/persistence/note-storage";
-import { createMemoryStorage } from "../../../src/infrastructure/storage/drivers/memory-storage";
-import { createLocalStorage } from "../../../src/infrastructure/storage/drivers/local-storage";
-import { ValidationError } from "../../../src/shared/validation/primitives";
+import { createNoteStorage } from "../../../src/features/notes/gateways/storage";
+import { createMemoryStorage } from "../../../src/infrastructure/storage/drivers/memory";
+import { createLocalStorage } from "../../../src/infrastructure/storage/drivers/web";
+import { ValidationError } from "../../../src/lib/validation";
 
 describe("メモ保存形式の互換性", () => {
   it("破損した保存データを Output として返さない", async () => {

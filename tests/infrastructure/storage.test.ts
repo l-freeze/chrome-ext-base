@@ -1,8 +1,8 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
-import type { StorageContract } from "../../src/infrastructure/storage/storage-contract";
-import type { TypedStorage } from "../../src/infrastructure/storage/typed-storage";
-import { createMemoryStorage } from "../../src/infrastructure/storage/drivers/memory-storage";
-import { createTypedStorage } from "../../src/infrastructure/storage/typed-storage";
+import type { StorageContract } from "../../src/infrastructure/storage/contracts";
+import type { TypedStorage } from "../../src/infrastructure/storage/typed";
+import { createMemoryStorage } from "../../src/infrastructure/storage/drivers/memory";
+import { createTypedStorage } from "../../src/infrastructure/storage/typed";
 
 const stringContract: StorageContract<string, string> = {
   key: "value",
