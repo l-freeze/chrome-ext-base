@@ -65,9 +65,8 @@ interface FetchCoffeeOutput {
 }
 ```
 
-型定義は `src/integrations/sampleapis/coffee/contracts.ts`、実通信は
-`src/integrations/sampleapis/coffee/client.ts` にあります。
-`features/notes/adapters/outbound/sources/sampleapis-coffee-source.ts` が外部の Coffee 形式をアプリの Note 形式へ変換し、
+`src/integrations/sampleapis/coffee.ts` に型・通信・外部データの検証があります。
+`features/notes/gateways/coffee.ts` が外部の Coffee 形式をアプリの Note 形式へ変換し、
 UseCase は「API 取得 → 保存 → 読み出し」のシーケンスを実行します。
 `image` は受信データとして扱い、画像への追加通信はしません。
 
@@ -94,31 +93,33 @@ CSS とアイコンはビルドに同梱し、外部 CDN やフォントサー�
 
 ```text
 src/
-├── features/notes/          メモ機能の責務と境界
-│   ├── domain/             メモの型・制約
-│   ├── application/        操作の Input/Output・ports・順次実行の UseCase
-│   ├── validation/         メモ操作・メモ形式の検証
-│   ├── adapters/           検証付きの入口・取得元・メモ固有の保存処理
-│   └── compose.ts          機能内の明示的 DI
-├── integrations/           外部サービス固有の DTO・検証・client
-├── infrastructure/         汎用 HTTP・型付き保存・ストレージ driver
-├── shared/validation/      機能に依存しない検証の仕組み
-├── composition/            環境に合わせて具体実装を選択
+├── features/notes/
+│   ├── note.ts             メモの型・制約
+│   ├── ports.ts            公開操作・取得・保存の契約
+│   ├── controllers/        load / save / import の入力検証と入口
+│   ├── use-cases/          対応する load / save / import のシーケンス
+│   ├── gateways/           メモの取得・変換・保存の実装
+│   └── compose.ts          controller と UseCase を接続
+├── integrations/           サービスごとの型・client・境界検証
+├── infrastructure/         共通の通信・保存基盤
+├── lib/validation.ts       検証の型と実行ラッパー
+├── composition/            環境に合わせた具体実装の選択
 └── ui/
-    ├── entrypoints/        ポップアップなどの起動点
-    ├── screens/            画面ごとの HTML・DOM 操作・CSS
-    ├── layouts/            共通の画面枠
-    ├── components/         再利用する表示部品
-    └── styles/             Tailwind・daisyUI 設定・テーマ
-tests/                      機能・外部連携・基盤ごとの入出力契約
+    ├── entrypoints/        起動点
+    ├── screens/            画面
+    ├── layouts/            画面枠
+    ├── components/         表示部品
+    └── styles/             daisyUI / Tailwind・テーマ
+tests/                      所有者ごとの入出力契約テスト
 ```
 
-ディレクトリ名に唯一の標準はありません。`inbound/outbound` は呼び出しを起動する方向を表し、
-`FetchCoffeeInput/Output` のようなデータ型名と区別します。命名の比較と参照した実装例は
-[アーキテクチャガイド](docs/architecture.md) に記載しています。
+controller は inbound adapter、gateway は outbound adapter に相当します。
+機能内は役割で分け、操作の Input / Output 型はその操作が所有します。
+小さな IF は `ports.ts` にまとめ、分類名だけの階層を重ねません。
 
-application の ports はメモ機能が要求する操作だけを定義します。外部 API の DTO と
-保存 driver の IF はそれぞれ integration と infrastructure が所有します。
+入力検証は controller と一対一です。外部レスポンスや保存形式の検証はその境界で行います。
+`lib/validation.ts` は検証を必須にする仕組みだけで、操作固有の検証条件は持ちません。
+配置の理由と依存方向は [アーキテクチャガイド](docs/architecture.md) を参照してください。
 
 保存 Input / 読み出し Output のバリデーターは両方必須です。片方だけでは初期化できません。
 既存のメモ文字列は引き続き読み出せます。未保存は空メモ、破損データはエラーとして扱います。

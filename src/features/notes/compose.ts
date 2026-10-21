@@ -1,14 +1,15 @@
-import type { NoteSource } from "./application/ports/outbound/note-source";
-import type { NoteRepository } from "./application/ports/outbound/note-repository";
-import { createImportNote } from "./application/use-cases/import-note";
-import { createLoadNote } from "./application/use-cases/load-note";
-import { createSaveNote } from "./application/use-cases/save-note";
-import { createNoteController } from "./adapters/inbound/note-controller";
+import type { NoteActions, NoteRepository, NoteSource } from "./ports";
+import { createLoadNote } from "./use-cases/load";
+import { createSaveNote } from "./use-cases/save";
+import { createImportNote } from "./use-cases/import";
+import { createLoadController } from "./controllers/load";
+import { createSaveController } from "./controllers/save";
+import { createImportController } from "./controllers/import";
 
-export function createNoteApplication(dependencies: { repository: NoteRepository; source: NoteSource }) {
-  return createNoteController({
-    loadNote: createLoadNote(dependencies.repository),
-    saveNote: createSaveNote(dependencies.repository),
-    importNote: createImportNote(dependencies.source, dependencies.repository),
-  });
+export function createNoteApplication(dependencies: { repository: NoteRepository; source: NoteSource }): NoteActions {
+  return {
+    loadNote: createLoadController(createLoadNote(dependencies.repository)),
+    saveNote: createSaveController(createSaveNote(dependencies.repository)),
+    importNote: createImportController(createImportNote(dependencies.source, dependencies.repository)),
+  };
 }

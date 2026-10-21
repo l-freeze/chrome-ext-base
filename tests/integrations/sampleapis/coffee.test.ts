@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createSampleApisCoffeeClient } from "../../../src/integrations/sampleapis/coffee/client";
+import { createSampleApisCoffeeClient } from "../../../src/integrations/sampleapis/coffee";
 import { coffee } from "../../fixtures/sampleapis-coffee";
 
 describe("SampleAPIs Coffee の Input / Output 契約", () => {

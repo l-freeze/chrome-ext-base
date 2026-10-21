@@ -1,8 +1,8 @@
-import { createChromeStorage } from "../infrastructure/storage/drivers/chrome-storage";
-import { createLocalStorage } from "../infrastructure/storage/drivers/local-storage";
-import { createNoteStorage } from "../features/notes/adapters/outbound/persistence/note-storage";
-import { createSampleApisCoffeeClient } from "../integrations/sampleapis/coffee/client";
-import { createSampleApisCoffeeSource } from "../features/notes/adapters/outbound/sources/sampleapis-coffee-source";
+import { createChromeStorage } from "../infrastructure/storage/drivers/chrome";
+import { createLocalStorage } from "../infrastructure/storage/drivers/web";
+import { createNoteStorage } from "../features/notes/gateways/storage";
+import { createSampleApisCoffeeClient } from "../integrations/sampleapis/coffee";
+import { createSampleApisCoffeeSource } from "../features/notes/gateways/coffee";
 import { createNoteApplication } from "../features/notes/compose";
 
 export function createPopupApplication() {

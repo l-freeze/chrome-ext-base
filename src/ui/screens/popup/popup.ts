@@ -1,6 +1,6 @@
-import type { NoteActions } from "../../../features/notes/application/ports/inbound/note-actions";
-import { MAX_NOTE_LENGTH } from "../../../features/notes/domain/note";
-import type { Note } from "../../../features/notes/domain/note";
+import type { NoteActions } from "../../../features/notes/ports";
+import { MAX_NOTE_LENGTH } from "../../../features/notes/note";
+import type { Note } from "../../../features/notes/note";
 import { createActionButton } from "../../components/action-button";
 import { createFeedback } from "../../components/feedback";
 import template from "./popup.html?raw";
