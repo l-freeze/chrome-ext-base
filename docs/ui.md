@@ -36,11 +36,12 @@ src/ui/
 ## 依存方向
 
 entrypoint は composition から検証付き controller を受け取り、レイアウトと画面を組み立てます。
-画面は `features/notes/application/ports/inbound/note-actions.ts` の `NoteActions` に依存し、
+画面は `features/notes/ports.ts` の `NoteActions` に依存し、
 注入された検証付き操作を通して保存・読み出し・API 取得を実行します。
-controller の具体型や UseCase・outbound adapter は参照しません。
+controller の具体型や UseCase・gateway は参照しません。
 共有部品は表示だけを担当し、UseCase・fetch・Chrome Storage を呼びません。
-ボタンやキーボードの入力は画面で受け、業務操作は必ず既存のバリデーション付き controller を通します。
+ボタンやキーボードの入力は画面で受け、取り出した値を操作別の controller に渡します。
+`controllers/load.ts`・`save.ts`・`import.ts` がそれぞれ入力を検証してから対応する UseCase を呼びます。
 
 HTML は Vite の `?raw` で取り込んだ固定テンプレートです。
 テンプレートの配置だけに `innerHTML` を使い、メモや API の内容は `value` / `textContent` で表示します。

@@ -1,153 +1,117 @@
-# ヘキサゴナルアーキテクチャの使い方
+# アーキテクチャと境界
 
-## ディレクトリの命名
+## ディレクトリを分ける基準
 
-ヘキサゴナルアーキテクチャは、特定のディレクトリ名を要求する規約ではありません。
-TypeScript の公開実装でも構成は異なります。
-
-| 実装例 | 確認した命名・説明 |
-| --- | --- |
-| [tim-hub/nestjs-hexagonal-example](https://github.com/tim-hub/nestjs-hexagonal-example#explanation-and-example-of-port-adapter) | Primary/Driving/Inbound と Secondary/Driven/Outbound を併記。ディレクトリは driving/driven |
-| [Sairyss/domain-driven-hexagon](https://github.com/Sairyss/domain-driven-hexagon#interface-adapters) | interface-adapters を driving/primary、infrastructure の adapters を driven/secondary と説明 |
-| [CodelyTV/typescript-ddd-example](https://github.com/CodelyTV/typescript-ddd-example/tree/master/src) | domain / application / infrastructure と apps 側の controllers を分離 |
-
-上記は実装例であり、普及率を測った結果ではありません。
-このプロジェクトでは役割が明確で既存構成とも合う **adapters/inbound / outbound** を採用します。
-`input/output` も利用可能な表現ですが、ここでは Input/Output をデータ契約の型名に使います。
-
-- **inbound / input / driving / primary**: 外部からアプリケーションの処理を起動する側。
-- **outbound / output / driven / secondary**: アプリケーションから呼ばれる外部機能を実装する側。
-
-これはデータが流れる方向ではなく、呼び出しを起動する側による区別です。
-例えば `storage.load()` や REST の GET は、データを受け取る処理でも outbound です。
-
-## 責務の所有者で分ける
-
-まず「どの機能・外部サービス・技術基盤に属するか」を分け、その中で依存方向を分けます。
-`http-client` は汎用的ですが、業務に対しては低水準の通信実装です。
-汎用性と業務上の抽象度は別の軸です。同じ通信経路で使うという理由だけでは、
-HTTP 処理・Coffee DTO・Coffee → Note 変換を同じフォルダーへ置きません。
+最初に所有者を分け、機能の中では役割を分けます。
+同じ階層に業務名・技術名・依存方向を混ぜたり、分類名だけの階層を重ねたりしません。
+ファイル名は親ディレクトリで分かる文脈を繰り返さず、その中で何を担当するかを表します。
 
 ```text
 src/
-├── features/notes/                     メモ機能のヘキサゴン
-│   ├── domain/note.ts                  メモの型・文字数制約
-│   ├── application/
-│   │   ├── contracts.ts               メモ操作の Input / Output
-│   │   ├── ports/
-│   │   │   ├── inbound/note-actions.ts 公開操作の IF
-│   │   │   └── outbound/
-│   │   │       ├── note-source.ts     メモを取得する IF
-│   │   │       └── note-repository.ts  メモを保存・読み出す IF
-│   │   └── use-cases/                 検証済み入力で順次実行
-│   ├── validation/                    メモ操作・メモ形式の検証
-│   ├── adapters/
-│   │   ├── inbound/note-controller.ts  公開操作の検証境界
-│   │   └── outbound/
-│   │       ├── sources/               REST / Coffee 変換 / モック
-│   │       └── persistence/           保存キー・保存形式・Repository 実装
-│   └── compose.ts                     機能内の UseCase と入口を接続
-├── integrations/sampleapis/coffee/
-│   ├── contracts.ts                   外部サービスの Input / Output / Client IF
-│   ├── validation.ts                  外部サービスのデータ形式を検証
-│   └── client.ts                      URL・リクエスト・レスポンス処理
+├── features/notes/
+│   ├── note.ts                メモの型と文字数制約
+│   ├── ports.ts               公開操作・取得・保存の IF
+│   ├── controllers/
+│   │   ├── load.ts            読み出し入力の検証と入口
+│   │   ├── save.ts            保存入力の検証と入口
+│   │   └── import.ts          取り込み入力の検証と入口
+│   ├── use-cases/
+│   │   ├── load.ts            読み出しのシーケンス
+│   │   ├── save.ts            保存のシーケンス
+│   │   └── import.ts          取り込みのシーケンス
+│   ├── gateways/
+│   │   ├── storage.ts         メモの保存形式と Repository 実装
+│   │   ├── coffee.ts          外部 Coffee をメモへ変換
+│   │   ├── rest.ts            メモ形式の REST サービスとの接続
+│   │   └── mock.ts            取得元のモック
+│   └── compose.ts             controller と UseCase の接続
+├── integrations/sampleapis/
+│   └── coffee.ts              Coffee 取得の型・通信・境界検証
 ├── infrastructure/
-│   ├── http/http-client.ts            共通 GET・タイムアウト・HTTP エラー
+│   ├── http.ts                GET・タイムアウト・HTTP エラー
 │   └── storage/
-│       ├── key-value-storage.ts       driver が実装する get / set の IF
-│       ├── storage-contract.ts        保存・読込の検証と codec 設定
-│       ├── typed-storage.ts           検証を伴う汎用の保存・読み出し
-│       └── drivers/                   Chrome / Web Storage / メモリ
-├── shared/validation/                 Validator・基本検証・検証付き action
-├── composition/popup.ts               ブラウザ環境と具体実装を選ぶ DI
-└── ui/                                起動点・画面・共通の表示部品
+│       ├── contracts.ts       driver IF と保存・読込の設定型
+│       ├── typed.ts           型付き保存・読み出しの仕組み
+│       └── drivers/
+│           ├── chrome.ts      chrome.storage
+│           ├── web.ts         localStorage
+│           └── memory.ts      メモリ保存
+├── lib/validation.ts          検証の型と実行ラッパー。操作の条件は持たない
+├── composition/popup.ts       環境に合わせた具体実装の選択
+└── ui/                       起動点・画面・表示部品・スタイル
 ```
 
-`ports` は「IF なら何でも置く場所」ではありません。UseCase が要求するメモの操作を
-application が所有します。`KeyValueStorage` は技術基盤の拡張点、`CoffeeClient` は
-外部サービスのクライアント契約なので、それぞれの所有者の近くに置きます。
-`NoteRepository` は保存キー・JSON・ブラウザ API・汎用 codec を知りません。
-`NoteSource` は Coffee の title / ingredients や REST の URL を知りません。
+`features` は業務機能、`integrations` は外部サービス、`infrastructure` は技術基盤を所有します。
+メモの controller / UseCase / gateway は、機能内の役割として横並びにします。
+controller は inbound adapter、gateway は outbound adapter に相当します。
+両者を総称する adapter という名前を、片方だけのディレクトリ名には使いません。
 
-## 依存方向
+`ports.ts` はこの機能の小さな契約の集合です。数行の IF のために inbound / outbound の
+階層を作りません。独立して大きくなる契約ができた時点で、責務ごとのファイルに分けます。
+`NoteRepository` は保存キーや JSON を知らず、`NoteSource` は Coffee DTO や URL を知りません。
+外部 API の型は integration、汎用の保存設定型は infrastructure に置きます。
 
-以下は import の方向です。同じ所有者・同じ層の内部参照は省略しています。
+`integrations/sampleapis/coffee.ts` は一つの外部操作に必要な型・検証・通信をまとめます。
+同じ変更理由を持つ数十行を contracts / validation / client の三層に分散しません。
+一方、汎用 HTTP とストレージ driver は機能から独立した責務なので分離を維持します。
 
-| 所有者 | 参照してよい相手 | 参照しない相手 |
+## 入力検証は操作と一対一
+
+「共通バリデーション層」を全操作が通る構成ではありません。
+各 controller のファイルが、その操作の入力検証を持ち、検証後に対応する UseCase を呼びます。
+
+| 操作 | 入力検証の所有者 | 検証後の処理 |
 | --- | --- | --- |
-| `shared/validation` | 標準言語機能 | features・integrations・infrastructure・UI |
-| `infrastructure` | shared | features・integrations・UI |
-| `integrations` | infrastructure・shared | features・UI |
-| 機能の `domain` | 標準言語機能 | application・adapters・技術基盤 |
-| 機能の `application` | 自機能の domain | adapters・validation・integrations・infrastructure・UI |
-| 機能の `validation` | 自機能の domain / application、shared | adapters・integrations・技術基盤 |
-| 機能の `adapters/inbound` | 自機能の application / validation、shared | outbound・外部サービス・技術基盤 |
-| 機能の `adapters/outbound` | 自機能の application / validation、integrations・infrastructure・shared | inbound・UI |
-| `ui/screens` | 機能の公開 inbound port / domain、UI 部品 | 具体 adapter・UseCase・技術基盤 |
-| `ui/components` / `layouts` | 表示に必要な UI 部品 | 機能の操作・技術基盤 |
+| 読み出し | `controllers/load.ts`: 引数が undefined であること | `use-cases/load.ts` |
+| 保存 | `controllers/save.ts`: メモ入力の構造・文字数 | `use-cases/save.ts` |
+| 取り込み | `controllers/import.ts`: ID が正の安全な整数であること | `use-cases/import.ts` |
 
-`features/notes/compose.ts` は注入済みの port と UseCase・controller を接続します。
-`composition/popup.ts` は Chrome / Web Storage を選び、具体 adapter と外部 client を作ります。
-`ui/entrypoints` がその結果を画面に渡します。DI コンテナーや自動解決は使いません。
+各ファイルの非公開 `input` バリデーターを `validatedAction(input, execute)` に渡します。
+UI が呼ぶ `NoteActions` は unknown を受け、UseCase は検証済みの Input 型を受けます。
+操作固有の検証を保存 adapter や別の controller から再利用しません。
+引数なしの操作にも専用の検証を置き、内容未定なら空の検証を明示します。
+
+`lib/validation.ts` は `Validator` の型、`ValidationError`、検証を省略できない実行ラッパーだけです。
+ID の条件や「引数なし」の規則を持たず、ブラウザイベントの共通検証も行いません。
+DOM イベントは画面で扱い、取り出した値を操作ごとの controller に渡します。
+将来、メッセージ形式などの共通プロトコル検証が必要になれば、その入口で定義します。
 
 ```mermaid
 flowchart LR
-  UI[UI] --> Inbound[NoteActions / 検証付き Controller]
-  Inbound --> UC[UseCase]
-  UC --> Ports[NoteSource / NoteRepository]
-  Sources[取得 adapter] -. implements .-> Ports
-  Persistence[保存 adapter] -. implements .-> Ports
-  Sources --> Client[SampleAPIs Coffee client]
-  Client --> HTTP[共通 HTTP 基盤]
-  Persistence --> Storage[共通 typed storage / driver]
+  UI[画面 / ブラウザ入力] --> C[操作別 Controller: 入力検証]
+  C --> U[対応する UseCase: 順次実行]
+  U --> P[Port: 取得 / 保存]
+  G[Gateway: 外部接続 / 形式変換] -. implements .-> P
+  G --> E[外部 client / 保存基盤]
 ```
 
-UI の固定マークアップ・DOM 状態は画面の責務です。画面固有の部品を無理に共有化せず、
-共通のボタン・フィードバック・画面枠だけを共有しています。
-daisyUI の構成は [UI ガイド](ui.md) を参照してください。
+## 外部データと業務上の制約
 
-## UseCase はシーケンスを書く
+UseCase 入力の検証と、外部から戻るデータの検証は別の境界です。
 
-`src/features/notes/application/use-cases/import-note.ts` は次の順番に処理します。
+| 検証対象 | 所有者 |
+| --- | --- |
+| SampleAPIs へのリクエスト・レスポンス | `integrations/sampleapis/coffee.ts` の `parseRequest` / `parseResponse` |
+| 別サービスから取得するメモ形式 | `features/notes/gateways/rest.ts` の `parseResponse` |
+| 保存する値・保存済み文字列 | `features/notes/gateways/storage.ts` の input / output |
+| メモ本文は文字列かつ 2000 文字以内 | `features/notes/note.ts` の `noteText` |
 
-```ts
-const note = await source.fetchNote(input);
-await repository.save(note);
-return repository.load();
-```
+`noteText` は共通の入力スキーマではなく、メモ自体の制約です。
+手入力・API 変換後・保存からの復元という異なる経路でも同じ Note の条件を適用します。
+各境界は自分が受け取る構造を検証し、本文の制約だけを再利用します。
 
-通信・形式変換・検証・DOM 操作は UseCase の外に置きます。
-途中で失敗した場合はエラーを UI へ返します。
-シーケンシャルという規則は一回の UseCase 実行内に適用します。
-UI は双方向のイベントを扱えます。サンプルでは保存・取得中の操作を無効化します。
-複数のタブ間の排他やトランザクションは含みません。
+## 依存方向と明示的 DI
 
-## SampleAPIs の REST サンプル
+- `note.ts` / `ports.ts` は controller・gateway・技術基盤に依存しない。
+- UseCase はメモの型と port のみを参照し、controller・gateway を参照しない。
+- controller は対応する UseCase の型とメモの制約・検証ラッパーを使う。
+- gateway は port を実装し、必要な integration・infrastructure を使う。controller を参照しない。
+- integration は機能を知らず、infrastructure は機能と外部サービスを知らない。
+- UI の画面は `NoteActions` とメモの型・制約を使い、UseCase や具体 gateway を呼ばない。
 
-`GET https://api.sampleapis.com/coffee/hot/{id}` を使います。
-公開データとルーティングは以下の一次ソースで確認しています。
-
-- [coffee.json](https://github.com/jermbo/SampleAPIs/blob/ef1f6b36076b28a39198b9b7654f9c734a78b83b/server/api/coffee.json)
-- [jsonRouter.js](https://github.com/jermbo/SampleAPIs/blob/ef1f6b36076b28a39198b9b7654f9c734a78b83b/server/utils/jsonRouter.js)
-
-`integrations/sampleapis/coffee` は SampleAPIs の形式だけを扱い、メモの文字数制約を知りません。
-`features/notes/adapters/outbound/sources/sampleapis-coffee-source.ts` が
-Coffee をメモに変換し、メモの出力契約を検証します。
-HTTP 処理自体をしないので、`http/coffee-note-api.ts` という配置・名前は使いません。
-
-ポップアップは ID 1 を取得し、タイトル・説明・材料をメモにして保存します。
-画像 URL はデータとして検証するだけで、画像の取得・表示は行いません。
-不正データは `ValidationError`、HTTP エラーは `HttpError`（status 付き）で返します。
-通信は 10 秒でタイムアウトします。取得・変換・検証に失敗した場合は保存を開始しません。
-
-`host_permissions` は `https://api.sampleapis.com/*` を追加済みです。
-プレビューでは API の CORS、クラウドではネットワーク許可も必要です。
-認証情報や API キーは不要です。
-
-## 軽量 DI とモックへの差し替え
-
-`createNoteApplication({ repository, source })` にポートを満たす実装を渡します。
-実 API は `src/composition/popup.ts` で次のように接続します。
+`features/notes/compose.ts` は検証付き controller と UseCase を一対一で接続します。
+`composition/popup.ts` は環境に応じた driver と具体 gateway を作ります。
+`ui/entrypoints` がその結果を画面へ注入します。自動解決や DI コンテナーは使いません。
 
 ```ts
 const coffeeClient = createSampleApisCoffeeClient((url, init) => globalThis.fetch(url, init));
@@ -157,84 +121,66 @@ return createNoteApplication({
 });
 ```
 
-オフライン開発では `source` を次の実装に差し替えられます。
+オフラインでは `source` を `createMockNoteSource([{ id: 1, text: "モックのメモ" }])` に差し替えます。
+
+## UseCase はシーケンスを書く
+
+`use-cases/import.ts` は取得 → 保存 → 読み出しの順に port を呼びます。
 
 ```ts
-import { createMockNoteSource } from "../features/notes/adapters/outbound/sources/mock-note-source";
-
-// createNoteApplication に渡す source プロパティ
-source: createMockNoteSource([{ id: 1, text: "モックのメモ" }]),
+const note = await source.fetchNote(input);
+await repository.save(note);
+return repository.load();
 ```
 
-`createRestNoteSource({ baseUrl, fetch })` は
-`GET {baseUrl}/notes/{id}` → `{ id, text }` 用の別サービス向けテンプレートです。
-メモ形式に依存するため、汎用 HTTP 基盤ではなくメモ機能の取得 adapter に置いています。
-SampleAPIs に `/notes` エンドポイントがあることを意味しません。
+通信・形式変換・入力検証・DOM 操作は外側の責務です。
+シーケンシャルの規則は一回の実行内に適用し、途中の失敗は UI へ返します。
+UI は双方向のイベントを扱えます。サンプルでは保存・取得中の操作を無効化します。
+複数タブ間の排他やトランザクションは含みません。
+
+## REST サンプル
+
+`GET https://api.sampleapis.com/coffee/hot/{id}` を使います。
+公開形式の参照先は [coffee.json](https://github.com/jermbo/SampleAPIs/blob/ef1f6b36076b28a39198b9b7654f9c734a78b83b/server/api/coffee.json)、
+ルーティングは [jsonRouter.js](https://github.com/jermbo/SampleAPIs/blob/ef1f6b36076b28a39198b9b7654f9c734a78b83b/server/utils/jsonRouter.js) です。
+
+ポップアップは ID 1 を取得し、タイトル・説明・材料をメモに変換して保存します。
+画像 URL はデータとして検証するだけで追加取得・表示しません。
+HTTP エラーは status 付きの `HttpError`、不正データは `ValidationError` を返し、通信は 10 秒でタイムアウトします。
+取得や変換に失敗したら保存を開始しません。
+
+`gateways/rest.ts` は別サービスの `GET {baseUrl}/notes/{id}` → `{ id, text }` 用です。
+SampleAPIs に `/notes` があるという意味ではありません。
+内部 port の引数は controller で検証済みの型を受けます。これらの gateway を UI の入口にはしません。
+
+拡張の `host_permissions` は `https://api.sampleapis.com/*` に設定済みです。
+プレビューでは CORS、クラウドではネットワーク許可が必要です。API キーは不要です。
 
 ## 保存 Input と読み出し Output の同時設定
 
-`infrastructure/storage` の `StorageContract<SaveInput, LoadOutput>` は
-両方のバリデーターを必須にします。`TypedStorage` は任意の型に使える技術基盤の IF で、
-application の `NoteRepository` に依存しません。
-メモ固有の `note-storage-contract.ts` が保存キー・文字列形式・未保存時の値を定義し、
-`createNoteStorage(driver)` がこの設定を適用して `NoteRepository` を返します。
+`StorageContract<SaveInput, LoadOutput>` は input / output のバリデーターを両方必須にします。
+片方だけでは型チェックでエラーとなり、実行時も初期化を拒否します。
 
-```ts
-const contract: StorageContract<SaveNoteInput, LoadNoteOutput> = {
-  key: "quick-note",
-  input: saveNoteInput,
-  output: { parse(raw) { return { text: raw === undefined ? "" : noteText(raw) }; } },
-  encode: (input) => input.text,
-};
-const storage = createTypedStorage(driver, contract);
-```
-
-Input と Output は異なる型でも構いません。
-`input` / `output` を一方だけ省くと型チェックでエラーになり、
-JavaScript からの呼び出しでも初期化を拒否します。
 保存は `input.parse → encode → output.parse → driver.set`、
-読み出しは `driver.get → output.parse` の順です。
-書き込む前に、その値が読み出しの契約にも適合していることを確認します。
-バリデーターは副作用のない関数にしてください。
+読み出しは `driver.get → output.parse` の順です。書き込む前に読み出し可能な値かも検証します。
+バリデーターは副作用を持たせません。Input と Output は異なる型でも構いません。
 
-driver は get / set だけを実装し、「何を保存するか」は知りません。
-Chrome / Web Storage / メモリを差し替えて同じメモ保存契約を使えます。
-既存の `quick-note` 文字列は読めます。プレビューの新データは名前空間付きの JSON です。
-未保存は空メモ、破損データはエラーにします。
+メモの保存キー・形式・未保存時の値は `gateways/storage.ts` 内の非公開 contract が所有します。
+controller の保存入力スキーマは使いません。
+Chrome / Web Storage / メモリの driver は get / set だけを実装し、メモを知りません。
+既存の `quick-note` 文字列も読み出せます。プレビューの新データは名前空間付き JSON です。
+未保存は空メモ、破損データはエラーとして扱います。
 
-## 入力は必ず検証する
+## 追加・変更と確認
 
-公開 inbound port `NoteActions` は未知の値を受け取ります。
-その実装である controller が `validatedAction(validator, execute)` を必ず使い、
-検証済みの値だけを内部の型付き `NoteUseCases` に渡します。
-UI は `NoteActions` に依存し、controller の具体型や UseCase を import しません。
+新しい操作は controller と UseCase を対にして追加します。
+外部処理が必要なら port と gateway を追加し、compose で明示的に接続します。
+検証処理を分割するほど大きくなった場合も、その操作の近くへ置き、検証全般の置き場には集めません。
 
-```ts
-loadNote: validatedAction(noInput, useCases.loadNote),
-saveNote: validatedAction(saveNoteInput, useCases.saveNote),
-importNote: validatedAction(importNoteInput, useCases.importNote),
-```
+Vitest は入力に対する出力・エラー・保存後の値を確認します。
+外部通信は固定レスポンスを使い、内部の呼び出し回数や詳細な順序、DOM スナップショットは検証しません。
+`npm run check` で実行時の契約・型契約・本番ビルドを確認します。
+UI の責務と daisyUI の設定は [UI ガイド](ui.md) を参照してください。
 
-引数のない操作にも `Validator<void>` を使い、`undefined` を渡します。
-検証内容が未定でも `{ parse: (raw: unknown) => raw }` のようにレイヤーを明示します。
-将来追加する content script や `chrome.runtime.onMessage` も検証付き公開操作を入口にしてください。
-
-基本的なオブジェクト・ID 検証は `shared/validation`、メモの操作検証は機能内の `validation`、
-Coffee DTO の検証は integration、保存形式の検証は persistence adapter が所有します。
-共有バリデーションや外部サービスが、メモ用の検証モジュールへ依存しない構成です。
-
-## 機能追加とテスト
-
-1. 新しい機能は `features/<機能名>` に domain・application の契約と port を定義する。
-2. 機能固有の外部処理はその機能の outbound adapter に置く。
-3. 外部サービスの DTO・client は `integrations/<サービス>/<リソース>`、機能を知らない技術処理は `infrastructure` に置く。
-4. UseCase にシーケンスを書き、inbound controller で検証を必須にする。
-5. composition で実装を注入し、画面は公開 inbound port を呼ぶ。
-6. Vitest で入力に対する出力・エラー・保存後の読み出し結果を検証する。
-
-`tests/features/notes` はメモ操作と保存互換性、`tests/integrations` は外部 client、
-`tests/infrastructure` は機能に依存しない保存契約、`tests/shared` は検証境界を確認します。
-外部ネットワークを使わず、固定のレスポンスとメモリストレージを使います。
-内部の呼び出し回数、細かい順序、DOM スナップショットには依存しません。
-型契約は `expectTypeOf` と `@ts-expect-error` を含む型チェックで確認します。
-`npm test` が実行時の契約、`npm run typecheck` が型契約、`npm run check` が両方とビルドです。
+ディレクトリ名に唯一の標準はありません。ヘキサゴナルで必要な依存方向を守り、
+この規模で責務を追える配置を選んでいます。
