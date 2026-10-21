@@ -1,18 +1,17 @@
-import { createChromeStorage } from "../adapters/outbound/storage/chrome-storage";
-import { createLocalStorage } from "../adapters/outbound/storage/local-storage";
-import { noteStorageContract } from "../adapters/outbound/storage/note-storage-contract";
-import { createTypedStorage } from "../adapters/outbound/storage/typed-storage";
-import { createSampleApisCoffeeApi } from "../adapters/outbound/http/sampleapis-coffee-api";
-import { createCoffeeNoteApi } from "../adapters/outbound/http/coffee-note-api";
-import { createApplication } from "./create-application";
+import { createChromeStorage } from "../infrastructure/storage/drivers/chrome-storage";
+import { createLocalStorage } from "../infrastructure/storage/drivers/local-storage";
+import { createNoteStorage } from "../features/notes/adapters/outbound/persistence/note-storage";
+import { createSampleApisCoffeeClient } from "../integrations/sampleapis/coffee/client";
+import { createSampleApisCoffeeSource } from "../features/notes/adapters/outbound/sources/sampleapis-coffee-source";
+import { createNoteApplication } from "../features/notes/compose";
 
 export function createPopupApplication() {
   const driver = globalThis.chrome?.storage?.local
     ? createChromeStorage(chrome.storage.local)
     : createLocalStorage(localStorage);
-  const coffeeApi = createSampleApisCoffeeApi((url, init) => globalThis.fetch(url, init));
-  return createApplication({
-    storage: createTypedStorage(driver, noteStorageContract),
-    api: createCoffeeNoteApi(coffeeApi),
+  const coffeeClient = createSampleApisCoffeeClient((url, init) => globalThis.fetch(url, init));
+  return createNoteApplication({
+    repository: createNoteStorage(driver),
+    source: createSampleApisCoffeeSource(coffeeClient),
   });
 }
