@@ -12,6 +12,9 @@
 
 - Use TypeScript and native DOM APIs with daisyUI / Tailwind CSS; do not add a UI framework without a request.
 - Preserve the hexagonal boundaries described in `docs/architecture.md`. UseCases describe sequential port calls; composition injects concrete implementations explicitly.
+- Keep feature domain/application independent of adapters, integrations, infrastructure, and UI. Application ports express feature needs, not generic driver or provider contracts.
+- Place provider DTOs/clients in `integrations`, reusable technical implementations in `infrastructure`, and feature-specific conversion/persistence in that feature's adapters. Shared infrastructure and validation must not import features.
+- UI screens depend on public inbound ports, not concrete controllers or UseCases. Keep generic infrastructure tests independent of feature contracts.
 - Route external input and UI operations through the validation-backed controller. Storage contracts require both save Input and load Output validators.
 - Use Vitest for input/output contracts and observable errors or persisted results. Avoid tests tied to internal call counts, fine-grained execution order, or DOM snapshots.
 - Keep `docs/screenshots/` and the README images current when changing the visible design. These images document the UI; they are not snapshot-test baselines.

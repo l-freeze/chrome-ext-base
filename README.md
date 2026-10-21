@@ -65,9 +65,9 @@ interface FetchCoffeeOutput {
 }
 ```
 
-型定義は `src/application/ports/coffee-api.ts`、実通信は
-`src/adapters/outbound/http/sampleapis-coffee-api.ts` にあります。
-`coffee-note-api.ts` が外部の Coffee 形式をアプリの Note 形式へ変換し、
+型定義は `src/integrations/sampleapis/coffee/contracts.ts`、実通信は
+`src/integrations/sampleapis/coffee/client.ts` にあります。
+`features/notes/adapters/outbound/sources/sampleapis-coffee-source.ts` が外部の Coffee 形式をアプリの Note 形式へ変換し、
 UseCase は「API 取得 → 保存 → 読み出し」のシーケンスを実行します。
 `image` は受信データとして扱い、画像への追加通信はしません。
 
@@ -94,27 +94,31 @@ CSS とアイコンはビルドに同梱し、外部 CDN やフォントサー�
 
 ```text
 src/
-├── domain/                 型・制約
-├── application/
-│   ├── ports/              IF・Input/Output
-│   └── use-cases/          順次実行のシーケンス
-├── validation/             必須の検証レイヤー
-├── adapters/
-│   ├── inbound/            外部からアプリを呼ぶ入口
-│   └── outbound/           アプリから呼ぶ REST・ストレージ・モック
-├── composition/            明示的な軽量 DI
+├── features/notes/          メモ機能の責務と境界
+│   ├── domain/             メモの型・制約
+│   ├── application/        操作の Input/Output・ports・順次実行の UseCase
+│   ├── validation/         メモ操作・メモ形式の検証
+│   ├── adapters/           検証付きの入口・取得元・メモ固有の保存処理
+│   └── compose.ts          機能内の明示的 DI
+├── integrations/           外部サービス固有の DTO・検証・client
+├── infrastructure/         汎用 HTTP・型付き保存・ストレージ driver
+├── shared/validation/      機能に依存しない検証の仕組み
+├── composition/            環境に合わせて具体実装を選択
 └── ui/
     ├── entrypoints/        ポップアップなどの起動点
     ├── screens/            画面ごとの HTML・DOM 操作・CSS
     ├── layouts/            共通の画面枠
     ├── components/         再利用する表示部品
     └── styles/             Tailwind・daisyUI 設定・テーマ
-tests/                      入出力契約のテスト
+tests/                      機能・外部連携・基盤ごとの入出力契約
 ```
 
 ディレクトリ名に唯一の標準はありません。`inbound/outbound` は呼び出しを起動する方向を表し、
 `FetchCoffeeInput/Output` のようなデータ型名と区別します。命名の比較と参照した実装例は
 [アーキテクチャガイド](docs/architecture.md) に記載しています。
+
+application の ports はメモ機能が要求する操作だけを定義します。外部 API の DTO と
+保存 driver の IF はそれぞれ integration と infrastructure が所有します。
 
 保存 Input / 読み出し Output のバリデーターは両方必須です。片方だけでは初期化できません。
 既存のメモ文字列は引き続き読み出せます。未保存は空メモ、破損データはエラーとして扱います。

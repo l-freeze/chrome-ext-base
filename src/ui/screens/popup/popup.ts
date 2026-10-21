@@ -1,11 +1,11 @@
-import type { NoteController } from "../../../adapters/inbound/note-controller";
-import { MAX_NOTE_LENGTH } from "../../../domain/note";
-import type { Note } from "../../../domain/note";
+import type { NoteActions } from "../../../features/notes/application/ports/inbound/note-actions";
+import { MAX_NOTE_LENGTH } from "../../../features/notes/domain/note";
+import type { Note } from "../../../features/notes/domain/note";
 import { createActionButton } from "../../components/action-button";
 import { createFeedback } from "../../components/feedback";
 import template from "./popup.html?raw";
 
-export function mountPopup(root: HTMLElement, application: NoteController) {
+export function mountPopup(root: HTMLElement, application: NoteActions) {
   root.innerHTML = template;
   const form = root.querySelector<HTMLFormElement>("#note-form")!;
   const note = root.querySelector<HTMLTextAreaElement>("#note")!;
