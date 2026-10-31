@@ -17,12 +17,25 @@ TypeScript + Vite + Vitest、素の HTML / DOM API と daisyUI 5 + Tailwind CSS 
 
 ## セットアップとコマンド
 
-Node.js 24 と npm を使用します。nvm を使う場合は `nvm use`。
+Node.js 26 LTS と npm を使用します。`.nvmrc` は検証した 26.13.0 に固定しています。
+nvm を導入済みの場合は、リポジトリのディレクトリで次を実行してください。
+
+```sh
+nvm install
+nvm use
+```
+
+2026-10-31 時点の [Node.js 公式配布情報](https://nodejs.org/dist/index.json) で、
+26.13.0 が最新安定版の LTS（Lithium）であることを確認しています。
+Node.js の準備後、依存関係をインストールして検証します。
 
 ```sh
 npm ci
 npm run check
 ```
+
+検証済み環境: Node.js 26.13.0 / npm 11.20.0（2026-10-31）。
+`npm ci`、49 件の Vitest テスト、型チェック、本番ビルドが成功しています。
 
 | コマンド | 内容 |
 | --- | --- |
