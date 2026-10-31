@@ -1,4 +1,7 @@
-<p class="intro-copy">思いついたことを、忘れないうちに。</p>
+<div class="popup-toolbar">
+  <p class="intro-copy">思いついたことを、忘れないうちに。</p>
+  <a href="./options.html" target="_blank" rel="noopener" class="btn btn-ghost btn-xs">設定 ↗</a>
+</div>
 
 <section class="card bg-base-100 note-card" aria-labelledby="note-title">
   <form id="note-form" class="card-body">
@@ -32,28 +35,33 @@
   <span data-feedback-text>読み込み中…</span>
 </div>
 
-<section class="card sample-card" aria-labelledby="sample-title">
+<section class="card bg-base-100 page-card" aria-labelledby="capture-title">
   <div class="card-body">
-    <div class="sample-heading">
-      <div class="coffee-illustration" aria-hidden="true">
-        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 20h22v12a7 7 0 0 1-7 7h-8a7 7 0 0 1-7-7V20Z" />
-          <path d="M33 22h2a5 5 0 0 1 0 10h-2M8 41h29M17 15c-4-4 3-5 0-9M24 15c-4-4 3-5 0-9M31 15c-4-4 3-5 0-9" />
-        </svg>
-      </div>
-      <div class="sample-copy">
-        <p class="sample-eyebrow">A SMALL DOSE OF INSPIRATION</p>
-        <h2 id="sample-title">ひと息、コーヒーの話。</h2>
-        <p>SampleAPIs から、ひとつの小さな発見を。</p>
-      </div>
+    <div class="page-heading"><h2 id="capture-title">今見ているページ</h2><span id="preview-label" class="badge badge-soft badge-sm" hidden>プレビュー</span></div>
+    <button id="capture-page" class="btn btn-outline btn-primary btn-sm" type="button" disabled>タイトル・URL・選択テキストを取得</button>
+    <p id="page-status" class="page-help" role="status" aria-live="polite">通常の Web ページを開いてから取得してください。</p>
+    <div id="page-result" class="page-result" hidden>
+      <h3 id="page-title"></h3>
+      <p id="page-url" class="page-url"></p>
+      <blockquote id="page-selection"></blockquote>
+      <p id="page-truncated" class="page-help" hidden>選択テキストは先頭 2,000 文字まで表示しています。</p>
     </div>
+  </div>
+</section>
+
+<details class="card sample-card coffee-details">
+  <summary>☕ REST サンプル · コーヒー情報を取得</summary>
+  <div class="card-body">
     <button id="import-sample" class="btn btn-soft btn-sm sample-button" type="button" aria-describedby="sample-help" disabled>
       <span data-button-spinner class="loading loading-spinner loading-xs hidden" aria-hidden="true"></span>
       サンプルを取得して保存
-      <svg data-button-icon class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M5 12h14m-5-5 5 5-5 5" />
-      </svg>
+      <svg data-button-icon class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
     </button>
-    <p id="sample-help" class="sample-help">取得したコーヒー情報で、現在のメモを置き換えます。</p>
+    <p id="sample-help" class="sample-help">SampleAPIs のコーヒー情報で、現在のメモを置き換えます。</p>
   </div>
-</section>
+</details>
+
+<aside class="live-settings" aria-label="反映中の設定">
+  <p><span class="live-dot" aria-hidden="true"></span> <span id="theme-setting">読み込み中</span><span class="settings-divider">/</span>選択テキスト <strong id="selection-setting">—</strong></p>
+  <p id="settings-status" role="status" aria-live="polite">設定を読み込み中…</p>
+</aside>

@@ -1,0 +1,39 @@
+<div class="options-heading"><p class="eyebrow">MAKE IT YOURS</p><h2>あなたの使いやすさに。</h2><p>見た目と、ページから取得する情報を設定できます。</p></div>
+<div class="options-grid">
+  <section class="card bg-base-100 settings-card" aria-labelledby="settings-title">
+    <form id="settings-form" class="card-body">
+      <h3 id="settings-title">基本設定</h3>
+      <fieldset id="settings-fields" disabled>
+        <label class="setting-label" for="theme">画面のテーマ</label>
+        <p class="setting-description" id="theme-help">保存すると、この画面と開いているポップアップ UI に反映します。</p>
+        <select id="theme" name="theme" class="select select-bordered w-full" aria-describedby="theme-help">
+          <option value="system">端末に合わせる</option><option value="light">ライト</option><option value="dark">ダーク</option>
+        </select>
+        <div class="selection-option">
+          <div><label class="setting-label" for="include-selection">選択テキストを取得する</label><p id="selection-help" class="setting-description">ページ情報の取得時に、選択した文章も含めます。本文全体やフォーム入力は取得しません。</p></div>
+          <input id="include-selection" name="includeSelection" type="checkbox" class="toggle toggle-primary" aria-describedby="selection-help" />
+        </div>
+        <button class="btn btn-primary w-full" type="submit" id="save-settings">設定を保存する</button>
+      </fieldset>
+      <p id="options-status" role="status" aria-live="polite">設定を読み込み中…</p>
+    </form>
+    <div class="reset-section"><div><h3>初期設定に戻す</h3><p>テーマと選択テキストの設定を戻します。保存したメモは残ります。</p></div><button id="reset-settings" class="btn btn-outline btn-sm" type="button" disabled>リセット</button></div>
+  </section>
+  <aside class="card live-guide" aria-labelledby="live-title">
+    <div class="card-body">
+      <span class="badge badge-soft badge-primary badge-sm">LIVE PREVIEW</span>
+      <h3 id="live-title">保存したら、もう反映。</h3>
+      <p>別の画面で変更した設定も、ストレージの変更通知で UI に届きます。</p>
+      <ol><li>表示確認用ページを開く</li><li>ここでテーマを変更して保存する</li><li>開いたページに戻り、色の変化を確認する</li></ol>
+      <a href="./index.html" target="_blank" rel="noopener" class="btn btn-soft btn-primary">表示確認用ページを開く ↗</a>
+      <p class="live-guide-note">同じポップアップ UI を確認用にタブで開きます。通常はツールバーのアイコンから開く拡張です。</p>
+    </div>
+  </aside>
+</div>
+<dialog id="reset-dialog" class="modal" aria-labelledby="reset-title" aria-describedby="reset-help">
+  <div class="modal-box">
+    <h2 id="reset-title" class="text-lg font-bold">初期設定に戻しますか？</h2>
+    <p id="reset-help" class="py-4 text-sm">テーマは「端末に合わせる」、選択テキストの取得は ON に戻ります。メモは削除しません。</p>
+    <form method="dialog" class="modal-action"><button class="btn" value="cancel" autofocus>キャンセル</button><button id="confirm-reset" type="button" class="btn btn-primary">初期設定に戻す</button></form>
+  </div>
+</dialog>

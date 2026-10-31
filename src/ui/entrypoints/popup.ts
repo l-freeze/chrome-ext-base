@@ -5,4 +5,5 @@ import { mountPopup } from "../screens/popup/popup";
 
 const root = document.querySelector<HTMLElement>("#app")!;
 const content = mountExtensionShell(root);
-mountPopup(content, createPopupApplication());
+const dispose = mountPopup(content, createPopupApplication());
+window.addEventListener("pagehide", (event) => { if (!event.persisted) dispose(); });
