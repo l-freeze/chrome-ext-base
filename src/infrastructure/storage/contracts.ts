@@ -11,3 +11,7 @@ export interface StorageContract<SaveInput, LoadOutput> {
   output: Validator<LoadOutput>;
   encode(input: SaveInput): unknown;
 }
+
+export interface StorageChanges {
+  subscribe(key: string, onValue: (value: unknown) => void, onError: (error: unknown) => void): () => void;
+}

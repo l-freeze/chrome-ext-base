@@ -1,0 +1,35 @@
+@layer utilities {
+  body.options-page { width: 100%; max-width: none; min-height: 100vh; }
+  .options-page .extension-shell { max-width: 1000px; margin-inline: auto; padding: 32px; }
+  .options-page .app-footer { margin-top: 32px; }
+  .options-heading { margin-block: 38px 26px; }
+  .options-heading h2 { font-size: clamp(24px, 4vw, 32px); font-weight: 750; letter-spacing: -.8px; margin-block: 8px; }
+  .options-heading > p:last-child { font-size: 13px; color: var(--ui-muted); line-height: 1.8; }
+  .options-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; gap: 24px; }
+  .settings-card { border: 1px solid var(--color-base-300); box-shadow: 0 5px 20px color-mix(in oklch, var(--color-neutral) 4%, transparent); }
+  .settings-card .card-body { padding: 26px; gap: 22px; }
+  .settings-card h3 { font-size: 16px; font-weight: 700; }
+  .setting-label { display: block; font-size: 13px; font-weight: 650; }
+  .setting-description { font-size: 12px; line-height: 1.8; color: var(--ui-muted); margin-block: 7px 14px; }
+  .selection-option { display: flex; align-items: start; gap: 18px; border-top: 1px solid var(--color-base-300); padding-top: 22px; margin-top: 24px; }
+  .selection-option .toggle { flex-shrink: 0; margin-top: 3px; }
+  .settings-card fieldset > button { margin-top: 14px; }
+  #options-status { font-size: 12px; line-height: 1.8; color: var(--ui-muted); min-height: 42px; }
+  .reset-section { border-top: 1px solid var(--color-base-300); padding: 22px 26px; display: flex; align-items: center; gap: 20px; }
+  .reset-section h3 { font-size: 13px; }
+  .reset-section p { font-size: 11px; color: var(--ui-muted); line-height: 1.8; margin-top: 5px; }
+  .reset-section button { flex-shrink: 0; }
+  .live-guide { background: color-mix(in oklch, var(--color-primary) 6%, var(--color-base-100)); border: 1px solid var(--color-base-300); }
+  .live-guide .card-body { padding: 24px; gap: 18px; }
+  .live-guide h3 { font-size: 21px; font-weight: 700; letter-spacing: -.6px; }
+  .live-guide p, .live-guide ol { font-size: 12px; line-height: 1.9; color: var(--ui-muted); }
+  .live-guide ol { list-style: decimal; padding-left: 18px; }
+  .live-guide .live-guide-note { font-size: 10px; }
+  @media (max-width: 720px) {
+    .options-page .extension-shell { padding: 22px 18px; }
+    .options-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+    .options-heading { margin-top: 28px; }
+    .settings-card .card-body { padding: 20px; }
+    .reset-section { padding: 20px; }
+  }
+}

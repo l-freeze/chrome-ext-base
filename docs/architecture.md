@@ -25,6 +25,9 @@ src/
 │   │   ├── rest.ts            メモ形式の REST サービスとの接続
 │   │   └── mock.ts            取得元のモック
 │   └── compose.ts             controller と UseCase の接続
+├── features/settings/        設定操作・保存形式・変更通知（同じ役割分け）
+├── features/page/            ページ取得（同じ役割分け）
+├── content/page.ts           ページ内で動く自己完結した関数
 ├── integrations/sampleapis/
 │   └── coffee.ts              Coffee 取得の型・通信・境界検証
 ├── infrastructure/
@@ -184,3 +187,19 @@ UI の責務と daisyUI の設定は [UI ガイド](ui.md) を参照してくだ
 
 ディレクトリ名に唯一の標準はありません。ヘキサゴナルで必要な依存方向を守り、
 この規模で責務を追える配置を選んでいます。
+
+## 設定とページ取得の境界
+
+`settings` と `page` も controller / UseCase / gateway を同じ深さに配置しています。
+設定の load / save / reset、ページの capture はそれぞれ専用の controller で入力を検証します。
+ページ取得 UseCase は「設定を読み出す → reader を呼ぶ」のシーケンスだけを持ちます。
+`CapturePreferences` はページ取得側の port で、設定機能の具体実装には依存しません。
+composition が設定 repository を明示的に注入します。
+
+`StorageChanges` は保存基盤の通知、`SettingsChanges` は検証済みの設定を UI に届ける port です。
+通知の購読は UI に属し、UseCase の順次処理から独立しています。
+UI は port と型に依存し、Chrome API や storage driver を直接扱いません。
+ページ内の DOM アクセスは `content/page.ts` だけに閉じ込め、Chrome gateway が注入と応答検証を担当します。
+
+設定のリセット確認・変更通知の流れ・content script と service worker の説明は
+[拡張サンプルのガイド](extension.md) にまとめています。
