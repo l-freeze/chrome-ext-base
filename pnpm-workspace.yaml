@@ -1,0 +1,5 @@
+# Project settings; no additional workspace packages yet.
+engineStrict: true
+saveExact: true
+strictDepBuilds: true
+allowBuilds: {}
