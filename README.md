@@ -17,7 +17,7 @@ TypeScript + Vite + Vitest、素の HTML / DOM API と daisyUI 5 + Tailwind CSS 
 
 ## セットアップとコマンド
 
-Node.js 26 LTS と npm を使用します。`.nvmrc` は検証した 26.13.0 に固定しています。
+Node.js 26 LTS と pnpm 12.16.1 を使用します。`.nvmrc` は検証した 26.13.0 に固定しています。
 nvm を導入済みの場合は、リポジトリのディレクトリで次を実行してください。
 
 ```sh
@@ -27,36 +27,57 @@ nvm use
 
 2026-10-31 時点の [Node.js 公式配布情報](https://nodejs.org/dist/index.json) で、
 26.13.0 が最新安定版の LTS（Lithium）であることを確認しています。
-Node.js の準備後、依存関係をインストールして検証します。
+Node.js の準備後、固定バージョンの pnpm を導入して依存関係をインストールします。
+最初の pnpm 導入にだけ、Node.js 付属の npm を使います。
 
 ```sh
-npm ci
-npm run check
+npm install --global pnpm@12.16.1
+pnpm --version
+pnpm install --frozen-lockfile
+pnpm run check
 ```
 
-検証済み環境: Node.js 26.13.0 / npm 11.20.0（2026-10-31）。
-`npm ci`、49 件の Vitest テスト、型チェック、本番ビルドが成功しています。
+検証済み環境: Node.js 26.13.0 / pnpm 12.16.1（2026-10-31）。
+`pnpm install --frozen-lockfile`、49 件の Vitest テスト、型チェック、本番ビルドが成功しています。
 
 | コマンド | 内容 |
 | --- | --- |
-| `npm run dev` | UI プレビューと HMR |
-| `npm run dev:extension` | 拡張用の監視ビルド |
-| `npm run typecheck` | ブラウザコード・テスト・ビルド設定の型チェック |
-| `npm test` | Vitest による Input / Output 契約テスト |
-| `npm run test:watch` | テストの監視実行 |
-| `npm run build` | 型チェックと `dist/` 生成 |
-| `npm run check` | テスト・型チェック・ビルド |
+| `pnpm run dev` | UI プレビューと HMR |
+| `pnpm run dev:extension` | 拡張用の監視ビルド |
+| `pnpm run typecheck` | ブラウザコード・テスト・ビルド設定の型チェック |
+| `pnpm test` | Vitest による Input / Output 契約テスト |
+| `pnpm run test:watch` | テストの監視実行 |
+| `pnpm run build` | 型チェックと `dist/` 生成 |
+| `pnpm run check` | テスト・型チェック・ビルド |
+
+## パッケージ管理
+
+`package.json` の `packageManager` で pnpm 12.16.1 を固定しています。
+`pnpm-workspace.yaml` は単一パッケージの設定にも使用し、次の方針を共有します。
+
+- `engineStrict: true`: Node.js 26 系の指定を必須にする。
+- `saveExact: true`: 追加する直接依存のバージョンを固定する。
+- `strictDepBuilds: true` / `allowBuilds: {}`: 未確認の依存スクリプトがあればインストールを失敗させる。現在の許可リストは空。
+
+依存を追加する場合は `pnpm add <package>`、開発用なら `pnpm add -D <package>` を使います。
+スクリプト付きの依存で停止したら、そのパッケージの処理を確認し、`allowBuilds` に判断を記録します。
+必要なものだけ `true`、実行しないものは `false` とし、許可対象は可能ならバージョンも指定します。
+設定例や詳細は [pnpm の build 設定](https://pnpm.io/settings/build) を参照してください。
+
+更新時は `package.json`・`pnpm-lock.yaml`・必要な許可設定を一緒にレビューし、`pnpm run check` を実行します。
+CI や取得直後の検証には `pnpm install --frozen-lockfile` を使います。
+Node.js 26 と pnpm を準備済みのクラウド環境でも、セットアップコマンドは同じです。
 
 ## Chrome で実行
 
-1. `npm run build` を実行する。
+1. `pnpm run build` を実行する。
 2. Chrome の `chrome://extensions` でデベロッパーモードを有効化する。
 3. 「パッケージ化されていない拡張機能を読み込む」で `dist/` を選ぶ。
 4. 拡張をツールバーに固定し、ポップアップを開く。
 5. メモを保存し、開き直して内容が残っていることを確認する。
 6. 「サンプルを取得して保存」でコーヒー情報がメモに入り、再度開いても残ることを確認する。
 
-Chrome 124 以降に対応します。`npm run dev:extension` は変更時に再ビルドします。
+Chrome 124 以降に対応します。`pnpm run dev:extension` は変更時に再ビルドします。
 変更後は拡張管理画面で再読み込みし、ポップアップを開き直してください。
 公開用アイコンやストアの説明・画像は製品に合わせて追加してください。
 
@@ -93,7 +114,7 @@ API は公開サンプルでデータが変更される可能性があるため�
 ライト／ダークのカスタムテーマは OS の設定に追従します。
 文字数表示と `Ctrl + Enter` / `⌘ + Enter` による保存にも対応しています。
 
-`npm run dev` で UI をプレビューできます。プレビューでは `localStorage` を使い、
+`pnpm run dev` で UI をプレビューできます。プレビューでは `localStorage` を使い、
 拡張では `chrome.storage.local` を使います。保存データは共有しません。
 プレビューから実 API を呼ぶ場合は通常のブラウザの CORS 制約を受けます。
 拡張の権限や CSP は、ビルドした `dist/` を Chrome に読み込んで確認してください。
@@ -138,7 +159,7 @@ controller は inbound adapter、gateway は outbound adapter に相当します
 既存のメモ文字列は引き続き読み出せます。未保存は空メモ、破損データはエラーとして扱います。
 API とストレージの実装は `src/composition/popup.ts` で差し替えられます。
 
-依存関係は `package-lock.json` で固定しています。
+依存関係は `pnpm-lock.yaml` で固定しています。
 バージョンを変更するときは `package.json` と `public/manifest.json` を揃えてください。
 バックグラウンド処理やページへの注入が必要になったら、service worker / content script と
 対応するビルドエントリー・権限を追加してください。
