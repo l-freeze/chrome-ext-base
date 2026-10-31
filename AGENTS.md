@@ -22,4 +22,5 @@
 - Place provider contracts/clients in `integrations`, reusable technical implementations in `infrastructure`, and feature-specific conversion/persistence in that feature's gateways. Generic modules must not import features.
 - UI screens depend on public ports, not concrete controllers or UseCases. Storage contracts require both save Input and load Output validators. Keep generic infrastructure tests independent of feature contracts.
 - Use Vitest for input/output contracts and observable errors or persisted results. Avoid tests tied to internal call counts, fine-grained execution order, or DOM snapshots.
+- As a base repository, keep default tests focused on reusable validation, HTTP/storage contracts, and build artifacts. Do not fix sample-specific fields, copy, limits, or API payloads in tests unless requested. Derived products can add tests for their own behavior. Run artifact tests after building; discover their entry paths from the manifest rather than fixing sample filenames.
 - Keep `docs/screenshots/` and the README images current when changing the visible design. These images document the UI; they are not snapshot-test baselines.

@@ -42,17 +42,22 @@ pnpm run check
 ```
 
 検証済み環境: Node.js 26.13.0 / pnpm 12.16.1（2026-10-31）。
-`pnpm install --frozen-lockfile`、83 件の Vitest テスト、型チェック、本番ビルドが成功しています。
+`pnpm install --frozen-lockfile`、共通基盤の契約テスト、型チェック、本番ビルド、配布物の構成テストで検証しています。
 
 | コマンド | 内容 |
 | --- | --- |
 | `pnpm run dev` | UI プレビューと HMR |
 | `pnpm run dev:extension` | 拡張用の監視ビルド |
 | `pnpm run typecheck` | ブラウザコード・テスト・ビルド設定の型チェック |
-| `pnpm test` | Vitest による Input / Output 契約テスト |
+| `pnpm test` | 共通基盤の Input / Output 契約テスト（ビルド不要） |
 | `pnpm run test:watch` | テストの監視実行 |
 | `pnpm run build` | 型チェックと `dist/` 生成 |
-| `pnpm run check` | テスト・型チェック・ビルド |
+| `pnpm run test:extension` | ビルド済み `dist/` の構成確認（先に build が必要） |
+| `pnpm run check` | 契約テスト・型チェック・ビルド・配布物の構成確認 |
+
+ベースのテストはサンプル固有の仕様を固定しません。メモ・設定・Coffee の項目や表示を
+変更しても、共通基盤の契約を変えなければそのテストを書き換える必要はありません。
+保証する範囲と派生プロジェクトでの追加方針は [テスト方針](docs/testing.md) を参照してください。
 
 ## パッケージ管理
 
@@ -126,7 +131,7 @@ UseCase は「API 取得 → 保存 → 読み出し」のシーケンスを実�
 
 `public/manifest.json` に `https://api.sampleapis.com/*` の `host_permissions` を設定済みです。
 クラウドからの実通信には環境設定でも `api.sampleapis.com` の許可が必要です。
-API は公開サンプルでデータが変更される可能性があるため、テストは固定レスポンスで I/O を検証します。
+API は公開サンプルでデータが変更される可能性があります。ベースの自動テストは外部 API を呼ばず、汎用 HTTP 処理を固定レスポンスで確認します。
 
 ## UI の開発
 
@@ -167,7 +172,7 @@ src/
     ├── layouts/            画面枠
     ├── components/         表示部品
     └── styles/             daisyUI / Tailwind・テーマ
-tests/                      所有者ごとの入出力契約テスト
+tests/                      共通基盤の契約・配布物の構成テスト
 ```
 
 controller は inbound adapter、gateway は outbound adapter に相当します。

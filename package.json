@@ -10,10 +10,11 @@
     "dev": "vite",
     "dev:extension": "vite build --watch",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.tools.json --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run --exclude \"tests/extension/**\"",
+    "test:watch": "vitest --exclude \"tests/extension/**\"",
+    "test:extension": "vitest run tests/extension",
     "build": "pnpm run typecheck && vite build",
-    "check": "pnpm run test && pnpm run build"
+    "check": "pnpm run test && pnpm run build && pnpm run test:extension"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",
