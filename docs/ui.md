@@ -10,11 +10,14 @@ daisyUI は CSS のコンポーネントライブラリで、ディレクトリ�
 ```text
 src/ui/
 ├── entrypoints/
-│   └── popup.ts                  CSS 読み込み・DI・画面の組み立て
+│   ├── popup.ts                  CSS 読み込み・DI・画面の組み立て
+│   └── options.ts                設定画面の起動
 ├── screens/popup/
 │   ├── popup.html                画面の固定マークアップ
 │   ├── popup.ts                  UI イベントと表示状態
 │   └── popup.css                 この画面だけの調整
+├── screens/options/              設定フォーム・確認ダイアログ・CSS
+├── settings.ts                   テーマ適用と設定通知への接続
 ├── layouts/
 │   ├── extension-shell.html      ヘッダー・コンテンツ領域・フッター
 │   ├── extension-shell.ts        固定テンプレートの配置
@@ -30,6 +33,8 @@ src/ui/
 
 `index.html` は拡張のエントリー HTML としてリポジトリ直下に残し、
 `src/ui/entrypoints/popup.ts` を読み込みます。ビルド結果の `dist/index.html` も変わりません。
+`options.html` は設定画面のエントリーで、ポップアップと一緒にビルドします。
+ポップアップは高さ 600 px を上限とし、取得結果や開いた REST サンプルはスクロールできます。
 新しい画面を作るときは `screens/<画面名>/` を追加し、必要なら entrypoint と Vite の入力を追加します。
 画面内でしか使わない UI を、無理に共有 components へ移す必要はありません。
 
@@ -66,7 +71,8 @@ CSS の検出範囲は `@source "../"` で `src/ui` に限定しています。
 ## テーマを変更する
 
 `styles/themes.css` に `notebook` と `notebook-dark` の 2 テーマを定義しています。
-ライトを既定にし、ダークは `prefers-color-scheme` に追従します。
+設定の初期値は「端末に合わせる」で `prefers-color-scheme` に追従します。
+保存した設定が light / dark の場合は `data-theme` で指定テーマを適用します。
 ブランド色は `--color-primary` と `--color-primary-content`、
 カードや背景は `--color-base-*`、角丸は `--radius-*` を変更します。
 独自の紙・コーヒーカードの色は `--ui-paper` と `--ui-coffee*` です。
@@ -94,3 +100,11 @@ CSS の検出範囲は `@source "../"` で `src/ui` に限定しています。
 - [Tailwind CSS の Vite 導入手順](https://tailwindcss.com/docs/installation/using-vite)
 
 これらは導入とテーマの仕様の参照先です。このプロジェクトのフォルダー構成を公式標準として示すものではありません。
+
+## 設定の変更を反映する
+
+`ui/settings.ts` が初期値と変更通知を扱い、各画面に検証済みの設定を渡します。
+ポップアップの未保存メモと、設定画面の未保存フォームは通知で上書きしません。
+リセット確認は native `dialog` と daisyUI の modal を使い、キャンセル・Escape では保存しません。
+確認ボタンからのみ `{ confirmed: true }` を検証付き reset 操作へ渡します。
+プレビューで別ページへの反映を確かめる手順は [拡張サンプルのガイド](extension.md) を参照してください。
