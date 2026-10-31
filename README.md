@@ -27,12 +27,9 @@ nvm use
 
 2026-10-31 時点の [Node.js 公式配布情報](https://nodejs.org/dist/index.json) で、
 26.13.0 が最新安定版の LTS（Lithium）であることを確認しています。
-Node.js の準備後、固定バージョンの pnpm を導入して依存関係をインストールします。
-最初の pnpm 導入にだけ、Node.js 付属の npm を使います。
+Node.js と pnpm が導入済みの環境で、プロジェクトの依存関係をインストールして検証します。
 
 ```sh
-npm install --global pnpm@12.16.1
-pnpm --version
 pnpm install --frozen-lockfile
 pnpm run check
 ```
