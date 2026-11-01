@@ -51,12 +51,15 @@ pnpm run check
 | `pnpm run typecheck` | ブラウザコード・テスト・ビルド設定の型チェック |
 | `pnpm test` | 共通基盤の Input / Output 契約テスト（ビルド不要） |
 | `pnpm run test:watch` | テストの監視実行 |
+| `pnpm run test:examples` | 開発者向けの参考テストを任意実行 |
 | `pnpm run build` | 型チェックと `dist/` 生成 |
 | `pnpm run test:extension` | ビルド済み `dist/` の構成確認（先に build が必要） |
 | `pnpm run check` | 契約テスト・型チェック・ビルド・配布物の構成確認 |
 
 ベースのテストはサンプル固有の仕様を固定しません。メモ・設定・Coffee の項目や表示を
 変更しても、共通基盤の契約を変えなければそのテストを書き換える必要はありません。
+`tests/examples/` の参考テストには、独自機能の開発時には参考にしてから削除する旨をコメントしています。
+通常のテスト実行には含めませんが、型チェック対象のためサンプルの差し替え時に一緒に削除してください。
 保証する範囲と派生プロジェクトでの追加方針は [テスト方針](docs/testing.md) を参照してください。
 
 ## パッケージ管理
@@ -172,7 +175,7 @@ src/
     ├── layouts/            画面枠
     ├── components/         表示部品
     └── styles/             daisyUI / Tailwind・テーマ
-tests/                      共通基盤の契約・配布物の構成テスト
+tests/                      共通基盤の契約・配布物の構成テストと任意の参考例
 ```
 
 controller は inbound adapter、gateway は outbound adapter に相当します。

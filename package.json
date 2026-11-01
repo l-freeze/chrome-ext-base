@@ -10,8 +10,9 @@
     "dev": "vite",
     "dev:extension": "vite build --watch",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.tools.json --noEmit",
-    "test": "vitest run --exclude \"tests/extension/**\"",
-    "test:watch": "vitest --exclude \"tests/extension/**\"",
+    "test": "vitest run --exclude \"tests/extension/**\" --exclude \"tests/examples/**\"",
+    "test:watch": "vitest --exclude \"tests/extension/**\" --exclude \"tests/examples/**\"",
+    "test:examples": "vitest run tests/examples",
     "test:extension": "vitest run tests/extension",
     "build": "pnpm run typecheck && vite build",
     "check": "pnpm run test && pnpm run build && pnpm run test:extension"
