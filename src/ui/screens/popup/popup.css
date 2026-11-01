@@ -1,23 +1,34 @@
 @layer utilities {
+  .popup-page .extension-shell { padding: 16px; }
+  .popup-page .app-header { gap: 10px; }
+  .popup-page .brand-mark { width: 32px; height: 32px; border-radius: 10px; box-shadow: none; }
+  .popup-page .brand-mark svg { width: 21px; height: 21px; }
+  .popup-page .eyebrow { display: none; }
+  .popup-page .brand-copy h1 { font-size: 20px; letter-spacing: -.5px; }
+  .popup-page .private-badge { font-size: 10px; flex-shrink: 0; }
+  .popup-page .btn { height: auto; min-height: 36px; padding-block: 7px; white-space: normal; line-height: 1.5; }
+  .popup-page .btn svg { flex-shrink: 0; }
+  .popup-page .app-footer { display: none; }
+  .popup-page .feedback { grid-template-columns: 14px minmax(0, 1fr); min-height: 0; padding-block: 6px; margin-block: 6px; font-size: 12px; overflow-wrap: anywhere; }
   .intro-copy { margin: 14px 0 12px; font-size: 12px; color: var(--ui-muted); }
   .note-card { border: 1px solid var(--color-base-300); box-shadow: 0 5px 20px color-mix(in oklch, var(--color-neutral) 4%, transparent); }
   .note-card .card-body { padding: 14px; gap: 10px; }
-  .note-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .note-label { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 650; }
-  .note-counter { font-size: 9px; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .note-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .note-label { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 650; white-space: nowrap; }
+  .note-counter { font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 500; flex-shrink: 0; }
   .note-editor {
-    width: 100%; height: 80px; min-height: 80px; max-height: 240px; resize: vertical;
+    width: 100%; min-width: 0; height: 104px; min-height: 104px; max-height: 240px; resize: vertical;
     padding: 13px; border: 1px solid transparent; border-radius: 10px;
-    background: var(--ui-paper); font-size: 13px; line-height: 1.9;
+    background: var(--ui-paper); font-size: 14px; line-height: 1.8;
   }
   .note-editor::placeholder { color: var(--ui-muted); opacity: .85; }
   .note-editor:focus { outline: 2px solid var(--color-primary); outline-offset: 2px; background: var(--ui-paper); }
   .note-editor:disabled { color: var(--ui-muted); background: var(--ui-paper); }
-  .note-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 2px; }
-  .keyboard-hint { display: flex; align-items: center; gap: 3px; font-size: 9px; color: var(--ui-muted); }
-  .keyboard-hint .kbd { border-color: var(--color-base-300); font-size: 9px; background: var(--color-base-100); box-shadow: none; }
+  .note-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-top: 2px; }
+  .keyboard-hint { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; font-size: 10px; color: var(--ui-muted); }
+  .keyboard-hint .kbd { border-color: var(--color-base-300); font-size: 10px; background: var(--color-base-100); box-shadow: none; }
   .keyboard-hint span { margin-left: 2px; }
-  .save-button { min-width: 106px; font-size: 12px; }
+  .save-button { min-width: min(100%, 112px); max-width: 100%; margin-left: auto; font-size: 14px; }
   .sample-card { background: var(--ui-coffee); color: var(--ui-coffee-content); border: 1px solid color-mix(in oklch, var(--ui-coffee-content) 12%, transparent); }
   .sample-card .card-body { gap: 11px; padding: 16px; }
   .sample-heading { display: flex; align-items: center; gap: 11px; }
@@ -26,31 +37,33 @@
   .sample-eyebrow { font-size: 7px; letter-spacing: 1px; font-weight: 650; opacity: .8; }
   .sample-copy h2 { margin: 3px 0 4px; font-size: 15px; font-weight: 650; letter-spacing: -.3px; }
   .sample-copy p:last-child { font-size: 10px; }
-  .sample-button { width: 100%; border: 1px solid color-mix(in oklch, var(--ui-coffee-content) 16%, transparent); color: var(--ui-coffee-content); background: color-mix(in oklch, var(--color-base-100) 65%, transparent); font-size: 11px; }
+  .sample-button { width: 100%; border: 1px solid color-mix(in oklch, var(--ui-coffee-content) 16%, transparent); color: var(--ui-coffee-content); background: color-mix(in oklch, var(--color-base-100) 65%, transparent); font-size: 12px; }
   .sample-button:hover:not(:disabled) { background: color-mix(in oklch, var(--ui-coffee-content) 10%, var(--color-base-100)); }
-  .sample-help { margin-top: -3px; font-size: 9px; line-height: 1.6; text-align: center; }
+  .sample-help { margin-top: -3px; font-size: 11px; line-height: 1.7; }
   @media (max-width: 360px) {
     .keyboard-hint > span { display: none; }
   }
 }
 
 @layer utilities {
-  .popup-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 5px; }
-  .popup-toolbar .intro-copy { margin-block: 10px; font-size: 11px; }
+  .popup-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 5px; margin-block: 8px; }
+  .popup-toolbar .intro-copy { margin: 0; font-size: 12px; flex: 1; min-width: 0; }
+  .popup-toolbar .btn { flex-shrink: 0; font-size: 12px; }
   .page-card { border: 1px solid var(--color-base-300); }
   .page-card .card-body { padding: 15px; gap: 10px; }
-  .page-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .page-heading h2 { font-size: 12px; font-weight: 650; }
-  .page-help { font-size: 10px; line-height: 1.7; color: var(--ui-muted); }
+  .page-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .page-heading h2 { font-size: 14px; font-weight: 650; }
+  .page-help { font-size: 12px; line-height: 1.7; color: var(--ui-muted); }
+  #capture-page { font-size: 14px; }
   .page-result { padding: 12px; border-radius: 10px; background: var(--ui-paper); }
   .page-result h3 { font-size: 12px; font-weight: 650; overflow-wrap: anywhere; }
   .page-url { margin-top: 5px; font-size: 10px; color: var(--ui-muted); overflow-wrap: anywhere; }
   .page-result blockquote { margin-top: 10px; padding-left: 10px; border-left: 2px solid var(--color-primary); font-size: 12px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 150px; overflow: auto; }
   .coffee-details { margin-top: 12px; }
-  .coffee-details summary { padding: 13px 15px; cursor: pointer; font-size: 11px; font-weight: 600; }
+  .coffee-details summary { padding: 13px 15px; cursor: pointer; font-size: 12px; font-weight: 600; }
   .coffee-details .card-body { padding-top: 0; }
-  .live-settings { padding: 10px 2px 0; font-size: 10px; color: var(--ui-muted); line-height: 1.8; }
-  .live-settings p:last-child { margin-top: 4px; font-size: 9px; }
+  .live-settings { padding: 10px 2px 0; font-size: 11px; color: var(--ui-muted); line-height: 1.8; }
+  .live-settings p:last-child { margin-top: 4px; font-size: 11px; }
   .settings-divider { margin-inline: 8px; opacity: .5; }
   .live-dot { display: inline-block; width: 5px; height: 5px; margin-right: 4px; background: var(--color-success); border-radius: 50%; }
 }

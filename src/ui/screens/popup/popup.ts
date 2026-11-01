@@ -135,7 +135,7 @@ export function mountPopup(root: HTMLElement, dependencies: PopupApplication): (
     const names = { system: "端末に合わせる", light: "ライト", dark: "ダーク" };
     root.querySelector<HTMLElement>("#theme-setting")!.textContent = names[value.theme];
     selectionSetting.textContent = includeSelection ? "ON" : "OFF";
-    settingsStatus.textContent = changed ? "設定の変更を受け取りました。再読み込みなしで反映しています。" : "設定画面で保存した変更が、この画面にも反映されます。";
+    settingsStatus.textContent = changed ? "設定の変更を受け取りました。再読み込みなしで反映しています。" : "設定画面の変更を自動で反映します。";
   }, () => {
     settingsReady = false;
     pageButton.disabled = true;

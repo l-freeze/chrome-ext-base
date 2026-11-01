@@ -38,8 +38,8 @@
 <section class="card bg-base-100 page-card" aria-labelledby="capture-title">
   <div class="card-body">
     <div class="page-heading"><h2 id="capture-title">今見ているページ</h2><span id="preview-label" class="badge badge-soft badge-sm" hidden>プレビュー</span></div>
-    <button id="capture-page" class="btn btn-outline btn-primary btn-sm" type="button" disabled>タイトル・URL・選択テキストを取得</button>
-    <p id="page-status" class="page-help" role="status" aria-live="polite">通常の Web ページを開いてから取得してください。</p>
+    <button id="capture-page" class="btn btn-outline btn-primary btn-sm" type="button" aria-describedby="page-status" disabled>ページ情報を取得</button>
+    <p id="page-status" class="page-help" role="status" aria-live="polite">開いているページのタイトル・URL・選択テキストを取得します。</p>
     <div id="page-result" class="page-result" hidden>
       <h3 id="page-title"></h3>
       <p id="page-url" class="page-url"></p>
