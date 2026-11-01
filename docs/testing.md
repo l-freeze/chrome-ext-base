@@ -30,6 +30,9 @@ pnpm run test:watch       # 同じテストを監視
 pnpm run check            # 契約テスト → 型チェック・ビルド → 配布物確認
 ```
 
+GitHub Actions でも同じ `pnpm run check` を実行し、成功した配布物を ZIP として保存します。
+実行タイミングとダウンロード手順は [Actions ガイド](ci.md) を参照してください。
+
 配布物の確認だけを実行する場合は `pnpm run build` の後に `pnpm run test:extension` を使います。
 既存の dist を検査するため、変更後はビルドし直してください。
 `pnpm test` は `tests/extension/` と `tests/examples/` を除外し、派生プロジェクトで追加した通常のテストも検出します。
