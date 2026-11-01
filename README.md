@@ -80,6 +80,16 @@ pnpm run check
 CI や取得直後の検証には `pnpm install --frozen-lockfile` を使います。
 Node.js 26 と pnpm を準備済みのクラウド環境でも、セットアップコマンドは同じです。
 
+## Actions から ZIP を取得
+
+GitHub の **Actions → Extension CI** で成功した実行を開き、Artifacts の
+`chrome-extension-<コミット先頭12桁>.zip` をダウンロードできます。
+ZIP を展開し、以下の Chrome 手順で `dist/` の代わりに展開先フォルダーを選んでください。
+手元でビルドせずに、サンプルを実際の拡張として確認できます。
+
+PR・`master` 更新・`v*` タグ・手動実行で、必須テストからビルドまでを検証して ZIP を生成します。
+操作方法と保存期間は [Actions ガイド](docs/ci.md) を参照してください。
+
 ## Chrome で実行
 
 1. `pnpm run build` を実行する。
