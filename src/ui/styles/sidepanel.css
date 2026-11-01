@@ -1,0 +1,20 @@
+@import "tailwindcss" source(none);
+@import "./themes.css";
+@import "../screens/sidepanel/sidepanel.css";
+@source "../screens/sidepanel";
+
+@plugin "daisyui" {
+  themes: false;
+  logs: false;
+}
+
+@layer base {
+  :root { font-family: Inter, "Noto Sans JP", system-ui, sans-serif; font-synthesis: none; text-rendering: optimizeLegibility; }
+  body { margin: 0; background: var(--color-base-200); }
+  button, textarea { font: inherit; }
+  :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+}
+
+@layer utilities {
+  body [hidden] { display: none; }
+}

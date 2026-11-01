@@ -14,6 +14,7 @@
 - Review dependency lifecycle scripts before adding version-specific `allowBuilds` entries. Keep `strictDepBuilds` enabled; never blanket-approve builds to make installation pass.
 
 - Use TypeScript and native DOM APIs with daisyUI / Tailwind CSS; do not add a UI framework without a request.
+- Keep popup and sidepanel HTML, CSS entries, and screen event handlers independent. Reuse feature ports/UseCases and themes, not the popup screen. Default commands and Actions build popup; sidepanel uses explicit commands and a separate output directory. Verify both variants when changing shared code or build configuration.
 - Preserve the hexagonal boundaries described in `docs/architecture.md`. UseCases describe sequential port calls; composition injects concrete implementations explicitly.
 - Group by ownership first (`features`, `integrations`, `infrastructure`), then by role. Within a feature, use `controllers` for inbound adapters, `use-cases` for sequences, and `gateways` for outbound adapters. Avoid redundant directory layers and repeating parent context in filenames.
 - Feature models, ports, and UseCases must not depend on controllers, gateways, integrations, infrastructure, or UI. Keep small related feature interfaces together in `ports.ts`.

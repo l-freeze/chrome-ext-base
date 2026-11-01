@@ -8,14 +8,20 @@
   },
   "scripts": {
     "dev": "vite",
-    "dev:extension": "vite build --watch",
+    "dev:sidepanel": "vite --mode sidepanel --open /sidepanel.html",
+    "dev:extension": "vite build --mode popup --watch",
+    "dev:extension:sidepanel": "vite build --mode sidepanel --watch",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.tools.json --noEmit",
     "test": "vitest run --exclude \"tests/extension/**\" --exclude \"tests/examples/**\"",
     "test:watch": "vitest --exclude \"tests/extension/**\" --exclude \"tests/examples/**\"",
     "test:examples": "vitest run tests/examples",
     "test:extension": "vitest run tests/extension",
-    "build": "pnpm run typecheck && vite build",
-    "check": "pnpm run test && pnpm run build && pnpm run test:extension"
+    "test:extension:sidepanel": "vitest run tests/extension --mode sidepanel",
+    "build": "pnpm run build:popup",
+    "build:popup": "pnpm run typecheck && vite build --mode popup",
+    "build:sidepanel": "pnpm run typecheck && vite build --mode sidepanel",
+    "check": "pnpm run test && pnpm run build:popup && pnpm run test:extension",
+    "check:sidepanel": "pnpm run test && pnpm run build:sidepanel && pnpm run test:extension:sidepanel"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",

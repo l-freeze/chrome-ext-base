@@ -4,6 +4,8 @@ UI フレームワークを使わない Manifest V3 の Chrome 拡張スター�
 TypeScript + Vite + Vitest、素の HTML / DOM API と daisyUI 5 + Tailwind CSS 4 で構成しています。
 メモの保存、[SampleAPIs](https://api.sampleapis.com/) の REST 取得、設定の保存・リセット、
 現在のページ情報の取得、ストレージ変更への UI の追従を含みます。
+既定はポップアップ版です。独立した HTML・CSS を持つサイドパネル版も選んでビルドできます。
+ビルドと実機での使い方は [サイドパネルガイド](docs/sidepanel.md) を参照してください。
 
 ## デザインのプレビュー
 
@@ -21,6 +23,12 @@ TypeScript + Vite + Vitest、素の HTML / DOM API と daisyUI 5 + Tailwind CSS 
 | ![設定画面のライトテーマ](docs/screenshots/options-light.png) | ![設定画面のダークテーマ](docs/screenshots/options-dark.png) |
 
 画像はリポジトリに同梱しています。[撮影条件](docs/screenshots/README.md)も参照してください。
+
+サイドパネル版のプレビューです。ページを操作しながら使うため、縦長の画面に合わせています。
+
+| ライト | ダーク |
+| --- | --- |
+| ![サイドパネル・ライト](docs/screenshots/sidepanel-light.png) | ![サイドパネル・ダーク](docs/screenshots/sidepanel-dark.png) |
 
 ## セットアップとコマンド
 
@@ -47,14 +55,19 @@ pnpm run check
 | コマンド | 内容 |
 | --- | --- |
 | `pnpm run dev` | UI プレビューと HMR |
+| `pnpm run dev:sidepanel` | サイドパネル UI のプレビュー |
 | `pnpm run dev:extension` | 拡張用の監視ビルド |
+| `pnpm run dev:extension:sidepanel` | サイドパネル版の監視ビルド |
 | `pnpm run typecheck` | ブラウザコード・テスト・ビルド設定の型チェック |
 | `pnpm test` | 共通基盤の Input / Output 契約テスト（ビルド不要） |
 | `pnpm run test:watch` | テストの監視実行 |
 | `pnpm run test:examples` | 開発者向けの参考テストを任意実行 |
-| `pnpm run build` | 型チェックと `dist/` 生成 |
-| `pnpm run test:extension` | ビルド済み `dist/` の構成確認（先に build が必要） |
+| `pnpm run build` / `pnpm run build:popup` | 型チェックと `dist/popup/` 生成 |
+| `pnpm run build:sidepanel` | 型チェックと `dist/sidepanel/` 生成 |
+| `pnpm run test:extension` | ビルド済みポップアップ版の構成確認 |
+| `pnpm run test:extension:sidepanel` | ビルド済みサイドパネル版の構成確認 |
 | `pnpm run check` | 契約テスト・型チェック・ビルド・配布物の構成確認 |
+| `pnpm run check:sidepanel` | 同じ検証をサイドパネル版で実行 |
 
 ベースのテストはサンプル固有の仕様を固定しません。メモ・設定・Coffee の項目や表示を
 変更しても、共通基盤の契約を変えなければそのテストを書き換える必要はありません。
@@ -83,18 +96,19 @@ Node.js 26 と pnpm を準備済みのクラウド環境でも、セットアッ
 ## Actions から ZIP を取得
 
 GitHub の **Actions → Extension CI** で成功した実行を開き、Artifacts の
-`chrome-extension-<コミット先頭12桁>.zip` をダウンロードできます。
-ZIP を展開し、以下の Chrome 手順で `dist/` の代わりに展開先フォルダーを選んでください。
+`chrome-extension-popup-<コミット先頭12桁>.zip` をダウンロードできます。
+ZIP を展開し、以下の Chrome 手順で `dist/popup/` の代わりに展開先フォルダーを選んでください。
 手元でビルドせずに、サンプルを実際の拡張として確認できます。
 
 PR・`master` 更新・`v*` タグ・手動実行で、必須テストからビルドまでを検証して ZIP を生成します。
+既定はポップアップです。手動実行で `variant: sidepanel` を選ぶとサイドパネル版の ZIP を生成します。
 操作方法と保存期間は [Actions ガイド](docs/ci.md) を参照してください。
 
 ## Chrome で実行
 
 1. `pnpm run build` を実行する。
 2. Chrome の `chrome://extensions` でデベロッパーモードを有効化する。
-3. 「パッケージ化されていない拡張機能を読み込む」で `dist/` を選ぶ。
+3. 「パッケージ化されていない拡張機能を読み込む」で `dist/popup/` を選ぶ。
 4. 拡張をツールバーに固定し、ポップアップを開く。
 5. メモを保存し、開き直して内容が残っていることを確認する。
 6. 「REST サンプル」を開き、「サンプルを取得して保存」でメモの更新を確認する。
@@ -155,7 +169,7 @@ API は公開サンプルでデータが変更される可能性があります�
 `pnpm run dev` で UI をプレビューできます。プレビューでは `localStorage` を使い、
 拡張では `chrome.storage.local` を使います。保存データは共有しません。
 プレビューから実 API を呼ぶ場合は通常のブラウザの CORS 制約を受けます。
-拡張の権限や CSP は、ビルドした `dist/` を Chrome に読み込んで確認してください。
+拡張の権限や CSP は、ビルドした `dist/popup/` または `dist/sidepanel/` を Chrome に読み込んで確認してください。
 
 UI の責務分離とテーマの変更方法は [UI ガイド](docs/ui.md) を参照してください。
 daisyUI に必須のフォルダー構成はなく、一般的な責務分離をこの拡張に合わせています。
@@ -198,12 +212,12 @@ controller は inbound adapter、gateway は outbound adapter に相当します
 
 保存 Input / 読み出し Output のバリデーターは両方必須です。片方だけでは初期化できません。
 既存のメモ文字列は引き続き読み出せます。未保存は空メモ、破損データはエラーとして扱います。
-API とストレージの実装は `src/composition/popup.ts` で差し替えられます。
+API とストレージの実装は `src/composition/popup.ts` / `sidepanel.ts` で差し替えられます。
 
 依存関係は `pnpm-lock.yaml` で固定しています。
 バージョンを変更するときは `package.json` と `public/manifest.json` を揃えてください。
-ページへの関数注入をサンプルに含めています。バックグラウンドのイベント処理が必要になったら、
-service worker と対応するビルドエントリー・権限を追加してください。
+ページへの関数注入をサンプルに含めています。サイドパネル版の service worker はツールバーからの起動設定のみを担当します。
+独自のバックグラウンド処理が必要なら、その責務に応じた入口・UseCase・権限を追加してください。
 
 ## Git
 

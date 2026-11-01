@@ -14,8 +14,9 @@
 | `tests/infrastructure/changes.test.ts` | 指定した local storage のキーの通知と購読解除。データは機能に依存しない任意の値 |
 | `tests/extension/build.test.ts` | 出力された Manifest V3 の基本項目、登録画面・worker・content script・アイコンの存在、画面が参照する JS/CSS の存在 |
 
-拡張の構成テストは `dist/manifest.json` から対象を読み取ります。ポップアップのファイル名、
-権限一覧、設定画面の有無、サンプルの名称を期待値にしません。
+拡張の構成テストは `dist/popup/manifest.json` または `dist/sidepanel/manifest.json` から対象を読み取ります。ポップアップのファイル名、
+個別のサイトの権限、設定画面の有無、サンプルの名称を期待値にしません。
+選んだ表示方式の起動先が登録され、もう一方の起動先が混ざらないことも確認します。
 これは Chrome の manifest 検証全体を再実装するものではなく、主要な参照漏れを検出する確認です。
 
 API と Chrome のイベントはテスト内の代替実装を注入します。
@@ -28,18 +29,20 @@ API と Chrome のイベントはテスト内の代替実装を注入します�
 pnpm test                 # 共通基盤。dist は不要
 pnpm run test:watch       # 同じテストを監視
 pnpm run check            # 契約テスト → 型チェック・ビルド → 配布物確認
+pnpm run check:sidepanel  # サイドパネル版のビルド・配布物を確認
 ```
 
 GitHub Actions でも同じ `pnpm run check` を実行し、成功した配布物を ZIP として保存します。
 実行タイミングとダウンロード手順は [Actions ガイド](ci.md) を参照してください。
 
 配布物の確認だけを実行する場合は `pnpm run build` の後に `pnpm run test:extension` を使います。
+サイドパネルは `pnpm run build:sidepanel` の後に `pnpm run test:extension:sidepanel` を使います。
 既存の dist を検査するため、変更後はビルドし直してください。
 `pnpm test` は `tests/extension/` と `tests/examples/` を除外し、派生プロジェクトで追加した通常のテストも検出します。
 
 ## 削除して使う参考テスト
 
-`tests/examples/` に、メモの保存・入力拒否・モックからの取り込み、設定リセットの例を置いています。
+`tests/examples/` に、メモの保存・入力拒否・モックからの取り込み、設定リセット、サイトアクセス許可の例を置いています。
 内部の実装手順を固定せず、公開操作の返り値・エラー・保存結果をどう検証するかを示します。
 各ファイルの冒頭にも、独自機能の開発時には参考にしたうえで削除するようコメントしています。
 

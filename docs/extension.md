@@ -3,6 +3,7 @@
 ## 今あるサンプル
 
 - ツールバーから開くポップアップ: メモ保存、REST 取得、現在のページ情報の表示。
+- 選択してビルドするサイドパネル: ページを操作しながら取得・メモできる独立した画面。[専用ガイド](sidepanel.md) を参照。
 - 設定画面: テーマ・選択テキスト取得の保存と、確認付きリセット。
 - ストレージ変更の購読: 別画面で保存した設定を再読み込みなしで反映。
 - content script: クリック時にページのタイトル・URL・選択テキストを取得。
@@ -132,8 +133,9 @@ sequenceDiagram
 型定義だけで信頼せず、受信時に入力と送信元、呼び出し元でも応答を検証します。
 失敗・タイムアウト・ページ遷移時の切断も扱う必要があります。
 
-今回のサンプルは、ポップアップからの一回のページ取得と、storage の変更通知で完結します。
-そのため service worker や独自メッセージ通信を追加していません。
+ポップアップ版は、一回のページ取得と storage の変更通知で完結し、service worker を持ちません。
+サイドパネル版には、ツールバーから開く動作を設定する service worker を含めています。
+ページ取得や保存を worker に転送する独自メッセージ通信は追加していません。
 REST API を呼ぶことだけを理由に service worker を必須にはしていません。
 
 ## 検証範囲
@@ -149,7 +151,7 @@ REST API を呼ぶことだけを理由に service worker を必須にはして�
 このクラウド環境では追加拡張の読み込みが管理ポリシーで禁止されているため、
 `activeTab` の許可・実際の `executeScript` 注入・拡張版 storage 通知・ツールバーポップアップの実動作は未検証です。
 プレビューの取得ボタンは固定データを返し、「プレビュー」と明記します。
-実装は拡張用にも用意してあり、権限が許可された Chrome で `dist/` を読み込んで確認できます。
+実装は拡張用にも用意してあり、権限が許可された Chrome で `dist/popup/` または `dist/sidepanel/` を読み込んで確認できます。
 
 参考: [content scripts](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts)、
 [service workers](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers)、
