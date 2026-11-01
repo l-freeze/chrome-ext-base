@@ -3,7 +3,8 @@ import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 
-const output = fileURLToPath(new URL("../../dist/", import.meta.url));
+const variant = import.meta.env.MODE === "sidepanel" ? "sidepanel" : "popup";
+const output = fileURLToPath(new URL(`../../dist/${variant}/`, import.meta.url));
 
 // Inspect the built artifact. Names, permissions, and sample features are not fixed here.
 function localFile(path: string, base = output): string {
@@ -45,4 +46,17 @@ it("Manifest V3 と、登録された画面・スクリプト・アイコンが�
   for (const path of Object.values(manifest.icons ?? {})) localFile(path);
   const actionIcon = manifest.action?.default_icon;
   for (const path of typeof actionIcon === "string" ? [actionIcon] : Object.values(actionIcon ?? {})) localFile(path);
+});
+
+it("選択した表示方式の起動先を登録する", () => {
+  const manifest = JSON.parse(readFileSync(localFile("manifest.json"), "utf8")) as chrome.runtime.ManifestV3;
+  if (variant === "sidepanel") {
+    expect(manifest.side_panel?.default_path).toBeTruthy();
+    expect(manifest.action?.default_popup).toBeUndefined();
+    expect(manifest.permissions).toContain("sidePanel");
+  } else {
+    expect(manifest.action?.default_popup).toBeTruthy();
+    expect(manifest.side_panel).toBeUndefined();
+    expect(manifest.permissions).not.toContain("sidePanel");
+  }
 });

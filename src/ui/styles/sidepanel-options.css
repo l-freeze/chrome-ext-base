@@ -1,0 +1,19 @@
+@import "tailwindcss" source(none);
+@import "./themes.css";
+@import "../layouts/extension-shell.css";
+@import "../screens/options/options.css";
+@source "../layouts";
+@source "../screens/options";
+
+@plugin "daisyui" {
+  themes: false;
+  logs: false;
+}
+
+@layer base {
+  :root { font-family: Inter, "Noto Sans JP", system-ui, sans-serif; font-synthesis: none; text-rendering: optimizeLegibility; }
+  body { margin: 0; background: var(--color-base-200); }
+  button, textarea, select { font: inherit; }
+  :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 4px; }
+}
+@layer utilities { body [hidden] { display: none; } }

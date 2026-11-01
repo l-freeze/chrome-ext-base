@@ -1,0 +1,42 @@
+<main class="panel-shell">
+  <header class="panel-header">
+    <div class="panel-brand"><span class="panel-mark" aria-hidden="true">Q</span><div><h1>Quick Note<span> .</span></h1><p>ページのとなりに、小さなメモ帳。</p></div></div>
+    <a href="./sidepanel-options.html" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">設定 ↗</a>
+  </header>
+
+  <section class="card panel-card" aria-labelledby="panel-page-title">
+    <div class="card-body">
+      <div class="panel-section-heading"><h2 id="panel-page-title">今見ているページ</h2><span id="panel-preview" class="badge badge-soft badge-sm" hidden>プレビュー</span></div>
+      <p class="panel-description">パネルを開いたまま文章を選び、取得できます。</p>
+      <div class="panel-site"><span class="panel-site-dot" aria-hidden="true"></span><span id="panel-site">ページを確認中…</span></div>
+      <p id="panel-access-status" class="panel-description" role="status" aria-live="polite">アクセス状態を確認しています。</p>
+      <button id="panel-allow" type="button" class="btn btn-soft btn-primary" hidden>このサイトを許可</button>
+      <button id="panel-capture" type="button" class="btn btn-primary" disabled>ページ情報を取得</button>
+      <p id="panel-page-status" class="panel-description" role="status" aria-live="polite">タイトル・URL・選択テキストを取得します。</p>
+      <div id="panel-result" class="panel-result" hidden>
+        <h3 id="panel-result-title"></h3>
+        <p id="panel-result-url" class="panel-result-url"></p>
+        <blockquote id="panel-result-selection"></blockquote>
+        <p id="panel-truncated" class="panel-description" hidden>選択テキストは先頭 2,000 文字までです。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card panel-card" aria-labelledby="panel-note-title">
+    <form id="panel-note-form" class="card-body">
+      <div class="panel-section-heading"><label id="panel-note-title" for="panel-note">今日のメモ</label><span id="panel-count" class="badge badge-soft badge-primary badge-sm" aria-live="off">0 / 2,000</span></div>
+      <textarea id="panel-note" class="textarea panel-editor" placeholder="調べたこと、気づいたこと。&#10;ページを見ながら書き留めましょう。" aria-describedby="panel-note-help panel-count" disabled></textarea>
+      <div class="panel-note-actions"><p id="panel-note-help" class="panel-description">Ctrl / ⌘ + Enter で保存</p><button id="panel-save" type="submit" class="btn btn-primary" disabled>保存する</button></div>
+      <p id="panel-note-status" class="panel-description" role="status" aria-live="polite">メモを読み込み中…</p>
+    </form>
+  </section>
+
+  <details class="card panel-rest">
+    <summary>REST サンプルを試す</summary>
+    <div class="card-body">
+      <p class="panel-description">SampleAPIs のコーヒー情報を取得して、現在のメモを置き換えます。</p>
+      <button id="panel-import" type="button" class="btn btn-soft" disabled>サンプルを取得して保存</button>
+    </div>
+  </details>
+  <footer class="panel-footer"><p id="panel-settings-status" role="status" aria-live="polite">設定を読み込み中…</p><p>メモと設定は、このブラウザに保存されます。</p></footer>
+</main>
