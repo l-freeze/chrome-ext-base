@@ -32,7 +32,7 @@ src/ui/
 ```
 
 `index.html` は拡張のエントリー HTML としてリポジトリ直下に残し、
-`src/ui/entrypoints/popup.ts` を読み込みます。ビルド結果の `dist/index.html` も変わりません。
+`src/ui/entrypoints/popup.ts` を読み込みます。ビルド結果は `dist/popup/index.html` です。
 `options.html` は設定画面のエントリーで、ポップアップと一緒にビルドします。
 ポップアップは高さ 600 px を上限とし、取得結果や開いた REST サンプルはスクロールできます。
 幅は `html.popup-document` に 384 CSS px を指定します。Chrome が内容からポップアップの幅を
@@ -100,7 +100,7 @@ CSS の検出範囲は `@source "../"` で `src/ui` に限定しています。
 初期幅が 202 CSS px のプレビューでも文書幅が 384 px になることを確認します。
 さらに文書幅を検証用に 202 / 320 / 384 px に変更し、DPR 1 / 2 と基準文字サイズ 16 / 24 / 32 px で
 横にはみ出さず操作できることを確認します。これは Chrome 本体のズーム設定や拡張 popup の実測とは区別します。
-拡張の権限や API の実通信は Chrome にビルド済み `dist/` を読み込んで確認してください。
+拡張の権限や API の実通信は Chrome にビルド済み `dist/popup/` または `dist/sidepanel/` を読み込んで確認してください。
 
 - [daisyUI の Vite 導入手順](https://daisyui.com/docs/install/vite/)
 - [daisyUI のテーマ](https://daisyui.com/docs/themes/)
@@ -115,3 +115,14 @@ CSS の検出範囲は `@source "../"` で `src/ui` に限定しています。
 リセット確認は native `dialog` と daisyUI の modal を使い、キャンセル・Escape では保存しません。
 確認ボタンからのみ `{ confirmed: true }` を検証付き reset 操作へ渡します。
 プレビューで別ページへの反映を確かめる手順は [拡張サンプルのガイド](extension.md) を参照してください。
+
+## サイドパネルの独立した画面
+
+`sidepanel.html` → `ui/entrypoints/sidepanel.ts` → `ui/screens/sidepanel/` の専用経路です。
+CSS は `ui/styles/sidepanel.css` を入口とし、ポップアップの HTML・CSS・画面処理を import しません。
+幅は可変、縦はドキュメント全体をスクロールし、ポップアップの固定幅・高さ上限を適用しません。
+共有するのはテーマ、設定通知ヘルパー、各機能の型と port です。
+
+設定画面の操作・テンプレートは共有しますが、サイドパネル版は `sidepanel-options.html` と専用起動点・CSS を持ちます。
+表示確認リンクと説明だけをサイドパネル用に設定し、ポップアップ版の設定画面には影響させません。
+権限処理とビルド方法は [サイドパネルガイド](sidepanel.md) を参照してください。

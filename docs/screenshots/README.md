@@ -3,10 +3,12 @@
 - `popup-light.png`: ライトテーマの初期表示。
 - `popup-dark.png`: ダークテーマの初期表示。
 - `options-light.png` / `options-dark.png`: 設定画面の初期表示。
+- `sidepanel-light.png` / `sidepanel-dark.png`: サイドパネル用画面の初期表示。
 - 取得日: 2026-11-01（日本時間）。
-- 対象: `pnpm run build` で生成した `dist/` のブラウザプレビュー。
+- 対象: `pnpm run build:popup` / `pnpm run build:sidepanel` で生成した `dist/popup/` / `dist/sidepanel/` のブラウザプレビュー。
 - ブラウザ: Chromium 154.0.8037.57、デバイススケール 1。
 - ポップアップは文書幅 384 CSS px、高さ上限 600 px の body。設定画面は幅 1100 px の全ページ。
+- サイドパネルは幅 380 px、高さ 900 px の viewport で全ページを撮影。Chrome のサイドパネル枠そのものの撮影ではありません。
 - 保存データがない新しいブラウザコンテキストを使用し、初期読み込み完了後の body を撮影。
 - カラースキームを light / dark に切り替えて撮影。表示の加工・合成は行っていません。
 

@@ -11,21 +11,25 @@
 - `v*` タグへの push。
 - Actions 画面からの手動実行（`Run workflow`）。
 
+既定は全て `popup` です。手動実行時だけ `variant` を `sidepanel` に変更できます。
+方式ごとの実行は別の concurrency group にし、互いの実行をキャンセルしません。
+
 Node.js は `.nvmrc`、pnpm は `package.json` の `packageManager` に合わせます。
-`pnpm install --frozen-lockfile` の後に `pnpm run check` を実行します。
+`pnpm install --frozen-lockfile` の後に、既定では `pnpm run check`、
+サイドパネル選択時は `pnpm run check:sidepanel` を実行します。
 `tests/examples/` の参考テストは実行しませんが、残っているファイルの型はチェックします。
 
 ## ZIP を取得して Chrome で確認する
 
 1. GitHub のリポジトリで **Actions → Extension CI** を開く。
-2. 対象のコミットで成功した実行を開く。最新の `master` を試すなら **Run workflow → master** でも生成できる。
-3. 実行サマリーのダウンロードリンク、または **Artifacts** の `chrome-extension-<コミット先頭12桁>.zip` を選ぶ。
+2. 対象のコミットで成功した実行を開く。手動なら **Run workflow → master → variant** で `popup` / `sidepanel` を選ぶ。
+3. 実行サマリーのダウンロードリンク、または **Artifacts** の `chrome-extension-<popup または sidepanel>-<コミット先頭12桁>.zip` を選ぶ。
 4. ZIP をローカルのフォルダーに展開する。
 5. Chrome の `chrome://extensions` でデベロッパーモードを有効にする。
 6. 「パッケージ化されていない拡張機能を読み込む」で、展開した `manifest.json` があるフォルダーを選ぶ。
 7. ツールバーに固定し、メモ・REST 取得・設定・ページ取得を試す。
 
-ZIP の直下には `manifest.json` とビルド済み HTML・assets があり、`dist/` の親フォルダーは入りません。
+ZIP の直下には `manifest.json` とビルド済み HTML・assets があり、`dist/popup/` / `dist/sidepanel/` の親フォルダーは入りません。
 動作確認時に調査しやすいよう、ビルドで生成した source map も含めています。
 ZIP を二重に圧縮しないよう `upload-artifact` の `archive: false` を指定しています。
 Node.js や pnpm を手元に導入しなくても、ZIP の展開だけでサンプルを読み込めます。
@@ -42,7 +46,7 @@ Artifact は 30 日で期限切れになるため、必要なら再実行して�
 ## 検証範囲と運用
 
 CI は配布物を生成できることを確認します。実際の権限付与、ページへの注入、
-Chrome のポップアップの動作は、ダウンロードした拡張で確認してください。
+Chrome のポップアップやサイドパネルの動作は、ダウンロードした拡張で確認してください。
 
 ワークフローの権限は `contents: read` に限定し、第三者の Action はコミット SHA で固定しています。
 このリポジトリの専用 secret は不要です。派生リポジトリでも Actions が有効なら利用できます。

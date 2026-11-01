@@ -206,3 +206,17 @@ UI は port と型に依存し、Chrome API や storage driver を直接扱い�
 
 設定のリセット確認・変更通知の流れ・content script と service worker の説明は
 [拡張サンプルのガイド](extension.md) にまとめています。
+
+## サイドパネルの境界
+
+`composition/sidepanel.ts` は既存の notes / settings / page と、新しい site-access を組み立てます。
+既存のポップアップ composition や画面を呼ばず、サイドパネルの UI へ port を注入します。
+ページ取得対象はパネルを開いたウィンドウに固定し、そのウィンドウのアクティブタブを毎回取得します。
+
+`features/site-access/` はサイトの確認・許可を所有します。status / grant の controller は
+それぞれ専用の入力検証を持ち、UseCase は gateway 呼び出しのみを記述します。
+gateway はタブ URL と Chrome の権限応答を検証し、タブ変更・権限変更を UI に通知します。
+権限要求はクリックから同期的に Chrome API へ到達させ、その前に別の非同期処理を挟みません。
+通知時の古い結果の破棄や再読み込みは UI の責務です。
+
+ビルドの差分、UI の分離、権限の理由は [サイドパネルガイド](sidepanel.md) に記載しています。
