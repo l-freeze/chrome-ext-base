@@ -7,12 +7,21 @@ on:
     branches: [master]
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      variant:
+        description: Extension display mode
+        type: choice
+        default: popup
+        options: [popup, sidepanel]
+
+env:
+  EXTENSION_VARIANT: ${{ inputs.variant || 'popup' }}
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.variant || 'popup' }}
   cancel-in-progress: true
 
 jobs:
@@ -42,14 +51,20 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Test, typecheck, build, and verify extension files
-        run: pnpm run check
+        shell: bash
+        run: |
+          case "$EXTENSION_VARIANT" in
+            popup) pnpm run check ;;
+            sidepanel) pnpm run check:sidepanel ;;
+            *) echo "Unknown extension variant" >&2; exit 1 ;;
+          esac
 
       - name: Package verified extension
         id: package
-        working-directory: dist
+        working-directory: dist/${{ env.EXTENSION_VARIANT }}
         shell: bash
         run: |
-          archive_path="$RUNNER_TEMP/chrome-extension-${GITHUB_SHA:0:12}.zip"
+          archive_path="$RUNNER_TEMP/chrome-extension-${EXTENSION_VARIANT}-${GITHUB_SHA:0:12}.zip"
           zip -q -r "$archive_path" .
           unzip -t "$archive_path"
           echo "path=$archive_path" >> "$GITHUB_OUTPUT"
@@ -70,6 +85,7 @@ jobs:
         run: |
           {
             printf '### Chrome 拡張の動作確認\n\n'
+            printf '表示方式: `%s`\n\n' "$EXTENSION_VARIANT"
             printf '[検証済み ZIP をダウンロード](%s)\n\n' "$ARTIFACT_URL"
             printf 'ZIP を展開し、Chrome の `chrome://extensions` でデベロッパーモードを有効にしてください。\n\n'
             printf '「パッケージ化されていない拡張機能を読み込む」で、展開した `manifest.json` のあるフォルダーを選びます。\n\n'
