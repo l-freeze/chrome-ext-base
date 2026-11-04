@@ -15,7 +15,7 @@
 | `tests/infrastructure/messaging.test.ts` | 要求・応答の両方の検証、不正な要求で処理を実行しないこと、エラーの伝達、自分宛てでないメッセージの無視、同じ拡張からの要求だけへの返信 |
 | `tests/infrastructure/context-menus.test.ts` | インストール時の項目の作り直し、クリックの振り分け、失敗の通知、ID 重複の拒否 |
 | `tests/infrastructure/i18n.test.ts` | ロケールの選択と既定への切り替え、プレースホルダーと置換、カタログの言語タグ、未定義の文言 |
-| `tests/extension/build.test.ts` | 出力された Manifest V3 の基本項目、登録画面・worker・content script・アイコンの存在、画面が参照する JS/CSS の存在、manifest が参照する文言と全ロケールのキー・プレースホルダーの一致 |
+| `tests/extension/build.test.ts` | 出力された Manifest V3 の基本項目、登録画面・worker・content script・アイコンの存在、画面が参照する JS/CSS の存在、manifest が参照する文言と全ロケールのキー・プレースホルダーの一致、manifest と `package.json` のバージョンの一致 |
 
 拡張の構成テストは `dist/popup/manifest.json` または `dist/sidepanel/manifest.json` から対象を読み取ります。ポップアップのファイル名、
 個別のサイトの権限、設定画面の有無、サンプルの名称を期待値にしません。
@@ -39,6 +39,7 @@ GitHub Actions でも同じ `pnpm run check` を実行し、成功した配布�
 実行タイミングとダウンロード手順は [Actions ガイド](ci.md) を参照してください。
 
 配布物の確認だけを実行する場合は `pnpm run build` の後に `pnpm run test:extension` を使います。
+環境変数 `EXTENSION_DIR` で別の出力先を指定でき、公開用ビルドはこの仕組みで `release/<方式>/` を確認します。
 サイドパネルは `pnpm run build:sidepanel` の後に `pnpm run test:extension:sidepanel` を使います。
 既存の dist を検査するため、変更後はビルドし直してください。
 `pnpm test` は `tests/extension/`・`tests/examples/`・`tests/e2e/` を除外し、派生プロジェクトで追加した通常のテストも検出します。

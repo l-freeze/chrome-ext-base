@@ -65,6 +65,7 @@ pnpm run check
 | `pnpm run test:examples` | 開発者向けの参考テストを任意実行 |
 | `pnpm run build` / `pnpm run build:popup` | 型チェックと `dist/popup/` 生成 |
 | `pnpm run build:sidepanel` | 型チェックと `dist/sidepanel/` 生成 |
+| `pnpm run release` / `pnpm run release:sidepanel` | 公開用ビルド。ソースマップなしで `release/<方式>/` に出力し、配布物の確認後に `release/<name>-<方式>-<version>.zip` を作る |
 | `pnpm run test:extension` | ビルド済みポップアップ版の構成確認 |
 | `pnpm run test:extension:sidepanel` | ビルド済みサイドパネル版の構成確認 |
 | `pnpm run check` | 契約テスト・型チェック・ビルド・配布物の構成確認 |
@@ -110,6 +111,16 @@ pnpm run check:sidepanel
 テーマを切り替えられる空の画面、何も登録していない service worker、ベースのテストが残ります。
 サンプル用の権限・文言・参考テストも一緒に削除します。CI はサンプルを消してもベースが壊れないことを毎回確認しています。
 ベースとサンプルの分担と、サンプルの印の付け方は [サンプルのガイド](docs/samples.md) を参照してください。
+
+## 確認用ビルドと公開用ビルド
+
+| 用途 | コマンド | 出力 | ソースマップ |
+| --- | --- | --- | --- |
+| 開発・動作確認 | `pnpm run build` / `build:sidepanel` | `dist/<方式>/` | あり（調査用） |
+| Chrome Web Store への提出 | `pnpm run release` / `release:sidepanel` | `release/<方式>/` と ZIP | なし |
+
+公開用ビルドは、必須テスト・型チェックの後にビルドし、ソースマップが残っていないことと配布物の構成を確認してから ZIP にします。
+ZIP は日時を固定して作るため、同じ内容なら同じファイルになります。ストアへのアップロードは手動です。
 
 ## Actions から ZIP を取得
 
@@ -244,7 +255,8 @@ API とストレージの実装は、機能ごとの `src/composition/notes.ts` 
 入口ごとの `composition/popup.ts` / `sidepanel.ts` / `worker.ts` は、それらを集めるだけです。
 
 依存関係は `pnpm-lock.yaml` で固定しています。
-バージョンを変更するときは `package.json` と `public/manifest.json` を揃えてください。
+バージョンは `package.json` の `version` だけで管理し、ビルドが manifest に書き込みます（`pnpm version patch` などで更新できます）。
+Chrome の形式（0〜65535 の整数を 1〜4 個、`.` 区切り）でない値はビルドを止めます。
 ページへの関数注入をサンプルに含めています。両方式の service worker は、メッセージの処理と右クリックメニューを登録します。
 独自のバックグラウンド処理は、機能の composition でメッセージやメニュー項目を登録し、`composition/worker.ts` から呼んで追加します。
 worker の制約と追加の手順は [service worker ガイド](docs/worker.md)、文言の追加は [多言語化ガイド](docs/i18n.md) を参照してください。
