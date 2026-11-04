@@ -1,5 +1,7 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
+import solid from "vite-plugin-solid";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -8,7 +10,7 @@ export default defineConfig(({ mode }) => {
   const outDir = `dist/${sidepanel ? "sidepanel" : "popup"}`;
   return {
     base: "./",
-    plugins: [tailwindcss(), {
+    plugins: [solid(), tailwindcss(), {
       name: "extension-manifest",
       buildStart() { this.addWatchFile(resolve("public/manifest.json")); },
       writeBundle() {
@@ -25,6 +27,8 @@ export default defineConfig(({ mode }) => {
         writeFileSync(resolve(outDir, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
       },
     }],
+    // The Solid plugin selects jsdom unless an environment is set; the base tests are DOM-independent.
+    test: { environment: "node" },
     build: {
       outDir,
       target: "chrome124", sourcemap: true,
