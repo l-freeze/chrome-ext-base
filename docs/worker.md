@@ -11,7 +11,8 @@ worker の起動処理そのものを書き換える必要はありません。
 | --- | --- |
 | `background/worker.ts` | `startWorker()`。メッセージの受信口と右クリックメニューを登録する |
 | `background/popup.ts` / `background/sidepanel.ts` | 方式ごとの worker の入口。サイドパネル版はパネルの起動設定を追加する |
-| `composition/worker.ts` | worker で使う具体実装、メッセージと処理の対応、メニュー項目の一覧 |
+| `composition/worker.ts` | worker の router とメニュー項目の一覧。各機能の登録関数を呼ぶ |
+| `composition/<機能>.ts` | 機能の組み立てと、worker への登録（例: `composition/notes.ts` の `registerNoteWorker`） |
 | `infrastructure/messaging/` | メッセージの契約・router・client・Chrome の受信口。機能を知らない |
 | `infrastructure/context-menus.ts` | メニュー項目の作成と、クリックの振り分け |
 | `features/notes/gateways/worker.ts` | 取り込みを worker に依頼するサンプルのメッセージと gateway |
@@ -75,7 +76,8 @@ sequenceDiagram
 ### 追加する手順
 
 1. 契約を、その処理を所有する機能の gateway に定義します（例: `features/<機能>/gateways/worker.ts`）。
-2. worker 側の処理を `composition/worker.ts` で登録します。処理には検証済みの要求と送信元（`url`・`tabId`）が渡ります。
+2. worker 側の処理を、その機能の composition（`composition/<機能>.ts`）の登録関数で登録し、`composition/worker.ts` から呼びます。
+   処理には検証済みの要求と送信元（`url`・`tabId`）が渡ります。
 
    ```ts
    router.handle(exampleMessage, (input, sender) => feature.fetchTitle(input));
@@ -102,7 +104,7 @@ content script も同じ拡張として届くため、ページ由来の値は�
 
 ## 右クリックメニュー
 
-`composition/worker.ts` の `menus` に `ContextMenuItem` を追加します。
+機能の登録関数で、`composition/worker.ts` から渡される `menus` に `ContextMenuItem` を追加します。
 
 ```ts
 {

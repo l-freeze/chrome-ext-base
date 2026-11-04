@@ -13,8 +13,9 @@ src/ui/
 │   ├── popup.tsx                 CSS 読み込み・DI・render
 │   └── options.tsx               設定画面の起動と表示方式ごとの文言
 ├── screens/popup/
-│   ├── popup.tsx                 画面のマークアップ・UI イベント・表示状態
-│   └── popup.css                 この画面だけの調整
+│   ├── popup.tsx                 画面の枠。テーマの反映と、配置された機能の部品の表示
+│   ├── note.tsx / page.tsx       サンプルの部品（メモと REST、ページ取得）
+│   └── popup.css                 この画面だけの調整。サンプルの部品の分は印で囲む
 ├── screens/options/              設定フォーム・確認ダイアログ・CSS
 ├── settings.ts                   テーマ適用と設定通知への接続（フレームワーク非依存）
 ├── live.ts                       購読してから読み出す共通処理（設定・メモの追従）
@@ -25,6 +26,7 @@ src/ui/
 ├── components/
 │   ├── action-button.tsx         disabled・ローディング・aria-busy
 │   ├── feedback.tsx              状態に応じたメッセージ表示
+│   ├── empty-state.tsx           機能の部品がないときの表示
 │   └── feedback.css              状態表示の見た目
 └── styles/
     ├── app.css                   CSS エントリーと Tailwind / daisyUI 登録
@@ -40,6 +42,8 @@ src/ui/
 ポップアップのヘッダーは小さくまとめ、操作部は折り返し可能にし、ボタンは文字に応じて高さが伸びます。
 設定画面は通常のタブとして幅を可変にします。
 新しい画面を作るときは `screens/<画面名>/` を追加し、必要なら entrypoint と Vite の入力を追加します。
+既存の画面に機能を足すときは、`screens/<画面名>/<機能>.tsx` に部品を作り、起動点で画面の枠の子として配置します。
+画面の枠は部品の中身を知らず、部品が一つもなければ空の表示を出します。
 画面内でしか使わない UI を、無理に共有 components へ移す必要はありません。
 
 ## 依存方向

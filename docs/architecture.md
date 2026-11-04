@@ -118,7 +118,8 @@ UseCase 入力の検証と、外部から戻るデータの検証は別の境界
 - UI の画面は `NoteActions` とメモの型・制約を使い、UseCase や具体 gateway を呼ばない。
 
 `features/notes/compose.ts` は検証付き controller と UseCase を一対一で接続します。
-`composition/popup.ts` は環境に応じた driver と具体 gateway を作ります。
+`composition/notes.ts` は具体 gateway を選んでメモ機能を組み立て、画面用と worker 用の両方を提供します。
+`composition/popup.ts` などの入口ごとの composition は、環境に応じた driver と各機能の組み立てを集めます。
 `ui/entrypoints` がその結果を画面へ注入します。自動解決や DI コンテナーは使いません。
 
 ```ts
@@ -199,10 +200,10 @@ UI の責務と daisyUI の設定は [UI ガイド](ui.md) を参照してくだ
 ## 設定とページ取得の境界
 
 `settings` と `page` も controller / UseCase / gateway を同じ深さに配置しています。
-設定の load / save / reset、ページの capture はそれぞれ専用の controller で入力を検証します。
-ページ取得 UseCase は「設定を読み出す → reader を呼ぶ」のシーケンスだけを持ちます。
-`CapturePreferences` はページ取得側の port で、設定機能の具体実装には依存しません。
-composition が設定 repository を明示的に注入します。
+ベースの設定はテーマだけで、load / save / reset をそれぞれ専用の controller で検証します。
+機能固有の設定は、その機能が所有します。ページ取得の「選択テキストも取得する」は `features/page` の
+`CapturePreferences` で、専用の保存先と load / save の操作を持ちます。
+ページ取得 UseCase は「取得の設定を読み出す → reader を呼ぶ」のシーケンスだけを持ちます。
 
 `StorageChanges` は保存基盤の通知、`SettingsChanges` は検証済みの設定を UI に届ける port です。
 通知の購読は UI に属し、UseCase の順次処理から独立しています。
@@ -214,8 +215,8 @@ UI は port と型に依存し、Chrome API や storage driver を直接扱い�
 
 ## サイドパネルの境界
 
-`composition/sidepanel.ts` は既存の notes / settings / page と、新しい site-access を組み立てます。
-既存のポップアップ composition や画面を呼ばず、サイドパネルの UI へ port を注入します。
+`composition/sidepanel.ts` は設定と、`composition/notes.ts`・`composition/page.ts` の組み立てを集めます。
+ポップアップの composition や画面を呼ばず、サイドパネルの UI へ port を注入します。
 ページ取得対象はパネルを開いたウィンドウに固定し、そのウィンドウのアクティブタブを毎回取得します。
 
 `features/site-access/` はサイトの確認・許可を所有します。status / grant の controller は
@@ -228,8 +229,9 @@ gateway はタブ URL と Chrome の権限応答を検証し、タブ変更・�
 
 ## service worker の境界
 
-worker は画面と同じ features を使う、もう一つの入口です。`composition/worker.ts` が具体実装を選び、
-メッセージの種類と処理、右クリックメニューの項目を明示的に登録します。`background/` はそれを最上位で登録するだけです。
+worker は画面と同じ features を使う、もう一つの入口です。`composition/worker.ts` が router とメニューの一覧を作り、
+各機能の composition（例: `composition/notes.ts` の `registerNoteWorker`）がメッセージの処理と項目を登録します。
+`background/` はそれを最上位で受信口に接続するだけです。
 
 - `infrastructure/messaging` と `context-menus.ts` は機能を知りません。メッセージの契約は処理を所有する機能の gateway が定義します。
 - 画面からはメッセージを直接送らず、port を実装した gateway（例: `delegateImportToWorker`）を composition が注入します。
@@ -238,6 +240,13 @@ worker は画面と同じ features を使う、もう一つの入口です。`co
 - `NoteChanges` は `SettingsChanges` と同じく、保存基盤の通知を検証して UI に届ける port です。
 
 制約と追加の手順は [service worker ガイド](worker.md) を参照してください。
+
+## ベースとサンプルの境界
+
+ベースのコードは、サンプルを `@sample-begin` / `@sample-end` の印の中でだけ参照します。
+画面の枠は機能の部品を子として受け取り、起動点が配置します。サンプルの機能は `composition/<機能>.ts` で組み立てます。
+`pnpm run samples:verify` が、印とサンプルのファイルを消した状態でもビルドとテストが通ることを確認します。
+詳細は [サンプルのガイド](samples.md) を参照してください。
 
 ## 文言の境界
 
