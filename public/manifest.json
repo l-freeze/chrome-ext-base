@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Chrome Extension Base",
+  "name": "__MSG_extensionName__",
   "version": "0.1.0",
-  "description": "TypeScript と Vite で作る Chrome 拡張のスターター。",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "en",
   "minimum_chrome_version": "124",
   "permissions": [
     "storage",
@@ -14,7 +15,7 @@
     "https://api.sampleapis.com/*"
   ],
   "action": {
-    "default_title": "Quick Note",
+    "default_title": "__MSG_actionTitle__",
     "default_popup": "index.html"
   },
   "background": {

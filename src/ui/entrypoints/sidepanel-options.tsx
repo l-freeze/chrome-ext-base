@@ -1,16 +1,20 @@
 import "../styles/sidepanel-options.css";
 import { render } from "solid-js/web";
 import { createSettingsContext } from "../../composition/settings";
+import { loadTranslator } from "../../composition/i18n";
+import { I18nProvider, prepareDocument } from "../i18n";
 import { ExtensionShell } from "../layouts/extension-shell";
 import { Options } from "../screens/options/options";
+import type { OptionsVariant } from "../screens/options/options";
 
 const context = createSettingsContext();
-const variant = {
-  previewHref: "./sidepanel.html",
-  themeHelp: "保存すると、この画面と開いているサイドパネルに反映します。",
-  previewNote: "同じサイドパネル UI を確認用にタブで開きます。通常はツールバーのアイコンから開きます。",
-};
-const dispose = render(() => (
-  <ExtensionShell><Options actions={context.actions} changes={context.changes} variant={variant} /></ExtensionShell>
-), document.querySelector<HTMLElement>("#app")!);
-window.addEventListener("pagehide", (event) => { if (!event.persisted) dispose(); });
+const variant: OptionsVariant = { previewHref: "./sidepanel.html", themeHelp: "optionsThemeHelpSidepanel", previewNote: "optionsLiveNoteSidepanel" };
+void loadTranslator().then((translator) => {
+  prepareDocument(translator, "documentTitleOptions");
+  const dispose = render(() => (
+    <I18nProvider translator={translator}>
+      <ExtensionShell><Options actions={context.actions} changes={context.changes} variant={variant} /></ExtensionShell>
+    </I18nProvider>
+  ), document.querySelector<HTMLElement>("#app")!);
+  window.addEventListener("pagehide", (event) => { if (!event.persisted) dispose(); });
+});

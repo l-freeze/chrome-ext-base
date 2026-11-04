@@ -16,10 +16,10 @@ export default defineConfig(({ mode }) => {
       writeBundle() {
         const manifest = JSON.parse(readFileSync("public/manifest.json", "utf8")) as chrome.runtime.ManifestV3;
         if (sidepanel) {
-          manifest.name += " — Side Panel";
+          manifest.name = "__MSG_extensionNameSidepanel__";
           manifest.permissions = [...(manifest.permissions ?? []).filter((name) => name !== "activeTab"), "sidePanel", "tabs"];
           manifest.optional_host_permissions = ["http://*/*", "https://*/*"];
-          manifest.action = { default_title: "Quick Note をサイドパネルで開く" };
+          manifest.action = { default_title: "__MSG_actionTitleSidepanel__" };
           manifest.side_panel = { default_path: "sidepanel.html" };
           manifest.options_ui = { page: "sidepanel-options.html", open_in_tab: true };
         }
