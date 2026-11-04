@@ -93,6 +93,28 @@ flowchart LR
   G --> E[外部 client / 保存基盤]
 ```
 
+## 検証ライブラリを使う場合
+
+ベースとサンプルは依存を増やさないため、バリデーターを手書きしています。
+派生製品で Valibot・Zod・ArkType などを使う場合は、`lib/validation.ts` の `fromStandardSchema()` で
+そのスキーマを `Validator` に変換します。これらのライブラリが実装する [Standard Schema](https://standardschema.dev) の
+共通インターフェイスに合わせているため、ベース側にライブラリ固有のコードはありません。
+
+```ts
+import * as v from "valibot";
+import { fromStandardSchema, validatedAction } from "../../../lib/validation";
+
+const input = fromStandardSchema(v.object({ text: v.pipe(v.string(), v.maxLength(MAX_NOTE_LENGTH)) }));
+export const createSaveController = (execute: SaveNote) => validatedAction(input, execute);
+```
+
+- controller・保存の contract・メッセージの contract のどこでも、`Validator` の代わりに使えます。境界ごとに専用の検証を置く原則は同じです。
+- 失敗は `ValidationError` になり、`issues` に各問題のメッセージと `path`（例: `["text"]`）が入ります。
+- 検証は同期処理です。非同期の検証を含むスキーマは拒否します。
+- ライブラリを足すと配布物が大きくなります。メモの入力程度の検証 1 つで、gzip 後に Valibot 約 1.6 kB、`zod/mini` 約 5.4 kB、
+  Zod 約 25 kB、ArkType 約 51 kB 増えました（2026-11-04 の計測）。ArkType の型定義は `@types/node` を参照するため、
+  `skipLibCheck` を有効にするか `@types/node` を型の対象に加える必要があります。
+
 ## 外部データと業務上の制約
 
 UseCase 入力の検証と、外部から戻るデータの検証は別の境界です。
