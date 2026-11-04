@@ -48,6 +48,12 @@ it("Manifest V3 と、登録された画面・スクリプト・アイコンが�
   for (const path of typeof actionIcon === "string" ? [actionIcon] : Object.values(actionIcon ?? {})) localFile(path);
 });
 
+it("manifest のバージョンは package.json のバージョンと一致する", () => {
+  const manifest = JSON.parse(readFileSync(localFile("manifest.json"), "utf8")) as chrome.runtime.ManifestV3;
+  const pkg = JSON.parse(readFileSync(fileURLToPath(new URL("../../package.json", import.meta.url)), "utf8")) as { version: string };
+  expect(manifest.version).toBe(pkg.version);
+});
+
 it("選択した表示方式の起動先を登録する", () => {
   const manifest = JSON.parse(readFileSync(localFile("manifest.json"), "utf8")) as chrome.runtime.ManifestV3;
   if (variant === "sidepanel") {

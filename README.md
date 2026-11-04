@@ -244,7 +244,8 @@ API とストレージの実装は、機能ごとの `src/composition/notes.ts` 
 入口ごとの `composition/popup.ts` / `sidepanel.ts` / `worker.ts` は、それらを集めるだけです。
 
 依存関係は `pnpm-lock.yaml` で固定しています。
-バージョンを変更するときは `package.json` と `public/manifest.json` を揃えてください。
+バージョンは `package.json` の `version` だけで管理し、ビルドが manifest に書き込みます（`pnpm version patch` などで更新できます）。
+Chrome の形式（0〜65535 の整数を 1〜4 個、`.` 区切り）でない値はビルドを止めます。
 ページへの関数注入をサンプルに含めています。両方式の service worker は、メッセージの処理と右クリックメニューを登録します。
 独自のバックグラウンド処理は、機能の composition でメッセージやメニュー項目を登録し、`composition/worker.ts` から呼んで追加します。
 worker の制約と追加の手順は [service worker ガイド](docs/worker.md)、文言の追加は [多言語化ガイド](docs/i18n.md) を参照してください。

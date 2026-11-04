@@ -5,6 +5,16 @@ import solid from "vite-plugin-solid";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
+// package.json is the only place to change the version; the build writes it into the manifest.
+// Chrome accepts one to four dot-separated integers from 0 to 65535, so pre-release tags are rejected.
+function extensionVersion(): string {
+  const { version } = JSON.parse(readFileSync("package.json", "utf8")) as { version?: unknown };
+  if (typeof version !== "string" || !/^\d+(?:\.\d+){0,3}$/.test(version) || version.split(".").some((part) => Number(part) > 65535)) {
+    throw new Error(`package.json version "${String(version)}" is not a valid Chrome extension version (e.g. 1.2.3).`);
+  }
+  return version;
+}
+
 export default defineConfig(({ mode }) => {
   const sidepanel = mode === "sidepanel";
   const outDir = `dist/${sidepanel ? "sidepanel" : "popup"}`;
@@ -12,9 +22,9 @@ export default defineConfig(({ mode }) => {
     base: "./",
     plugins: [solid(), tailwindcss(), {
       name: "extension-manifest",
-      buildStart() { this.addWatchFile(resolve("public/manifest.json")); },
+      buildStart() { this.addWatchFile(resolve("public/manifest.json")); this.addWatchFile(resolve("package.json")); },
       writeBundle() {
-        const manifest = JSON.parse(readFileSync("public/manifest.json", "utf8")) as chrome.runtime.ManifestV3;
+        const manifest = { ...JSON.parse(readFileSync("public/manifest.json", "utf8")), version: extensionVersion() } as chrome.runtime.ManifestV3;
         if (sidepanel) {
           manifest.name = "__MSG_extensionNameSidepanel__";
           manifest.permissions = [...(manifest.permissions ?? []), "sidePanel"];
