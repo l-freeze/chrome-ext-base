@@ -21,7 +21,6 @@ export default defineConfig(({ mode }) => {
           manifest.optional_host_permissions = ["http://*/*", "https://*/*"];
           manifest.action = { default_title: "Quick Note をサイドパネルで開く" };
           manifest.side_panel = { default_path: "sidepanel.html" };
-          manifest.background = { service_worker: "sidepanel-worker.js", type: "module" };
           manifest.options_ui = { page: "sidepanel-options.html", open_in_tab: true };
         }
         writeFileSync(resolve(outDir, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
@@ -34,9 +33,9 @@ export default defineConfig(({ mode }) => {
       target: "chrome124", sourcemap: true,
       rolldownOptions: {
         input: sidepanel
-          ? { sidepanel: "sidepanel.html", options: "sidepanel-options.html", "sidepanel-worker": "src/background/sidepanel.ts" }
-          : { popup: "index.html", options: "options.html" },
-        output: { entryFileNames: (chunk) => chunk.name === "sidepanel-worker" ? "sidepanel-worker.js" : "assets/[name]-[hash].js" },
+          ? { sidepanel: "sidepanel.html", options: "sidepanel-options.html", worker: "src/background/sidepanel.ts" }
+          : { popup: "index.html", options: "options.html", worker: "src/background/popup.ts" },
+        output: { entryFileNames: (chunk) => chunk.name === "worker" ? "worker.js" : "assets/[name]-[hash].js" },
       },
     },
   };
