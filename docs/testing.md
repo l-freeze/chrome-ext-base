@@ -41,7 +41,7 @@ GitHub Actions でも同じ `pnpm run check` を実行し、成功した配布�
 配布物の確認だけを実行する場合は `pnpm run build` の後に `pnpm run test:extension` を使います。
 サイドパネルは `pnpm run build:sidepanel` の後に `pnpm run test:extension:sidepanel` を使います。
 既存の dist を検査するため、変更後はビルドし直してください。
-`pnpm test` は `tests/extension/` と `tests/examples/` を除外し、派生プロジェクトで追加した通常のテストも検出します。
+`pnpm test` は `tests/extension/`・`tests/examples/`・`tests/e2e/` を除外し、派生プロジェクトで追加した通常のテストも検出します。
 `vite-plugin-solid` は未指定なら Vitest の環境を jsdom にするため、`vite.config.ts` で `node` を明示しています。
 UI コンポーネントのテストを追加する場合は、そのテストで DOM 環境を選び、必要な依存を追加してください。
 
@@ -56,6 +56,26 @@ UI コンポーネントのテストを追加する場合は、そのテスト�
 サンプルを差し替える際は、対応する参考テストも削除してください。
 全て不要なら `tests/examples/` を削除し、`package.json` の `test:examples` も削除できます。
 独自機能のテストはこのディレクトリに置かず、通常のテストとして追加してください。
+
+## 実際の拡張での E2E テスト（任意実行）
+
+`pnpm run test:e2e` は両方式をビルドし、Playwright で Chromium に拡張として読み込んで操作します。
+必須テストと CI には含めません。初回は `pnpm exec playwright install chromium` でブラウザを用意します。
+インストール済みの Chromium を使う場合は `CHROMIUM_PATH` に実行ファイルを指定します。
+
+| 配置 | 内容 |
+| --- | --- |
+| `tests/e2e/support/extension.ts` | 拡張の読み込み、manifest からの画面の特定、localhost のページ配信、拡張のウィンドウへのタブ追加、host permission を足した検証用コピー |
+| `tests/e2e/settings.test.ts` | ベース。設定画面で保存したテーマが、開いている画面に再読み込みなしで反映されること |
+| `tests/e2e/samples/` | サンプルの参考テスト。メモ・右クリックメニュー・worker での取り込み・ページ取得 |
+
+ヘッドレスの Chromium では、許可ダイアログへの応答・ネイティブの右クリックメニュー・ツールバーからの起動を操作できません。
+参考テストでは、host permission を足したコピー（配布しない）や、worker 内でのクリックイベントの発火で代わりに確認しています。
+
+## サンプルを消しても壊れないことの確認
+
+`pnpm run samples:verify` は、作業ツリーの複製からサンプルを削除して `check` と `check:sidepanel` を実行します。
+CI でも実行します。仕組みは [サンプルのガイド](samples.md) を参照してください。
 
 ## 派生プロジェクトで追加するもの
 

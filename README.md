@@ -69,6 +69,9 @@ pnpm run check
 | `pnpm run test:extension:sidepanel` | ビルド済みサイドパネル版の構成確認 |
 | `pnpm run check` | 契約テスト・型チェック・ビルド・配布物の構成確認 |
 | `pnpm run check:sidepanel` | 同じ検証をサイドパネル版で実行 |
+| `pnpm run test:e2e` | 両方式をビルドし、Chromium に拡張として読み込んで操作する E2E テスト（任意実行） |
+| `pnpm run samples:remove` | サンプルを削除してベースだけにする |
+| `pnpm run samples:verify` | 一時的な複製でサンプルを削除し、ベースの検証が通ることを確認する |
 
 ベースのテストはサンプル固有の仕様を固定しません。メモ・設定・Coffee の項目や表示を
 変更しても、共通基盤の契約を変えなければそのテストを書き換える必要はありません。
@@ -94,6 +97,20 @@ pnpm run check
 CI や取得直後の検証には `pnpm install --frozen-lockfile` を使います。
 Node.js 26 と pnpm を準備済みのクラウド環境でも、セットアップコマンドは同じです。
 
+## サンプルを外してベースだけにする
+
+メモ・ページ取得・サイト単位の許可はサンプルです。自分の機能を作り始めるときは、コミット後に次を実行します。
+
+```sh
+pnpm run samples:remove
+pnpm run check
+pnpm run check:sidepanel
+```
+
+テーマを切り替えられる空の画面、何も登録していない service worker、ベースのテストが残ります。
+サンプル用の権限・文言・参考テストも一緒に削除します。CI はサンプルを消してもベースが壊れないことを毎回確認しています。
+ベースとサンプルの分担と、サンプルの印の付け方は [サンプルのガイド](docs/samples.md) を参照してください。
+
 ## Actions から ZIP を取得
 
 GitHub の **Actions → Extension CI** で成功した実行を開き、Artifacts の
@@ -114,7 +131,7 @@ PR・`master` 更新・`v*` タグ・手動実行で、必須テストからビ�
 5. メモを保存し、開き直して内容が残っていることを確認する。
 6. 「REST サンプル」を開き、「サンプルを取得して保存」でメモの更新を確認する。取得と保存は service worker が行うため、
    直後にポップアップを閉じても保存まで完了する。
-7. 通常の HTTP(S) ページで文章を選択し、拡張を開いて「ページ情報を取得」を押す。
+7. 通常の HTTP(S) ページで文章を選択し、拡張を開いて「ページ情報を取得」を押す。「選択テキストも取得する」で選択の取得を切り替えられる。
 8. 「設定」からテーマを保存・リセットし、次に開いたポップアップへ反映されることを確認する。
 9. 通常のページで文章を選んで右クリックし、「選択した文章をメモに追加」でメモの末尾に追加されることを確認する。
 10. Chrome の表示言語を英語にすると、拡張名・画面・メニューが英語で表示される。
@@ -209,7 +226,8 @@ src/
     ├── components/         表示部品のコンポーネント
     └── styles/             daisyUI / Tailwind・テーマ
 public/_locales/            ja / en の文言（chrome.i18n の messages.json）
-tests/                      共通基盤の契約・配布物の構成テストと任意の参考例
+tests/                      共通基盤の契約・配布物の構成テスト、任意の参考例、任意実行の E2E（tests/e2e）
+scripts/samples.ts          サンプルの削除と、削除後の検証
 ```
 
 controller は inbound adapter、gateway は outbound adapter に相当します。
@@ -222,12 +240,13 @@ controller は inbound adapter、gateway は outbound adapter に相当します
 
 保存 Input / 読み出し Output のバリデーターは両方必須です。片方だけでは初期化できません。
 既存のメモ文字列は引き続き読み出せます。未保存は空メモ、破損データはエラーとして扱います。
-API とストレージの実装は `src/composition/popup.ts` / `sidepanel.ts` で差し替えられます。
+API とストレージの実装は、機能ごとの `src/composition/notes.ts` / `page.ts` で差し替えられます。
+入口ごとの `composition/popup.ts` / `sidepanel.ts` / `worker.ts` は、それらを集めるだけです。
 
 依存関係は `pnpm-lock.yaml` で固定しています。
 バージョンを変更するときは `package.json` と `public/manifest.json` を揃えてください。
 ページへの関数注入をサンプルに含めています。両方式の service worker は、メッセージの処理と右クリックメニューを登録します。
-独自のバックグラウンド処理は、メッセージやメニュー項目を `composition/worker.ts` に登録して追加します。
+独自のバックグラウンド処理は、機能の composition でメッセージやメニュー項目を登録し、`composition/worker.ts` から呼んで追加します。
 worker の制約と追加の手順は [service worker ガイド](docs/worker.md)、文言の追加は [多言語化ガイド](docs/i18n.md) を参照してください。
 
 ## Git

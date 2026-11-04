@@ -59,6 +59,12 @@ jobs:
             *) echo "Unknown extension variant" >&2; exit 1 ;;
           esac
 
+      # @sample-begin
+      - name: Verify the base without samples
+        if: env.EXTENSION_VARIANT == 'popup'
+        run: pnpm run samples:verify
+
+      # @sample-end
       - name: Package verified extension
         id: package
         working-directory: dist/${{ env.EXTENSION_VARIANT }}

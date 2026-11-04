@@ -67,11 +67,11 @@ SampleAPIs への固定の host permission は REST サンプル用として両�
 | 配置 | 責務 |
 | --- | --- |
 | `sidepanel.html` / `ui/entrypoints/sidepanel.tsx` | サイドパネルの起動 |
-| `ui/screens/sidepanel/` | 専用の画面コンポーネントと CSS |
+| `ui/screens/sidepanel/` | 専用の画面の枠（`sidepanel.tsx`）、サンプルの部品（`page.tsx`・`note.tsx`）、CSS |
 | `ui/styles/sidepanel.css` | ポップアップ CSS を読まない独立した CSS 入口 |
 | `sidepanel-options.html` / `ui/entrypoints/sidepanel-options.tsx` | 共有の設定画面にサイドパネル用の文言・リンクを渡す入口 |
 | `ui/styles/sidepanel-options.css` | 設定画面の CSS。ポップアップ用 CSS は含めない |
-| `composition/sidepanel.ts` | 既存機能とサイトアクセス機能の明示的 DI |
+| `composition/sidepanel.ts` | 設定と各機能の組み立て（`composition/notes.ts`・`page.ts`）を集める明示的 DI |
 | `features/site-access/` | サイト確認・許可の入力検証、UseCase、Chrome gateway、通知 |
 | `background/sidepanel.ts` | 共通の worker 処理の登録と、ツールバー操作でパネルを開く設定 |
 

@@ -2,6 +2,7 @@
 @import "./themes.css";
 @import "../screens/sidepanel/sidepanel.css";
 @source "../screens/sidepanel";
+@source "../components/empty-state.tsx";
 
 @plugin "daisyui" {
   themes: false;

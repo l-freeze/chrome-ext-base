@@ -1,5 +1,12 @@
-import type { PageInfo } from "./page";
+import type { CapturePreferences, PageInfo } from "./page";
 
-export interface PageActions { capture(input: unknown): Promise<PageInfo> }
-export interface PageReader { read(input: { includeSelection: boolean }): Promise<PageInfo> }
-export interface CapturePreferences { load(): Promise<{ includeSelection: boolean }> }
+export interface PageActions {
+  capture(input: unknown): Promise<PageInfo>;
+  loadPreferences(input: unknown): Promise<CapturePreferences>;
+  savePreferences(input: unknown): Promise<CapturePreferences>;
+}
+export interface PageReader { read(input: CapturePreferences): Promise<PageInfo> }
+export interface CapturePreferencesRepository {
+  load(): Promise<CapturePreferences>;
+  save(input: CapturePreferences): Promise<void>;
+}

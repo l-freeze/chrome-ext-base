@@ -17,8 +17,12 @@ export default defineConfig(({ mode }) => {
         const manifest = JSON.parse(readFileSync("public/manifest.json", "utf8")) as chrome.runtime.ManifestV3;
         if (sidepanel) {
           manifest.name = "__MSG_extensionNameSidepanel__";
-          manifest.permissions = [...(manifest.permissions ?? []).filter((name) => name !== "activeTab"), "sidePanel", "tabs"];
+          manifest.permissions = [...(manifest.permissions ?? []), "sidePanel"];
+          // @sample-begin
+          // Page capture follows the panel window's active tab with per-site permissions instead of activeTab.
+          manifest.permissions = [...manifest.permissions.filter((name) => name !== "activeTab"), "tabs"];
           manifest.optional_host_permissions = ["http://*/*", "https://*/*"];
+          // @sample-end
           manifest.action = { default_title: "__MSG_actionTitleSidepanel__" };
           manifest.side_panel = { default_path: "sidepanel.html" };
           manifest.options_ui = { page: "sidepanel-options.html", open_in_tab: true };
