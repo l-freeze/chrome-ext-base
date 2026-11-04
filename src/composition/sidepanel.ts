@@ -1,6 +1,9 @@
 import { createSettingsContext } from "./settings";
 import { createNoteApplication } from "../features/notes/compose";
-import { createNoteStorage } from "../features/notes/gateways/storage";
+import { createNoteChanges, createNoteStorage } from "../features/notes/gateways/storage";
+import { delegateImportToWorker } from "../features/notes/gateways/worker";
+import { createMessageClient } from "../infrastructure/messaging/client";
+import { createChromeTransport } from "../infrastructure/messaging/drivers/chrome";
 import { createSampleApisCoffeeSource } from "../features/notes/gateways/coffee";
 import { createSampleApisCoffeeClient } from "../integrations/sampleapis/coffee";
 import { createPageApplication } from "../features/page/compose";
@@ -21,8 +24,10 @@ export async function createSidepanelApplication() {
     query: () => chrome.tabs.query({ active: true, windowId }),
     executeScript: (input) => chrome.scripting.executeScript(input),
   }) : createMockPageReader();
+  const notes = createNoteApplication({ repository: createNoteStorage(settings.driver), source: createSampleApisCoffeeSource(createSampleApisCoffeeClient((url, init) => globalThis.fetch(url, init))) });
   return {
-    notes: createNoteApplication({ repository: createNoteStorage(settings.driver), source: createSampleApisCoffeeSource(createSampleApisCoffeeClient(fetch)) }),
+    notes: settings.extension ? delegateImportToWorker(notes, createMessageClient(createChromeTransport(chrome.runtime))) : notes,
+    noteChanges: createNoteChanges(settings.events),
     settings: settings.actions, settingsChanges: settings.changes,
     page: createPageApplication(reader, settings.repository),
     access: createSiteAccessApplication(access), accessChanges: access,

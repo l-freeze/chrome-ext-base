@@ -1,4 +1,4 @@
-import { readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
@@ -58,5 +58,27 @@ it("選択した表示方式の起動先を登録する", () => {
     expect(manifest.action?.default_popup).toBeTruthy();
     expect(manifest.side_panel).toBeUndefined();
     expect(manifest.permissions).not.toContain("sidePanel");
+  }
+});
+
+type Catalog = Record<string, { message: string; placeholders?: Record<string, { content: string }> }>;
+const catalog = (locale: string): Catalog => JSON.parse(readFileSync(localFile(`_locales/${locale}/messages.json`), "utf8")) as Catalog;
+const shape = (messages: Catalog) => Object.fromEntries(Object.entries(messages)
+  .map(([key, entry]) => [key.toLowerCase(), Object.keys(entry.placeholders ?? {}).map((name) => name.toLowerCase()).sort()])
+  .sort(([a], [b]) => String(a).localeCompare(String(b))));
+
+it("manifest が参照する文言が既定のロケールにあり、全ロケールのキーとプレースホルダーが揃っている", () => {
+  const manifest = JSON.parse(readFileSync(localFile("manifest.json"), "utf8")) as chrome.runtime.ManifestV3;
+  const references = [...JSON.stringify(manifest).matchAll(/__MSG_(\w+)__/g)].map((match) => match[1]!.toLowerCase());
+  if (!manifest.default_locale) {
+    expect(references, "__MSG_ requires default_locale").toEqual([]);
+    expect(existsSync(resolve(output, "_locales")), "_locales requires default_locale").toBe(false);
+    return;
+  }
+  const defaults = catalog(manifest.default_locale);
+  const keys = new Set(Object.keys(defaults).map((key) => key.toLowerCase()));
+  for (const reference of references) expect(keys.has(reference), reference).toBe(true);
+  for (const locale of readdirSync(resolve(output, "_locales"))) {
+    expect(shape(catalog(locale)), locale).toEqual(shape(defaults));
   }
 });

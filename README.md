@@ -4,6 +4,7 @@ UI を SolidJS で構成する Manifest V3 の Chrome 拡張スターターで�
 TypeScript + Vite + Vitest、SolidJS 1.9 と daisyUI 5 + Tailwind CSS 4 で構成しています。
 メモの保存、[SampleAPIs](https://api.sampleapis.com/) の REST 取得、設定の保存・リセット、
 現在のページ情報の取得、ストレージ変更への UI の追従を含みます。
+service worker へのメッセージ通信と右クリックメニューの仕組み、日本語・英語の表示切り替え（`chrome.i18n`）も備えています。
 既定はポップアップ版です。独立した HTML・CSS を持つサイドパネル版も選んでビルドできます。
 ビルドと実機での使い方は [サイドパネルガイド](docs/sidepanel.md) を参照してください。
 
@@ -111,9 +112,12 @@ PR・`master` 更新・`v*` タグ・手動実行で、必須テストからビ�
 3. 「パッケージ化されていない拡張機能を読み込む」で `dist/popup/` を選ぶ。
 4. 拡張をツールバーに固定し、ポップアップを開く。
 5. メモを保存し、開き直して内容が残っていることを確認する。
-6. 「REST サンプル」を開き、「サンプルを取得して保存」でメモの更新を確認する。
-7. 通常の HTTP(S) ページで文章を選択し、拡張を開いて「タイトル・URL・選択テキストを取得」を押す。
+6. 「REST サンプル」を開き、「サンプルを取得して保存」でメモの更新を確認する。取得と保存は service worker が行うため、
+   直後にポップアップを閉じても保存まで完了する。
+7. 通常の HTTP(S) ページで文章を選択し、拡張を開いて「ページ情報を取得」を押す。
 8. 「設定」からテーマを保存・リセットし、次に開いたポップアップへ反映されることを確認する。
+9. 通常のページで文章を選んで右クリックし、「選択した文章をメモに追加」でメモの末尾に追加されることを確認する。
+10. Chrome の表示言語を英語にすると、拡張名・画面・メニューが英語で表示される。
 
 Chrome 124 以降に対応します。`pnpm run dev:extension` は変更時に再ビルドします。
 変更後は拡張管理画面で再読み込みし、ポップアップを開き直してください。
@@ -191,17 +195,20 @@ src/
 │   └── compose.ts          controller と UseCase を接続
 ├── features/settings/      設定の保存・リセット・変更通知（notes と同じ役割分け）
 ├── features/page/          現在のページ情報を取得（同じ役割分け）
+├── features/site-access/   サイドパネルのサイト確認・許可（同じ役割分け）
 ├── content/                ページ内で実行する自己完結した関数
+├── background/             service worker の入口（方式ごと）と共通の登録処理
 ├── integrations/           サービスごとの型・client・境界検証
-├── infrastructure/         共通の通信・保存基盤
+├── infrastructure/         共通の通信・保存・メッセージ・右クリックメニュー・多言語化の基盤
 ├── lib/validation.ts       検証の型と実行ラッパー
-├── composition/            環境に合わせた具体実装の選択
+├── composition/            環境に合わせた具体実装の選択（画面・worker・翻訳）
 └── ui/
     ├── entrypoints/        起動点（Solid の render）
     ├── screens/            画面コンポーネント
     ├── layouts/            画面枠のコンポーネント
     ├── components/         表示部品のコンポーネント
     └── styles/             daisyUI / Tailwind・テーマ
+public/_locales/            ja / en の文言（chrome.i18n の messages.json）
 tests/                      共通基盤の契約・配布物の構成テストと任意の参考例
 ```
 
@@ -219,8 +226,9 @@ API とストレージの実装は `src/composition/popup.ts` / `sidepanel.ts` �
 
 依存関係は `pnpm-lock.yaml` で固定しています。
 バージョンを変更するときは `package.json` と `public/manifest.json` を揃えてください。
-ページへの関数注入をサンプルに含めています。サイドパネル版の service worker はツールバーからの起動設定のみを担当します。
-独自のバックグラウンド処理が必要なら、その責務に応じた入口・UseCase・権限を追加してください。
+ページへの関数注入をサンプルに含めています。両方式の service worker は、メッセージの処理と右クリックメニューを登録します。
+独自のバックグラウンド処理は、メッセージやメニュー項目を `composition/worker.ts` に登録して追加します。
+worker の制約と追加の手順は [service worker ガイド](docs/worker.md)、文言の追加は [多言語化ガイド](docs/i18n.md) を参照してください。
 
 ## Git
 

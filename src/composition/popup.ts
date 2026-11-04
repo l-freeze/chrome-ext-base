@@ -1,4 +1,7 @@
-import { createNoteStorage } from "../features/notes/gateways/storage";
+import { createNoteChanges, createNoteStorage } from "../features/notes/gateways/storage";
+import { delegateImportToWorker } from "../features/notes/gateways/worker";
+import { createMessageClient } from "../infrastructure/messaging/client";
+import { createChromeTransport } from "../infrastructure/messaging/drivers/chrome";
 import { createSampleApisCoffeeClient } from "../integrations/sampleapis/coffee";
 import { createSampleApisCoffeeSource } from "../features/notes/gateways/coffee";
 import { createNoteApplication } from "../features/notes/compose";
@@ -14,8 +17,11 @@ export function createPopupApplication() {
     query: (query) => chrome.tabs.query(query),
     executeScript: (injection) => chrome.scripting.executeScript(injection),
   }) : createMockPageReader();
+  const notes = createNoteApplication({ repository: createNoteStorage(settings.driver), source: createSampleApisCoffeeSource(coffeeClient) });
   return {
-    notes: createNoteApplication({ repository: createNoteStorage(settings.driver), source: createSampleApisCoffeeSource(coffeeClient) }),
+    // In the extension the worker runs the import; the browser preview has no worker and runs it here.
+    notes: settings.extension ? delegateImportToWorker(notes, createMessageClient(createChromeTransport(chrome.runtime))) : notes,
+    noteChanges: createNoteChanges(settings.events),
     settings: settings.actions,
     settingsChanges: settings.changes,
     page: createPageApplication(reader, settings.repository),

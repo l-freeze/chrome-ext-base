@@ -17,6 +17,8 @@ src/ui/
 │   └── popup.css                 この画面だけの調整
 ├── screens/options/              設定フォーム・確認ダイアログ・CSS
 ├── settings.ts                   テーマ適用と設定通知への接続（フレームワーク非依存）
+├── live.ts                       購読してから読み出す共通処理（設定・メモの追従）
+├── i18n.tsx                      翻訳の Context・useI18n・lang と title の設定
 ├── layouts/
 │   ├── extension-shell.tsx       ヘッダー・コンテンツ領域・フッター
 │   └── extension-shell.css       共通レイアウトの見た目
@@ -60,6 +62,10 @@ props で画面へ渡し、`render()` の返す破棄関数を `pagehide` で呼
 Solid は `src/ui` の中だけで使います。features・composition・infrastructure は Solid を import しません。
 `settings.ts` のテーマ適用と設定通知の接続も、フレームワークに依存しない関数のままです。
 メモや API・ページ由来の内容は JSX のテキストや `value` で表示し、`innerHTML` は使いません。
+
+画面の文言は直接書かず、`useI18n()` の `t("キー")` で `public/_locales` から参照します。
+起動点が翻訳を読み込んでから描画します。数値は `language` を使う `Intl.NumberFormat` で書式を揃えます。
+文言の追加方法は [多言語化ガイド](i18n.md) を参照してください。
 外部入力を HTML 文字列に連結しないでください。
 
 ## daisyUI と Tailwind の使い分け
@@ -118,6 +124,8 @@ CSS の検出範囲は `@source "../"` で `src/ui` に限定しています。
 
 `ui/settings.ts` が初期値と変更通知を扱い、各画面に検証済みの設定を渡します。
 ポップアップの未保存メモと、設定画面の未保存フォームは通知で上書きしません。
+メモ自体も `NoteChanges` で購読し、別の画面や右クリックメニューで保存された内容を表示に反映します。
+編集中の下書きがあるときは保持し、別の画面で更新されたことを知らせます。購読と初期読み出しの順序は `ui/live.ts` が揃えます。
 リセット確認は native `dialog` と daisyUI の modal を使い、キャンセル・Escape では保存しません。
 確認ボタンからのみ `{ confirmed: true }` を検証付き reset 操作へ渡します。
 プレビューで別ページへの反映を確かめる手順は [拡張サンプルのガイド](extension.md) を参照してください。

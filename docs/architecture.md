@@ -27,7 +27,9 @@ src/
 │   └── compose.ts             controller と UseCase の接続
 ├── features/settings/        設定操作・保存形式・変更通知（同じ役割分け）
 ├── features/page/            ページ取得（同じ役割分け）
+├── features/site-access/     サイト確認・許可（同じ役割分け）
 ├── content/page.ts           ページ内で動く自己完結した関数
+├── background/               service worker の入口と、受信口・メニューの登録
 ├── integrations/sampleapis/
 │   └── coffee.ts              Coffee 取得の型・通信・境界検証
 ├── infrastructure/
@@ -39,8 +41,11 @@ src/
 │           ├── chrome.ts      chrome.storage
 │           ├── web.ts         localStorage
 │           └── memory.ts      メモリ保存
+│   ├── messaging/             worker とのメッセージ契約・router・client・Chrome の受信口
+│   ├── context-menus.ts       右クリックメニューの作成とクリックの振り分け
+│   └── i18n.ts                chrome.i18n とプレビュー用カタログの翻訳
 ├── lib/validation.ts          検証の型と実行ラッパー。操作の条件は持たない
-├── composition/popup.ts       環境に合わせた具体実装の選択
+├── composition/               画面・worker・翻訳ごとの具体実装の選択
 └── ui/                       起動点・画面・表示部品・スタイル
 ```
 
@@ -77,7 +82,7 @@ UI が呼ぶ `NoteActions` は unknown を受け、UseCase は検証済みの In
 `lib/validation.ts` は `Validator` の型、`ValidationError`、検証を省略できない実行ラッパーだけです。
 ID の条件や「引数なし」の規則を持たず、ブラウザイベントの共通検証も行いません。
 DOM イベントは画面で扱い、取り出した値を操作ごとの controller に渡します。
-将来、メッセージ形式などの共通プロトコル検証が必要になれば、その入口で定義します。
+worker とのメッセージは `MessageContract` の要求・応答バリデーターで構造を検証し、業務上の入力検証は受け側の controller に任せます。
 
 ```mermaid
 flowchart LR
@@ -220,3 +225,22 @@ gateway はタブ URL と Chrome の権限応答を検証し、タブ変更・�
 通知時の古い結果の破棄や再読み込みは UI の責務です。
 
 ビルドの差分、UI の分離、権限の理由は [サイドパネルガイド](sidepanel.md) に記載しています。
+
+## service worker の境界
+
+worker は画面と同じ features を使う、もう一つの入口です。`composition/worker.ts` が具体実装を選び、
+メッセージの種類と処理、右クリックメニューの項目を明示的に登録します。`background/` はそれを最上位で登録するだけです。
+
+- `infrastructure/messaging` と `context-menus.ts` は機能を知りません。メッセージの契約は処理を所有する機能の gateway が定義します。
+- 画面からはメッセージを直接送らず、port を実装した gateway（例: `delegateImportToWorker`）を composition が注入します。
+  画面は処理がその場で動くか worker で動くかを知りません。
+- worker は `src/ui` を import しません。Solid と DOM を含まないことを配布物で確認しています。
+- `NoteChanges` は `SettingsChanges` と同じく、保存基盤の通知を検証して UI に届ける port です。
+
+制約と追加の手順は [service worker ガイド](worker.md) を参照してください。
+
+## 文言の境界
+
+画面に表示する文言は `public/_locales` にあり、UI が `useI18n()` で参照します。
+features は文言を返さず、表示に必要な理由をコード（`PageCaptureError` の `reason` など）で返します。
+詳細は [多言語化ガイド](i18n.md) を参照してください。
