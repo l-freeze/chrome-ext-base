@@ -9,7 +9,7 @@ function parseResponse(raw: unknown): FetchNoteOutput {
     typeof raw !== "object" || raw === null || Array.isArray(raw) || !("id" in raw) ||
     typeof raw.id !== "number" || !Number.isSafeInteger(raw.id) || raw.id < 1 || !("text" in raw)
   ) {
-    throw new ValidationError("取得したメモの形式が不正です。");
+    throw new ValidationError("The notes service returned an unexpected note.");
   }
   return { id: raw.id, text: noteText(raw.text) };
 }

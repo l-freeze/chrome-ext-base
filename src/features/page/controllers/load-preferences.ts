@@ -4,7 +4,7 @@ import type { LoadPreferences, LoadPreferencesInput } from "../use-cases/load-pr
 
 const input: Validator<LoadPreferencesInput> = {
   parse(raw) {
-    if (raw !== undefined) throw new ValidationError("この操作に引数は不要です。");
+    if (raw !== undefined) throw new ValidationError("This operation takes no input.");
   },
 };
 

@@ -6,7 +6,7 @@ const input: Validator<ResetSettingsInput> = {
   parse(raw) {
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) ||
         !("confirmed" in raw) || raw.confirmed !== true) {
-      throw new ValidationError("初期設定へのリセットには確認が必要です。");
+      throw new ValidationError("Reset requires { confirmed: true }.");
     }
     return { confirmed: true };
   },

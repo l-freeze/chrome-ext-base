@@ -8,7 +8,7 @@
 
 | 配置 | 保証する契約 |
 | --- | --- |
-| `tests/lib/validation.test.ts` | 検証済みの値を処理に渡す。不正入力は副作用を起こさず拒否し、失敗を返す。検証の指定は型として必須 |
+| `tests/lib/validation.test.ts` | 検証済みの値を処理に渡す。不正入力は副作用を起こさず拒否し、失敗を返す。検証の指定は型として必須。Standard Schema のスキーマを変換し、失敗を問題の一覧付きで返す。非同期のスキーマは拒否する |
 | `tests/infrastructure/storage.test.ts` | 保存 Input と復元 Output の同時指定、異なる型での保存・復元、不正な保存形式の拒否、I/O エラーの伝達 |
 | `tests/infrastructure/http.test.ts` | 指定 URL への JSON GET、応答値、HTTP・通信・JSON エラーの伝達 |
 | `tests/infrastructure/changes.test.ts` | 指定した local storage のキーの通知と購読解除。データは機能に依存しない任意の値 |

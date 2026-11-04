@@ -6,7 +6,7 @@ const input: Validator<SavePreferencesInput> = {
   parse(raw) {
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) ||
         !("includeSelection" in raw) || typeof raw.includeSelection !== "boolean") {
-      throw new ValidationError("取得の設定の形式が不正です。");
+      throw new ValidationError("Expected { includeSelection: boolean }.");
     }
     return { includeSelection: raw.includeSelection };
   },

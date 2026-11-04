@@ -9,7 +9,7 @@ export interface Note {
 // A Note invariant, independent of any command or persisted representation.
 export function noteText(input: unknown): string {
   if (typeof input !== "string" || input.length > MAX_NOTE_LENGTH) {
-    throw new ValidationError(`メモは ${MAX_NOTE_LENGTH} 文字以内の文字列で指定してください。`);
+    throw new ValidationError(`A note must be a string of at most ${MAX_NOTE_LENGTH} characters.`);
   }
   return input;
 }

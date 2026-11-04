@@ -11,7 +11,7 @@ export const importNoteMessage: MessageContract<unknown, Note> = {
   request: { parse: (raw) => raw },
   response: { parse(raw) {
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) || !("text" in raw)) {
-      throw new ValidationError("取り込んだメモの形式が不正です。");
+      throw new ValidationError("The worker returned an unexpected note.");
     }
     return { text: noteText(raw.text) };
   } },

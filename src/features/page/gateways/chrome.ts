@@ -15,7 +15,7 @@ function parseResponse(raw: unknown): PageInfo {
       !("url" in raw) || typeof raw.url !== "string" || raw.url.length > 8192 ||
       !("selection" in raw) || typeof raw.selection !== "string" || raw.selection.length > 2000 ||
       !("selectionTruncated" in raw) || typeof raw.selectionTruncated !== "boolean") {
-    throw new ValidationError("ページ情報の形式が不正です。");
+    throw new ValidationError("The page script returned an unexpected result.");
   }
   if (!["http:", "https:"].includes(new URL(raw.url).protocol)) throw new PageCaptureError("unsupported-page");
   return { title: raw.title, url: raw.url, selection: raw.selection, selectionTruncated: raw.selectionTruncated };

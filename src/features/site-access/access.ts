@@ -8,11 +8,11 @@ export type SiteAccess =
   | { available: true; tabId: number; url: string; origin: string; allowed: boolean };
 
 export function siteOrigin(raw: unknown): string {
-  if (typeof raw !== "string") throw new ValidationError("サイトの形式が不正です。");
+  if (typeof raw !== "string") throw new ValidationError("A site origin must be a URL origin string.");
   let url: URL;
-  try { url = new URL(raw); } catch { throw new ValidationError("サイトの形式が不正です。"); }
+  try { url = new URL(raw); } catch { throw new ValidationError("A site origin must be a URL origin string."); }
   if (!["http:", "https:"].includes(url.protocol) || url.origin !== raw) {
-    throw new ValidationError("HTTP(S) のサイトを指定してください。");
+    throw new ValidationError("A site origin must be an HTTP(S) origin such as https://example.com.");
   }
   return url.origin;
 }

@@ -9,7 +9,7 @@ const contract: StorageContract<Settings, Settings> = {
   key: "settings",
   input: { parse(raw) {
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) || !("theme" in raw)) {
-      throw new ValidationError("保存する設定の形式が不正です。");
+      throw new ValidationError("Settings to save must be { theme }.");
     }
     return { theme: settingsTheme(raw.theme) };
   } },
@@ -17,7 +17,7 @@ const contract: StorageContract<Settings, Settings> = {
     if (raw === undefined) return defaultSettings();
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) ||
         !("version" in raw) || raw.version !== 1 || !("theme" in raw)) {
-      throw new ValidationError("保存済みの設定を読み出せません。初期設定に戻してください。");
+      throw new ValidationError("Stored settings are not in a known format; reset them to the defaults.");
     }
     return { theme: settingsTheme(raw.theme) };
   } },

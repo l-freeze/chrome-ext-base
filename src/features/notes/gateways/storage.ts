@@ -10,7 +10,7 @@ const contract: StorageContract<Note, Note> = {
   key: "quick-note",
   input: { parse(raw) {
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) || !("text" in raw)) {
-      throw new ValidationError("保存するメモの形式が不正です。");
+      throw new ValidationError("A note to save must be { text }.");
     }
     return { text: noteText(raw.text) };
   } },

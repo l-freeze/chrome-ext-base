@@ -6,7 +6,7 @@ import { settingsTheme } from "../settings";
 const input: Validator<SaveSettingsInput> = {
   parse(raw) {
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) || !("theme" in raw)) {
-      throw new ValidationError("設定の形式が不正です。");
+      throw new ValidationError("Expected { theme }.");
     }
     return { theme: settingsTheme(raw.theme) };
   },

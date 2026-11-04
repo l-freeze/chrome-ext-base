@@ -5,7 +5,7 @@ startWorker();
 
 function configurePanel() {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch((error: unknown) => {
-    console.error("サイドパネルの起動設定に失敗しました。", error);
+    console.error("Failed to configure the side panel behavior.", error);
   });
 }
 chrome.runtime.onInstalled.addListener(configurePanel);
