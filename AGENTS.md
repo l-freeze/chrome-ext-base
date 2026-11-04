@@ -10,6 +10,7 @@
 
 # Implementation conventions
 
+- Change the extension version only in `package.json`; the build writes it into the manifest.
 - Use the pinned pnpm version in `packageManager` and Node.js from `.nvmrc`. Install with `pnpm install --frozen-lockfile`; commit `pnpm-lock.yaml` and keep package-manager settings in `pnpm-workspace.yaml`.
 - Review dependency lifecycle scripts before adding version-specific `allowBuilds` entries. Keep `strictDepBuilds` enabled; never blanket-approve builds to make installation pass.
 
