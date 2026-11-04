@@ -3,16 +3,18 @@ import type { SettingsActions, SettingsChanges } from "../../../features/setting
 import type { Theme } from "../../../features/settings/settings";
 import type { PageActions } from "../../../features/page/ports";
 import type { PageInfo } from "../../../features/page/page";
-import type { NoteActions } from "../../../features/notes/ports";
+import type { NoteActions, NoteChanges } from "../../../features/notes/ports";
 import { MAX_NOTE_LENGTH } from "../../../features/notes/note";
 import type { Note } from "../../../features/notes/note";
 import { applyTheme, connectSettings } from "../../settings";
+import { connectLive } from "../../live";
 import { ActionButton } from "../../components/action-button";
 import { Feedback } from "../../components/feedback";
 import type { FeedbackState } from "../../components/feedback";
 
 export interface PopupApplication {
   notes: NoteActions;
+  noteChanges: NoteChanges;
   settings: SettingsActions;
   settingsChanges: SettingsChanges;
   page: PageActions;
@@ -44,12 +46,26 @@ export function Popup(props: { app: PopupApplication }) {
   const count = () => `${formatter.format(text().length)} / ${formatter.format(MAX_NOTE_LENGTH)}`;
   const accept = (note: Note) => { setText(note.text); setSavedText(note.text); };
 
-  void app.notes.loadNote(undefined).then((note) => {
-    if (disposed) return;
+  // Notes saved elsewhere (another screen, the context menu) replace the view, never an unsaved draft.
+  onCleanup(connectLive(() => app.notes.loadNote(undefined), (value, error) => app.noteChanges.subscribe(value, error), (note, changed) => {
+    if (busy() === "init") {
+      accept(note);
+      setBusy(undefined);
+      show("準備できました。このブラウザに保存できます。");
+      return;
+    }
+    if (!changed || busy() || note.text === savedText()) return;
+    if (text() !== savedText()) {
+      setSavedText(note.text);
+      show("別の画面でメモが更新されました。編集中の内容を保持しています。保存すると上書きします。", "dirty");
+      return;
+    }
     accept(note);
-    setBusy(undefined);
-    show("準備できました。このブラウザに保存できます。");
-  }, () => { if (!disposed) show("読み込めませんでした。開き直してください。", "error"); });
+    show("別の画面で更新されたメモを反映しました。", "success");
+  }, () => {
+    if (busy() === "init") show("読み込めませんでした。開き直してください。", "error");
+    else show("保存されたメモを読み出せませんでした。", "error");
+  }));
 
   async function perform(action: "save" | "import", operation: () => Promise<Note>, pending: string, success: string, failure: string) {
     if (busy()) return;
