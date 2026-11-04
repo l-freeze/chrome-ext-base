@@ -6,7 +6,7 @@ import type { SaveNote, SaveNoteInput } from "../use-cases/save";
 const input: Validator<SaveNoteInput> = {
   parse(raw) {
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) || !("text" in raw)) {
-      throw new ValidationError("保存するメモを指定してください。");
+      throw new ValidationError("Expected { text } for the note to save.");
     }
     return { text: noteText(raw.text) };
   },

@@ -4,7 +4,7 @@ import type { LoadSettings, LoadSettingsInput } from "../use-cases/load";
 
 const input: Validator<LoadSettingsInput> = {
   parse(raw) {
-    if (raw !== undefined) throw new ValidationError("この操作に引数は不要です。");
+    if (raw !== undefined) throw new ValidationError("This operation takes no input.");
   },
 };
 

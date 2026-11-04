@@ -10,7 +10,7 @@ export function defaultSettings(): Settings {
 
 export function settingsTheme(raw: unknown): Theme {
   if (raw !== "system" && raw !== "light" && raw !== "dark") {
-    throw new ValidationError("テーマを選択してください。");
+    throw new ValidationError("Theme must be system, light, or dark.");
   }
   return raw;
 }

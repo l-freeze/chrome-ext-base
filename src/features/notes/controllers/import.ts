@@ -8,7 +8,7 @@ const input: Validator<ImportNoteInput> = {
       typeof raw !== "object" || raw === null || Array.isArray(raw) || !("id" in raw) ||
       typeof raw.id !== "number" || !Number.isSafeInteger(raw.id) || raw.id < 1
     ) {
-      throw new ValidationError("取得する ID は正の安全な整数で指定してください。");
+      throw new ValidationError("Expected { id } as a positive safe integer.");
     }
     return { id: raw.id };
   },

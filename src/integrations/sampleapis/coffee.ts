@@ -19,7 +19,7 @@ function parseRequest(raw: unknown): FetchCoffeeInput {
     typeof raw !== "object" || raw === null || Array.isArray(raw) || !("id" in raw) ||
     typeof raw.id !== "number" || !Number.isSafeInteger(raw.id) || raw.id < 1
   ) {
-    throw new ValidationError("SampleAPIs の ID は正の安全な整数で指定してください。");
+    throw new ValidationError("SampleAPIs coffee ID must be a positive safe integer.");
   }
   return { id: raw.id };
 }
@@ -34,7 +34,7 @@ function parseResponse(raw: unknown): FetchCoffeeOutput {
     !("ingredients" in raw) || !Array.isArray(raw.ingredients) ||
     !raw.ingredients.every((item: unknown) => typeof item === "string")
   ) {
-    throw new ValidationError("SampleAPIs のコーヒーデータの形式が不正です。");
+    throw new ValidationError("SampleAPIs returned unexpected coffee data.");
   }
   return {
     id: raw.id, title: raw.title, description: raw.description,

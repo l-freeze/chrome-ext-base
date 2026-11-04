@@ -10,7 +10,7 @@ const contract: StorageContract<CapturePreferences, CapturePreferences> = {
   input: { parse(raw) {
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) ||
         !("includeSelection" in raw) || typeof raw.includeSelection !== "boolean") {
-      throw new ValidationError("保存する取得の設定の形式が不正です。");
+      throw new ValidationError("Capture preferences to save must be { includeSelection: boolean }.");
     }
     return { includeSelection: raw.includeSelection };
   } },
@@ -18,7 +18,7 @@ const contract: StorageContract<CapturePreferences, CapturePreferences> = {
     if (raw === undefined) return defaultCapturePreferences();
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) || !("version" in raw) || raw.version !== 1 ||
         !("includeSelection" in raw) || typeof raw.includeSelection !== "boolean") {
-      throw new ValidationError("保存済みの取得の設定を読み出せません。");
+      throw new ValidationError("Stored capture preferences are not in a known format.");
     }
     return { includeSelection: raw.includeSelection };
   } },

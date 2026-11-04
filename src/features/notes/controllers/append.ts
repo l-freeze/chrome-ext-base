@@ -7,7 +7,7 @@ const input: Validator<AppendNoteInput> = {
   parse(raw) {
     if (typeof raw !== "object" || raw === null || Array.isArray(raw) || !("text" in raw) ||
         typeof raw.text !== "string" || raw.text.trim() === "") {
-      throw new ValidationError("追加する文章を指定してください。");
+      throw new ValidationError("Expected { text } with non-blank text to append.");
     }
     return { text: noteText(raw.text) };
   },

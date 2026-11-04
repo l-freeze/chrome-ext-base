@@ -21,14 +21,14 @@ export function createChromeSiteAccess(
       if (!["http:", "https:"].includes(url.protocol)) return { available: false, reason: "unsupported-page" };
       const origin = siteOrigin(url.origin);
       const allowed = await browser.permissions.contains({ origins: [permissionPattern(origin)] });
-      if (typeof allowed !== "boolean") throw new Error("サイトの権限を確認できません。");
+      if (typeof allowed !== "boolean") throw new Error("chrome.permissions.contains returned an unexpected value.");
       return { available: true, tabId: tab.id, url: url.href, origin, allowed };
     },
     grant(input) {
       // This validates the gateway boundary and invokes request before any await.
       const origin = siteOrigin(input.origin);
       return browser.permissions.request({ origins: [permissionPattern(origin)] }).then((granted) => {
-        if (typeof granted !== "boolean") throw new Error("権限の応答が不正です。");
+        if (typeof granted !== "boolean") throw new Error("chrome.permissions.request returned an unexpected value.");
         return granted;
       });
     },
