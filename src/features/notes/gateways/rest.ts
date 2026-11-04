@@ -3,6 +3,7 @@ import { noteText } from "../note";
 import { ValidationError } from "../../../lib/validation";
 import { getJson } from "../../../infrastructure/http";
 import type { HttpClient, RetryPolicy } from "../../../infrastructure/http";
+import { importFailure } from "./failure";
 
 function parseResponse(raw: unknown): FetchNoteOutput {
   if (
@@ -22,8 +23,10 @@ export function createRestNoteSource(options: { baseUrl: string; client: HttpCli
   if (!baseUrl.pathname.endsWith("/")) baseUrl.pathname += "/";
   return {
     async fetchNote(input) {
-      const data = await getJson(options.client, new URL(`notes/${input.id}`, baseUrl), options.retry ? { retry: options.retry } : {});
-      return parseResponse(data);
+      try {
+        const data = await getJson(options.client, new URL(`notes/${input.id}`, baseUrl), options.retry ? { retry: options.retry } : {});
+        return parseResponse(data);
+      } catch (error) { throw importFailure(error); }
     },
   };
 }

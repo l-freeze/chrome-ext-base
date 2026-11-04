@@ -93,6 +93,18 @@
   "importButton": {
     "message": "サンプルを取得して保存"
   },
+  "importFailedNetwork": {
+    "message": "通信できませんでした。接続を確認してから、もう一度お試しください。"
+  },
+  "importFailedTimeout": {
+    "message": "応答がありませんでした。時間をおいて、もう一度お試しください。"
+  },
+  "importFailedServer": {
+    "message": "サービスが一時的に利用できません。時間をおいて、もう一度お試しください。"
+  },
+  "importFailedResponse": {
+    "message": "取得したデータを読み取れませんでした。メモは変更していません。"
+  },
   "pageHeading": {
     "message": "今見ているページ"
   },

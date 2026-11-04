@@ -53,6 +53,39 @@ describe.each<Variant>(["popup", "sidepanel"])("%s", (variant) => {
     expect(await editor.inputValue()).toBe("下書き");
   });
 
+  it("一時的なサーバーエラーは worker が再試行して取り込みを完了する", async () => {
+    const { extension, editor, screen } = await open();
+    let calls = 0;
+    await extension.context.route("https://api.sampleapis.com/**", (route) => ++calls === 1
+      ? route.fulfill({ status: 503 })
+      : route.fulfill({ json: { id: 1, title: "Second Try", description: "Hot.", ingredients: ["Coffee"], image: "https://example.test/x.jpg" } }));
+    await screen.locator("summary").click();
+    await screen.getByRole("button", { name: "サンプルを取得して保存" }).click();
+    await expect.poll(() => editor.inputValue(), { timeout: 10_000 }).toMatch(/^Second Try/);
+    expect(calls).toBe(2);
+  });
+
+  it("取り込みの失敗は種類に応じた文言を表示し、メモを変更しない", async () => {
+    const { extension, editor, screen } = await open();
+    await editor.fill("残すメモ");
+    await editor.press("Control+Enter");
+    await expect.poll(() => stored(extension.worker)).toBe("残すメモ");
+    await screen.locator("summary").click();
+    const importButton = screen.getByRole("button", { name: "サンプルを取得して保存" });
+    const cases: Array<[(route: import("playwright").Route) => Promise<void>, string]> = [
+      [(route) => route.abort("internetdisconnected"), "通信できませんでした。"],
+      [(route) => route.fulfill({ status: 503 }), "サービスが一時的に利用できません。"],
+      [(route) => route.fulfill({ status: 200, contentType: "application/json", body: "{" }), "取得したデータを読み取れませんでした。"],
+    ];
+    for (const [answer, text] of cases) {
+      await extension.context.unrouteAll();
+      await extension.context.route("https://api.sampleapis.com/**", answer);
+      await importButton.click();
+      await screen.getByText(text).waitFor({ timeout: 15_000 });
+      expect(await stored(extension.worker)).toBe("残すメモ");
+    }
+  });
+
   it("取り込みは worker が行い、画面を閉じても保存まで完了する", async () => {
     const { extension, screen } = await open();
     // The public API is replaced with a fixed response; the worker's own fetch is intercepted too.

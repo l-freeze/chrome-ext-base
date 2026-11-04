@@ -2,13 +2,18 @@
 import { createSignal, onCleanup } from "solid-js";
 import type { NoteActions, NoteChanges } from "../../../features/notes/ports";
 import { MAX_NOTE_LENGTH } from "../../../features/notes/note";
-import type { Note } from "../../../features/notes/note";
+import type { ImportFailure, Note } from "../../../features/notes/note";
+import { NoteImportError } from "../../../features/notes/note";
 import { connectLive } from "../../live";
 import { useI18n } from "../../i18n";
 import type { MessageKey } from "../../i18n";
 import { ActionButton } from "../../components/action-button";
 import { Feedback } from "../../components/feedback";
 import type { FeedbackState } from "../../components/feedback";
+
+const importFailures: Record<ImportFailure, MessageKey> = {
+  network: "importFailedNetwork", timeout: "importFailedTimeout", server: "importFailedServer", response: "importFailedResponse",
+};
 
 export function NoteSection(props: { notes: NoteActions; noteChanges: NoteChanges }) {
   const { t, language } = useI18n();
@@ -44,7 +49,7 @@ export function NoteSection(props: { notes: NoteActions; noteChanges: NoteChange
   }));
   onCleanup(() => { disposed = true; });
 
-  async function perform(action: "save" | "import", operation: () => Promise<Note>, pending: MessageKey, success: MessageKey, failure: MessageKey) {
+  async function perform(action: "save" | "import", operation: () => Promise<Note>, pending: MessageKey, success: MessageKey, failure: (error: unknown) => MessageKey) {
     if (busy()) return;
     setBusy(action);
     show(pending, "loading");
@@ -53,8 +58,8 @@ export function NoteSection(props: { notes: NoteActions; noteChanges: NoteChange
       if (disposed) return;
       accept(note);
       show(success, "success");
-    } catch {
-      if (!disposed) show(failure, "error");
+    } catch (error) {
+      if (!disposed) show(failure(error), "error");
     } finally {
       if (!disposed) setBusy(undefined);
     }
@@ -65,7 +70,7 @@ export function NoteSection(props: { notes: NoteActions; noteChanges: NoteChange
       <section class="card bg-base-100 note-card" aria-labelledby="note-title">
         <form ref={form} class="card-body" onSubmit={(event) => {
           event.preventDefault();
-          void perform("save", () => props.notes.saveNote({ text: text() }), "statusSaving", "popupSaved", "popupSaveFailed");
+          void perform("save", () => props.notes.saveNote({ text: text() }), "statusSaving", "popupSaved", () => "popupSaveFailed");
         }}>
           <div class="note-heading">
             <label id="note-title" class="note-label" for="note">
@@ -107,7 +112,8 @@ export function NoteSection(props: { notes: NoteActions; noteChanges: NoteChange
         <div class="card-body">
           <ActionButton type="button" class="btn btn-soft btn-sm sample-button" describedBy="sample-help"
             disabled={busy() !== undefined} loading={busy() === "import"} iconPosition="end"
-            onClick={() => void perform("import", () => props.notes.importNote({ id: 1 }), "popupImporting", "popupImported", "popupImportFailed")}
+            onClick={() => void perform("import", () => props.notes.importNote({ id: 1 }), "popupImporting", "popupImported",
+              (error) => error instanceof NoteImportError ? importFailures[error.reason] : "popupImportFailed")}
             icon={<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>}>
             {t("importButton")}
           </ActionButton>
