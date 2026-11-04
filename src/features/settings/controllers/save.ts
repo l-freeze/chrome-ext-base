@@ -5,11 +5,10 @@ import { settingsTheme } from "../settings";
 
 const input: Validator<SaveSettingsInput> = {
   parse(raw) {
-    if (typeof raw !== "object" || raw === null || Array.isArray(raw) ||
-        !("theme" in raw) || !("includeSelection" in raw) || typeof raw.includeSelection !== "boolean") {
+    if (typeof raw !== "object" || raw === null || Array.isArray(raw) || !("theme" in raw)) {
       throw new ValidationError("設定の形式が不正です。");
     }
-    return { theme: settingsTheme(raw.theme), includeSelection: raw.includeSelection };
+    return { theme: settingsTheme(raw.theme) };
   },
 };
 

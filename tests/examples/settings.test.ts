@@ -18,15 +18,15 @@ function application() {
 
 it("確認済みのリセットは初期設定を返し、保存にも反映する", async () => {
   const app = application();
-  await app.save({ theme: "dark", includeSelection: false });
-  const initial = { theme: "system", includeSelection: true };
+  await app.save({ theme: "dark" });
+  const initial = { theme: "system" };
   expect(await app.reset({ confirmed: true })).toEqual(initial);
   expect(await app.load(undefined)).toEqual(initial);
 });
 
 it("確認されていないリセットは拒否し、保存内容を維持する", async () => {
   const app = application();
-  const saved = { theme: "dark", includeSelection: false };
+  const saved = { theme: "dark" };
   await app.save(saved);
   await expect(app.reset({ confirmed: false })).rejects.toBeInstanceOf(ValidationError);
   expect(await app.load(undefined)).toEqual(saved);

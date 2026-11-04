@@ -9,5 +9,6 @@ export function startWorker() {
   const application = createWorkerApplication();
   const report = (error: unknown) => console.error("Service worker task failed.", error);
   listenChromeMessages(chrome.runtime, application.router);
-  registerContextMenus(chrome.contextMenus, chrome.runtime.onInstalled, application.menus, report);
+  // The contextMenus API exists only with its permission, which a build without menu items can omit.
+  if (application.menus.length > 0) registerContextMenus(chrome.contextMenus, chrome.runtime.onInstalled, application.menus, report);
 }

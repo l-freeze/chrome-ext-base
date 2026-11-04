@@ -1,3 +1,10 @@
+// Whether a capture includes the selected text. Owned by this feature, not by the base settings.
+export interface CapturePreferences { includeSelection: boolean }
+
+export function defaultCapturePreferences(): CapturePreferences {
+  return { includeSelection: true };
+}
+
 export interface PageInfo {
   title: string;
   url: string;

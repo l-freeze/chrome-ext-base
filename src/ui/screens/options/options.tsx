@@ -17,7 +17,6 @@ export function Options(props: { actions: SettingsActions; changes: SettingsChan
   let dialog!: HTMLDialogElement;
   let disposed = false;
   const [theme, setTheme] = createSignal<string>("system");
-  const [includeSelection, setIncludeSelection] = createSignal(false);
   const [ready, setReady] = createSignal(false);
   const [busy, setBusy] = createSignal(true);
   const [dirty, setDirty] = createSignal(false);
@@ -25,7 +24,6 @@ export function Options(props: { actions: SettingsActions; changes: SettingsChan
 
   function render(value: Settings) {
     setTheme(value.theme);
-    setIncludeSelection(value.includeSelection);
     setDirty(false);
     setReady(true);
     applyTheme(value);
@@ -49,7 +47,7 @@ export function Options(props: { actions: SettingsActions; changes: SettingsChan
   async function perform(operation: () => Promise<Settings>, message: MessageKey) {
     if (busy()) return;
     setBusy(true);
-    setStatus("noteSaving");
+    setStatus("statusSaving");
     try {
       const value = await operation();
       if (disposed) return;
@@ -72,7 +70,7 @@ export function Options(props: { actions: SettingsActions; changes: SettingsChan
             onSubmit={(event) => {
               event.preventDefault();
               if (!ready() || busy()) return;
-              const input = { theme: theme(), includeSelection: includeSelection() };
+              const input = { theme: theme() };
               void perform(() => props.actions.save(input), "optionsSaved");
             }}>
             <h3 id="settings-title">{t("optionsGeneral")}</h3>
@@ -83,11 +81,6 @@ export function Options(props: { actions: SettingsActions; changes: SettingsChan
                 value={theme()} onChange={(event) => setTheme(event.currentTarget.value)}>
                 <option value="system">{t("themeSystem")}</option><option value="light">{t("themeLight")}</option><option value="dark">{t("themeDark")}</option>
               </select>
-              <div class="selection-option">
-                <div><label class="setting-label" for="include-selection">{t("optionsSelectionLabel")}</label><p id="selection-help" class="setting-description">{t("optionsSelectionHelp")}</p></div>
-                <input id="include-selection" name="includeSelection" type="checkbox" class="toggle toggle-primary" aria-describedby="selection-help"
-                  checked={includeSelection()} onChange={(event) => setIncludeSelection(event.currentTarget.checked)} />
-              </div>
               <button class="btn btn-primary w-full" type="submit">{t("optionsSave")}</button>
             </fieldset>
             <p id="options-status" role="status" aria-live="polite">{t(status())}</p>
