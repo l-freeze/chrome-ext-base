@@ -80,7 +80,8 @@ Chrome は関数をコピーして実行するため、関数内から拡張側�
 | input / textarea / contenteditable にフォーカス中 | フォームや編集領域の選択テキストを取得しない |
 | 長いタイトル／選択テキスト | タイトルは 512 文字、選択は 2,000 文字まで。選択の省略を画面に明示 |
 | chrome://、拡張自身、file:// など | 対象外としてエラーを表示 |
-| Chrome Web Store 等の保護ページ、タブ消失・権限失効 | 注入失敗を画面に表示 |
+| Chrome Web Store 等の保護ページ、タブ消失 | 注入失敗を画面に表示 |
+| `activeTab` が付いていない（ポップアップをタブで開いた場合など） | タブの URL を読めないため、通常の Web ページを開くよう表示 |
 | iframe 内の選択、PDF ビューアー、特殊なページ | 対応対象外。全フレーム取得や専用 API は未実装 |
 | SPA の画面遷移 | ボタンを押した時点の値を読む。自動監視はしない |
 
@@ -148,10 +149,21 @@ REST API を呼ぶことだけを理由に service worker を必須にはして�
 保存・永続化・キャンセル／確定・通知反映・入力保持・設定破損からの復旧を確認しています。
 ページ情報取得関数も通常ページの DOM で確認しています。
 
-このクラウド環境では追加拡張の読み込みが管理ポリシーで禁止されているため、
-`activeTab` の許可・実際の `executeScript` 注入・拡張版 storage 通知・ツールバーポップアップの実動作は未検証です。
+SolidJS への移行時（2026-11-04）には、ビルドした `dist/popup/` と `dist/sidepanel/` を
+Playwright の Chromium 153 に読み込み、本物の Chrome API で次を確認しました。両テーマの画面キャプチャーも確認しています。
+
+- `chrome.storage.local` へのメモ保存と再読み込み、設定画面の保存が開いている画面へ通知されること。
+- サイドパネルの service worker がツールバー操作でパネルを開く設定を有効にすること。
+- サイドパネルがアクティブタブに追従し、「このサイトを許可」が Chrome の許可要求まで届くこと。
+- `http://localhost/*` の host permission を加えた検証用コピーで、`executeScript` によるタイトル・URL・選択テキストの取得、
+  フォーム内の選択を取得しないこと、ページ移動で古い取得結果を消すこと。
+- ポップアップをタブで開いた場合は `activeTab` が付かず、URL を読めないため取得しないこと。
+
+ヘッドレスの Chromium では、ツールバーからの起動による `activeTab` の付与と、許可ダイアログへの応答を自動化できません。
+実際のポップアップ・サイドパネルの枠と、ダイアログで許可した後の流れは未検証です。
+SampleAPIs への実通信は、検証環境のネットワーク制限で接続できず未検証です（失敗時にメモを維持する表示は確認済み）。
 プレビューの取得ボタンは固定データを返し、「プレビュー」と明記します。
-実装は拡張用にも用意してあり、権限が許可された Chrome で `dist/popup/` または `dist/sidepanel/` を読み込んで確認できます。
+未検証の操作は、Chrome で `dist/popup/` または `dist/sidepanel/` を読み込んで確認してください。
 
 参考: [content scripts](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts)、
 [service workers](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers)、
