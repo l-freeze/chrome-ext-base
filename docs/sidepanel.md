@@ -85,8 +85,10 @@ Chromium の通常ブラウザでは、両テーマ、幅 240 / 320 / 380 / 640 
 REST の固定応答、設定反映・リセットを確認しています。
 Chrome API の代替実装を使い、許可／拒否、タブ切り替え、古い応答の破棄、保護ページの失敗も確認しています。
 
-この環境では追加拡張の読み込みが禁止されているため、実際のサイドパネル枠、Chrome の許可ダイアログ、
-実ページへの注入は未検証です。ブラウザプレビューは固定データで、その旨を画面に表示します。
+拡張として Chromium に読み込み、パネルの起動設定、アクティブタブへの追従、許可要求が Chrome まで届くこと、
+host permission を加えた検証用コピーでの実ページ取得とページ移動時の結果破棄を確認しています。
+実際のサイドパネル枠と、許可ダイアログで許可した後の流れは未検証です。詳細は [拡張サンプルのガイド](extension.md#検証範囲) にあります。
+ブラウザプレビューは固定データで、その旨を画面に表示します。
 
 公式リファレンス: [Side Panel API](https://developer.chrome.com/docs/extensions/reference/api/sidePanel)、
 [Permissions API](https://developer.chrome.com/docs/extensions/reference/api/permissions)。
