@@ -18,3 +18,15 @@ export function noteText(input: unknown): string {
 export function appendText(note: Note, text: string): Note {
   return { text: noteText(note.text === "" ? text : `${note.text}\n\n${text}`) };
 }
+
+// Why an import failed. Gateways translate transport and service errors into these; the UI words them.
+export type ImportFailure = "network" | "timeout" | "server" | "response";
+
+export class NoteImportError extends Error {
+  override name = "NoteImportError";
+  readonly reason: ImportFailure;
+  constructor(reason: ImportFailure, options?: { cause?: unknown }) {
+    super(`Note import failed: ${reason}`, options);
+    this.reason = reason;
+  }
+}

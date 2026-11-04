@@ -19,13 +19,18 @@ export interface MessageTransport {
 
 export type MessageReply =
   | { ok: true; value: unknown }
-  | { ok: false; error: { name: string; message: string } };
+  | { ok: false; error: { name: string; message: string; reason?: string } };
 
-// The handler's error crosses the process boundary as name and message only.
+// The handler's error crosses the process boundary as its name, message, and string `reason` (a
+// feature's reason code), if it has one. Gateways rebuild their feature's error from these.
 export class MessageError extends Error {
   override name = "MessageError";
-  constructor(message: string, public readonly remoteName: string) {
+  readonly remoteName: string;
+  readonly reason: string | undefined;
+  constructor(message: string, remoteName: string, reason?: string) {
     super(message);
+    this.remoteName = remoteName;
+    this.reason = reason;
   }
 }
 

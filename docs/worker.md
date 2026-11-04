@@ -32,6 +32,8 @@ worker の起動処理そのものを書き換える必要はありません。
 - **DOM はない**。`document`・`window`・`localStorage` は使えません。`src/ui` や Solid を import しないでください。
   画面と共有するのは features・infrastructure・integrations のコードだけです。
 - **動的 `import()` は使えない**。service worker では動的 import が禁止されています。必要なモジュールは静的に import します。
+- **通信の待ちは停止までの時間を延ばさない**。再試行を使う場合は、時間切れ・回数・待ち時間の合計が
+  30 秒を十分に下回るようにします（`createRetryPolicy` の `maxElapsedMs`）。サンプルは 1 回 8 秒・合計 15 秒です。
 - **長時間の処理を前提にしない**。イベントや拡張 API の呼び出しで停止までの時間は延びますが、
   長い処理は分割し、途中経過を storage に保存してください。
 

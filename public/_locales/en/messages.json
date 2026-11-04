@@ -93,6 +93,18 @@
   "importButton": {
     "message": "Fetch and save sample"
   },
+  "importFailedNetwork": {
+    "message": "Couldn't connect. Check your connection and try again."
+  },
+  "importFailedTimeout": {
+    "message": "No response. Please try again later."
+  },
+  "importFailedServer": {
+    "message": "The service is temporarily unavailable. Please try again later."
+  },
+  "importFailedResponse": {
+    "message": "Couldn't read the fetched data. Your note is unchanged."
+  },
   "pageHeading": {
     "message": "Current page"
   },

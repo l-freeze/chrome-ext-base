@@ -2,10 +2,16 @@
 import { createSignal, onCleanup } from "solid-js";
 import type { NoteActions, NoteChanges } from "../../../features/notes/ports";
 import { MAX_NOTE_LENGTH } from "../../../features/notes/note";
-import type { Note } from "../../../features/notes/note";
+import type { ImportFailure, Note } from "../../../features/notes/note";
+import { NoteImportError } from "../../../features/notes/note";
 import { connectLive } from "../../live";
 import { useI18n } from "../../i18n";
+import type { MessageKey } from "../../i18n";
 import { message, Status } from "./status";
+
+const importFailures: Record<ImportFailure, MessageKey> = {
+  network: "importFailedNetwork", timeout: "importFailedTimeout", server: "importFailedServer", response: "importFailedResponse",
+};
 
 export function NoteSection(props: { notes: NoteActions; noteChanges: NoteChanges }) {
   const { t, language } = useI18n();
@@ -38,14 +44,14 @@ export function NoteSection(props: { notes: NoteActions; noteChanges: NoteChange
     setStatus(message(noteReady ? "noteStoredReadFailed" : "sidepanelNoteLoadFailed", true));
   }));
 
-  async function perform(operation: () => Promise<Note>) {
+  async function perform(operation: () => Promise<Note>, failure: (error: unknown) => MessageKey = () => "sidepanelNoteSaveFailed") {
     if (busy()) return;
     setBusy(true); setStatus(message("statusSaving"));
     try {
       const value = await operation();
       if (disposed) return;
       setText(value.text); setSavedText(value.text); setStatus(message("sidepanelNoteSaved"));
-    } catch { if (!disposed) setStatus(message("sidepanelNoteSaveFailed", true)); }
+    } catch (error) { if (!disposed) setStatus(message(failure(error), true)); }
     finally { if (!disposed) setBusy(false); }
   }
 
@@ -76,7 +82,8 @@ export function NoteSection(props: { notes: NoteActions; noteChanges: NoteChange
         <summary>{t("sidepanelRestSummary")}</summary>
         <div class="card-body">
           <p class="panel-description">{t("sidepanelRestHelp")}</p>
-          <button type="button" class="btn btn-soft" disabled={busy()} onClick={() => void perform(() => props.notes.importNote({ id: 1 }))}>{t("importButton")}</button>
+          <button type="button" class="btn btn-soft" disabled={busy()} onClick={() => void perform(() => props.notes.importNote({ id: 1 }),
+            (error) => error instanceof NoteImportError ? importFailures[error.reason] : "sidepanelNoteSaveFailed")}>{t("importButton")}</button>
         </div>
       </details>
     </>

@@ -1,6 +1,6 @@
 import { ValidationError } from "../../lib/validation";
-import { getJson } from "../../infrastructure/http";
-import type { Fetch } from "../../infrastructure/http";
+import { createRetryPolicy, getJson } from "../../infrastructure/http";
+import type { HttpClient } from "../../infrastructure/http";
 
 export interface FetchCoffeeInput { id: number }
 export interface FetchCoffeeOutput {
@@ -42,11 +42,14 @@ function parseResponse(raw: unknown): FetchCoffeeOutput {
   };
 }
 
-export function createSampleApisCoffeeClient(fetch: Fetch): CoffeeClient {
+// A public sample API: retry brief outages twice, finishing well inside the worker's idle limit.
+const retry = createRetryPolicy({ maxRetries: 2, baseDelayMs: 500, maxElapsedMs: 15_000 });
+
+export function createSampleApisCoffeeClient(client: HttpClient): CoffeeClient {
   return {
     async fetchCoffee(raw) {
       const input = parseRequest(raw);
-      const data = await getJson(new URL(`https://api.sampleapis.com/coffee/hot/${input.id}`), fetch);
+      const data = await getJson(client, new URL(`https://api.sampleapis.com/coffee/hot/${input.id}`), { retry });
       return parseResponse(data);
     },
   };

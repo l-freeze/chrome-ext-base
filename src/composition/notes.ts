@@ -5,6 +5,7 @@ import type { ContextMenuItem } from "../infrastructure/context-menus";
 import { createMessageClient } from "../infrastructure/messaging/client";
 import { createChromeTransport } from "../infrastructure/messaging/drivers/chrome";
 import { createChromeTranslator } from "../infrastructure/i18n";
+import { createHttpClient } from "../infrastructure/http";
 import { createSampleApisCoffeeClient } from "../integrations/sampleapis/coffee";
 import { createNoteApplication } from "../features/notes/compose";
 import { createNoteChanges, createNoteStorage } from "../features/notes/gateways/storage";
@@ -15,7 +16,11 @@ import type { MessageKey } from "./i18n";
 function createNotes(driver: KeyValueStorage) {
   return createNoteApplication({
     repository: createNoteStorage(driver),
-    source: createSampleApisCoffeeSource(createSampleApisCoffeeClient((url, init) => globalThis.fetch(url, init))),
+    source: createSampleApisCoffeeSource(createSampleApisCoffeeClient(createHttpClient({
+      // Wrapped so fetch keeps its global receiver; 8 s per try keeps retries short.
+      fetch: (url, init) => globalThis.fetch(url, init),
+      timeoutMs: 8_000,
+    }))),
   });
 }
 
