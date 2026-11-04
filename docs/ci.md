@@ -42,7 +42,9 @@ Node.js や pnpm を手元に導入しなくても、ZIP の展開だけでサ�
 
 Artifact は 30 日で期限切れになるため、必要なら再実行して生成します。
 ダウンロードには GitHub へのログインが必要です。
-タグでも同じ ZIP を生成しますが、GitHub Release の作成や Chrome Web Store への公開は行いません。
+`v*` タグでは、タグ名が `package.json` のバージョン（`v` + version）と一致することを確認し、確認用の ZIP に加えて
+ソースマップなしの公開用 ZIP（`pnpm run release` の出力、保存期間 90 日）も Artifact に保存します。一致しなければ失敗します。
+GitHub Release の作成や Chrome Web Store への公開は行いません。
 この ZIP は、署名付きの `.crx` ではなく、展開して読み込むビルド成果物です。
 
 ## 検証範囲と運用
