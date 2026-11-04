@@ -21,7 +21,9 @@
     "build:popup": "pnpm run typecheck && vite build --mode popup",
     "build:sidepanel": "pnpm run typecheck && vite build --mode sidepanel",
     "check": "pnpm run test && pnpm run build:popup && pnpm run test:extension",
-    "check:sidepanel": "pnpm run test && pnpm run build:sidepanel && pnpm run test:extension:sidepanel"
+    "check:sidepanel": "pnpm run test && pnpm run build:sidepanel && pnpm run test:extension:sidepanel",
+    "samples:remove": "node scripts/samples.ts remove",
+    "samples:verify": "node scripts/samples.ts verify"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.4",
