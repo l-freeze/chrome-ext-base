@@ -10,21 +10,19 @@ daisyUI は CSS のコンポーネントライブラリで、ディレクトリ�
 ```text
 src/ui/
 ├── entrypoints/
-│   ├── popup.ts                  CSS 読み込み・DI・画面の組み立て
-│   └── options.ts                設定画面の起動
+│   ├── popup.tsx                 CSS 読み込み・DI・render
+│   └── options.tsx               設定画面の起動と表示方式ごとの文言
 ├── screens/popup/
-│   ├── popup.html                画面の固定マークアップ
-│   ├── popup.ts                  UI イベントと表示状態
+│   ├── popup.tsx                 画面のマークアップ・UI イベント・表示状態
 │   └── popup.css                 この画面だけの調整
 ├── screens/options/              設定フォーム・確認ダイアログ・CSS
-├── settings.ts                   テーマ適用と設定通知への接続
+├── settings.ts                   テーマ適用と設定通知への接続（フレームワーク非依存）
 ├── layouts/
-│   ├── extension-shell.html      ヘッダー・コンテンツ領域・フッター
-│   ├── extension-shell.ts        固定テンプレートの配置
+│   ├── extension-shell.tsx       ヘッダー・コンテンツ領域・フッター
 │   └── extension-shell.css       共通レイアウトの見た目
 ├── components/
-│   ├── action-button.ts          disabled・ローディング・aria-busy
-│   ├── feedback.ts               状態に応じたメッセージ表示
+│   ├── action-button.tsx         disabled・ローディング・aria-busy
+│   ├── feedback.tsx              状態に応じたメッセージ表示
 │   └── feedback.css              状態表示の見た目
 └── styles/
     ├── app.css                   CSS エントリーと Tailwind / daisyUI 登録
@@ -32,7 +30,7 @@ src/ui/
 ```
 
 `index.html` は拡張のエントリー HTML としてリポジトリ直下に残し、
-`src/ui/entrypoints/popup.ts` を読み込みます。ビルド結果は `dist/popup/index.html` です。
+`src/ui/entrypoints/popup.tsx` を読み込みます。ビルド結果は `dist/popup/index.html` です。
 `options.html` は設定画面のエントリーで、ポップアップと一緒にビルドします。
 ポップアップは高さ 600 px を上限とし、取得結果や開いた REST サンプルはスクロールできます。
 幅は `html.popup-document` に 384 CSS px を指定します。Chrome が内容からポップアップの幅を
@@ -52,8 +50,16 @@ controller の具体型や UseCase・gateway は参照しません。
 ボタンやキーボードの入力は画面で受け、取り出した値を操作別の controller に渡します。
 `controllers/load.ts`・`save.ts`・`import.ts` がそれぞれ入力を検証してから対応する UseCase を呼びます。
 
-HTML は Vite の `?raw` で取り込んだ固定テンプレートです。
-テンプレートの配置だけに `innerHTML` を使い、メモや API の内容は `value` / `textContent` で表示します。
+## SolidJS の使い方
+
+画面・レイアウト・部品は SolidJS のコンポーネントです。entrypoint が composition の結果を
+props で画面へ渡し、`render()` の返す破棄関数を `pagehide` で呼びます。
+表示状態は `createSignal` で持ち、ボタンの disabled や表示の切り替えは signal から導きます。
+購読は `onCleanup` で解除し、非同期処理の結果は破棄後や古い要求なら反映しません。
+
+Solid は `src/ui` の中だけで使います。features・composition・infrastructure は Solid を import しません。
+`settings.ts` のテーマ適用と設定通知の接続も、フレームワークに依存しない関数のままです。
+メモや API・ページ由来の内容は JSX のテキストや `value` で表示し、`innerHTML` は使いません。
 外部入力を HTML 文字列に連結しないでください。
 
 ## daisyUI と Tailwind の使い分け
@@ -69,7 +75,7 @@ Tailwind 4 の `@tailwindcss/vite` を Vite プラグインとして登録して
 独自スタイルは `@layer utilities` に置き、同じ utilities 層内でネストされた
 daisyUI のスタイルより優先されるようにします。`!important` による上書きは行いません。
 CSS の検出範囲は `@source "../"` で `src/ui` に限定しています。
-状態ごとのクラス名は `feedback.ts` のように完全な文字列で記載し、
+状態ごとのクラス名は `feedback.tsx` のように完全な文字列で記載し、
 `"alert-" + state` のような実行時の連結で CSS の生成漏れを起こさないようにします。
 
 ## テーマを変更する
@@ -118,11 +124,11 @@ CSS の検出範囲は `@source "../"` で `src/ui` に限定しています。
 
 ## サイドパネルの独立した画面
 
-`sidepanel.html` → `ui/entrypoints/sidepanel.ts` → `ui/screens/sidepanel/` の専用経路です。
+`sidepanel.html` → `ui/entrypoints/sidepanel.tsx` → `ui/screens/sidepanel/` の専用経路です。
 CSS は `ui/styles/sidepanel.css` を入口とし、ポップアップの HTML・CSS・画面処理を import しません。
 幅は可変、縦はドキュメント全体をスクロールし、ポップアップの固定幅・高さ上限を適用しません。
 共有するのはテーマ、設定通知ヘルパー、各機能の型と port です。
 
-設定画面の操作・テンプレートは共有しますが、サイドパネル版は `sidepanel-options.html` と専用起動点・CSS を持ちます。
-表示確認リンクと説明だけをサイドパネル用に設定し、ポップアップ版の設定画面には影響させません。
+設定画面のコンポーネントは共有しますが、サイドパネル版は `sidepanel-options.html` と専用起動点・CSS を持ちます。
+表示確認リンクと説明は `OptionsVariant` の props として起動点から渡し、ポップアップ版の設定画面には影響させません。
 権限処理とビルド方法は [サイドパネルガイド](sidepanel.md) を参照してください。
