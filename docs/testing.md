@@ -39,6 +39,8 @@ GitHub Actions でも同じ `pnpm run check` を実行し、成功した配布�
 サイドパネルは `pnpm run build:sidepanel` の後に `pnpm run test:extension:sidepanel` を使います。
 既存の dist を検査するため、変更後はビルドし直してください。
 `pnpm test` は `tests/extension/` と `tests/examples/` を除外し、派生プロジェクトで追加した通常のテストも検出します。
+`vite-plugin-solid` は未指定なら Vitest の環境を jsdom にするため、`vite.config.ts` で `node` を明示しています。
+UI コンポーネントのテストを追加する場合は、そのテストで DOM 環境を選び、必要な依存を追加してください。
 
 ## 削除して使う参考テスト
 

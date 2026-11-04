@@ -1,7 +1,7 @@
 # Chrome Extension Base
 
-UI フレームワークを使わない Manifest V3 の Chrome 拡張スターターです。
-TypeScript + Vite + Vitest、素の HTML / DOM API と daisyUI 5 + Tailwind CSS 4 で構成しています。
+UI を SolidJS で構成する Manifest V3 の Chrome 拡張スターターです。
+TypeScript + Vite + Vitest、SolidJS 1.9 と daisyUI 5 + Tailwind CSS 4 で構成しています。
 メモの保存、[SampleAPIs](https://api.sampleapis.com/) の REST 取得、設定の保存・リセット、
 現在のページ情報の取得、ストレージ変更への UI の追従を含みます。
 既定はポップアップ版です。独立した HTML・CSS を持つサイドパネル版も選んでビルドできます。
@@ -40,7 +40,7 @@ nvm install
 nvm use
 ```
 
-2026-10-31 時点の [Node.js 公式配布情報](https://nodejs.org/dist/index.json) で、
+2026-11-04 時点の [Node.js 公式配布情報](https://nodejs.org/dist/index.json) で、
 26.13.0 が最新安定版の LTS（Lithium）であることを確認しています。
 Node.js と pnpm が導入済みの環境で、プロジェクトの依存関係をインストールして検証します。
 
@@ -49,7 +49,7 @@ pnpm install --frozen-lockfile
 pnpm run check
 ```
 
-検証済み環境: Node.js 26.13.0 / pnpm 12.16.1（2026-10-31）。
+検証済み環境: Node.js 26.13.0 / pnpm 12.16.1（2026-11-04）。
 `pnpm install --frozen-lockfile`、共通基盤の契約テスト、型チェック、本番ビルド、配布物の構成テストで検証しています。
 
 | コマンド | 内容 |
@@ -162,6 +162,8 @@ API は公開サンプルでデータが変更される可能性があります�
 
 ## UI の開発
 
+画面は SolidJS のコンポーネントで、状態は signal で管理します。Solid は `src/ui` の中だけで使い、
+機能・composition・共通基盤はフレームワークに依存しません。
 カード、ボタン、入力欄、ステータス表示、ローディング表示に daisyUI を使用します。
 ライト／ダークのカスタムテーマと、OS に追従する設定を用意しています。
 文字数表示と `Ctrl + Enter` / `⌘ + Enter` による保存にも対応しています。
@@ -194,10 +196,10 @@ src/
 ├── lib/validation.ts       検証の型と実行ラッパー
 ├── composition/            環境に合わせた具体実装の選択
 └── ui/
-    ├── entrypoints/        起動点
-    ├── screens/            画面
-    ├── layouts/            画面枠
-    ├── components/         表示部品
+    ├── entrypoints/        起動点（Solid の render）
+    ├── screens/            画面コンポーネント
+    ├── layouts/            画面枠のコンポーネント
+    ├── components/         表示部品のコンポーネント
     └── styles/             daisyUI / Tailwind・テーマ
 tests/                      共通基盤の契約・配布物の構成テストと任意の参考例
 ```
