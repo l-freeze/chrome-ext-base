@@ -4,5 +4,5 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": ["node", "chrome", "vite/client"]
   },
-  "include": ["tests", "vite.config.ts"]
+  "include": ["tests", "scripts", "vite.config.ts"]
 }
