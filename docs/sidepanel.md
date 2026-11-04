@@ -46,6 +46,7 @@
 - `tabs`: 許可前にも、対象タブの URL を確認して許可するサイトを表示する。
 - `scripting`: 許可されたページで、タイトル・URL・選択テキストを取得する関数を実行する。
 - `storage`: メモ・設定を保存する。
+- `contextMenus`: 選択した文章をメモに追加する右クリックメニュー。ポップアップ版と共通。
 - `optional_host_permissions`: HTTP(S) サイトを候補として宣言し、利用者が選んだサイトだけを実行時に要求する。
 
 パネルを開き続けて別タブに移れるため、ポップアップ版の一時的な `activeTab` 許可には依存しません。
@@ -72,10 +73,11 @@ SampleAPIs への固定の host permission は REST サンプル用として両�
 | `ui/styles/sidepanel-options.css` | 設定画面の CSS。ポップアップ用 CSS は含めない |
 | `composition/sidepanel.ts` | 既存機能とサイトアクセス機能の明示的 DI |
 | `features/site-access/` | サイト確認・許可の入力検証、UseCase、Chrome gateway、通知 |
-| `background/sidepanel.ts` | ツールバー操作でパネルを開く設定のみ |
+| `background/sidepanel.ts` | 共通の worker 処理の登録と、ツールバー操作でパネルを開く設定 |
 
 Chrome API は composition / gateway / background に置き、画面は port を通して操作します。
-worker は起動設定だけを担当し、メモや DOM の状態を保持しません。ページ取得用の独自メッセージ通信は不要です。
+worker はポップアップ版と同じメッセージ処理・右クリックメニューを登録し、メモや DOM の状態を保持しません。
+ページ取得はパネルから直接行い、worker を経由しません。worker の詳細は [service worker ガイド](worker.md) を参照してください。
 ポップアップの起動点・画面・CSS はサイドパネルの画面から参照しません。
 
 ## 確認済みの範囲

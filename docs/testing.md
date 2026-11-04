@@ -12,7 +12,10 @@
 | `tests/infrastructure/storage.test.ts` | 保存 Input と復元 Output の同時指定、異なる型での保存・復元、不正な保存形式の拒否、I/O エラーの伝達 |
 | `tests/infrastructure/http.test.ts` | 指定 URL への JSON GET、応答値、HTTP・通信・JSON エラーの伝達 |
 | `tests/infrastructure/changes.test.ts` | 指定した local storage のキーの通知と購読解除。データは機能に依存しない任意の値 |
-| `tests/extension/build.test.ts` | 出力された Manifest V3 の基本項目、登録画面・worker・content script・アイコンの存在、画面が参照する JS/CSS の存在 |
+| `tests/infrastructure/messaging.test.ts` | 要求・応答の両方の検証、不正な要求で処理を実行しないこと、エラーの伝達、自分宛てでないメッセージの無視、同じ拡張からの要求だけへの返信 |
+| `tests/infrastructure/context-menus.test.ts` | インストール時の項目の作り直し、クリックの振り分け、失敗の通知、ID 重複の拒否 |
+| `tests/infrastructure/i18n.test.ts` | ロケールの選択と既定への切り替え、プレースホルダーと置換、カタログの言語タグ、未定義の文言 |
+| `tests/extension/build.test.ts` | 出力された Manifest V3 の基本項目、登録画面・worker・content script・アイコンの存在、画面が参照する JS/CSS の存在、manifest が参照する文言と全ロケールのキー・プレースホルダーの一致 |
 
 拡張の構成テストは `dist/popup/manifest.json` または `dist/sidepanel/manifest.json` から対象を読み取ります。ポップアップのファイル名、
 個別のサイトの権限、設定画面の有無、サンプルの名称を期待値にしません。
