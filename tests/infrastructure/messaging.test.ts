@@ -47,6 +47,10 @@ describe("メッセージの Request / Response 契約", () => {
     expect(error).toBeInstanceOf(MessageError);
     expect(error).toMatchObject({ message: "Too large", remoteName: "RangeError" });
   });
+  it("処理のエラーが持つ理由のコードも呼び出し側へ渡す", async () => {
+    const { client } = connect(async () => { throw Object.assign(new Error("Quota exceeded"), { name: "LimitError", reason: "quota" }); });
+    await expect(client.request(double, { value: 1 })).rejects.toMatchObject({ remoteName: "LimitError", reason: "quota" });
+  });
   it("Response の契約を満たさない結果を成功として返さない", async () => {
     // @ts-expect-error The handler must return the contract's response type.
     const { client } = connect(async () => ({ doubled: "42" }));

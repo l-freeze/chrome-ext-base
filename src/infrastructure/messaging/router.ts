@@ -32,9 +32,11 @@ export function createMessageRouter(): MessageRouter {
           const value = route.contract.response.parse(await route.handler(input, sender));
           return { ok: true, value };
         } catch (error) {
+          const reason = typeof error === "object" && error !== null && "reason" in error && typeof error.reason === "string" ? error.reason : undefined;
           return { ok: false, error: {
             name: error instanceof Error ? error.name : "Error",
             message: error instanceof Error ? error.message : String(error),
+            ...(reason !== undefined ? { reason } : {}),
           } };
         }
       })();
