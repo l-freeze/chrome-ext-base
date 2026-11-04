@@ -33,7 +33,7 @@ src/
 ├── integrations/sampleapis/
 │   └── coffee.ts              Coffee 取得の型・通信・境界検証
 ├── infrastructure/
-│   ├── http.ts                GET・タイムアウト・HTTP エラー
+│   ├── http.ts                送信・時間切れ・中断・エラーの種類・再試行の仕組みと汎用の方針・JSON
 │   └── storage/
 │       ├── contracts.ts       driver IF と保存・読込の設定型
 │       ├── typed.ts           型付き保存・読み出しの仕組み
@@ -62,6 +62,24 @@ controller は inbound adapter、gateway は outbound adapter に相当します
 `integrations/sampleapis/coffee.ts` は一つの外部操作に必要な型・検証・通信をまとめます。
 同じ変更理由を持つ数十行を contracts / validation / client の三層に分散しません。
 一方、汎用 HTTP とストレージ driver は機能から独立した責務なので分離を維持します。
+
+## HTTP の分担
+
+`infrastructure/http.ts` はどのサービスも知らない送信の仕組みです。
+
+- `createHttpClient()` が送信・1 回ごとの時間切れ・`AbortSignal` による中断を扱います。
+  応答が得られなければ `TransportError` を投げ、`kind` で `network`・`timeout`・`aborted` を区別します。
+  応答が得られれば状態コードにかかわらず返します。`requestJson()` / `getJson()` は 2xx 以外を `HttpError`（`status` 付き）にします。
+- 再試行は `RetryPolicy` で受け取る判断に従います。仕組みは「待つミリ秒か、やめるか」を聞くだけで、既定では再試行しません。
+  `GET` と `HEAD` 以外は、方針を渡しても再試行しません。
+- `createRetryPolicy()` は汎用の方針です。通信エラー・時間切れ・408/429/5xx を、間隔を倍にしながら再試行し、
+  `Retry-After`（秒数または日時）があればそれに従います。回数・1 回の待ちの上限・合計時間の上限を持ちます。
+- service worker は約 30 秒操作がないと停止し、通信や待ちの間は延長されません。worker で使う方針は、
+  時間切れ × 試行回数 ＋ 待ち時間が 30 秒を十分に下回るように設定してください。
+- いつ・何回再試行するか、ページ送り（`Link` ヘッダーなど）、認証は、サービスごとに `integrations` が決めます。
+
+失敗を画面に伝えるときは、gateway が `TransportError` / `HttpError` を機能の理由のコードに変換します。
+worker とのメッセージでは、エラーの `reason` も呼び出し側に届くため、worker で起きた失敗も画面が文言を選べます。
 
 ## 入力検証は操作と一対一
 
@@ -177,7 +195,8 @@ UI は双方向のイベントを扱えます。サンプルでは保存・取�
 
 ポップアップは ID 1 を取得し、タイトル・説明・材料をメモに変換して保存します。
 画像 URL はデータとして検証するだけで追加取得・表示しません。
-HTTP エラーは status 付きの `HttpError`、不正データは `ValidationError` を返し、通信は 10 秒でタイムアウトします。
+1 回の通信は 8 秒で時間切れにし、通信エラー・時間切れ・5xx などは間隔を広げて 2 回まで再試行します（合計 15 秒以内）。
+失敗は gateway が `NoteImportError` の理由（`network`・`timeout`・`server`・`response`）に変換し、画面が文言を選びます。
 取得や変換に失敗したら保存を開始しません。
 
 `gateways/rest.ts` は別サービスの `GET {baseUrl}/notes/{id}` → `{ id, text }` 用です。
