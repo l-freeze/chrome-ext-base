@@ -1,6 +1,8 @@
 import { createChromeStorage } from "../infrastructure/storage/drivers/chrome";
 import { createMessageRouter } from "../infrastructure/messaging/router";
 import type { ContextMenuItem } from "../infrastructure/context-menus";
+import { createChromeTranslator } from "../infrastructure/i18n";
+import type { MessageKey } from "./i18n";
 import { createSampleApisCoffeeClient } from "../integrations/sampleapis/coffee";
 import { createNoteApplication } from "../features/notes/compose";
 import { createNoteStorage } from "../features/notes/gateways/storage";
@@ -13,12 +15,13 @@ export function createWorkerApplication() {
     repository: createNoteStorage(createChromeStorage(chrome.storage.local)),
     source: createSampleApisCoffeeSource(createSampleApisCoffeeClient((url, init) => globalThis.fetch(url, init))),
   });
+  const { t } = createChromeTranslator<MessageKey>(chrome.i18n);
   const router = createMessageRouter();
   router.handle(importNoteMessage, (input) => notes.importNote(input));
 
   const menus: ContextMenuItem[] = [{
     id: "notes.append-selection",
-    title: "選択した文章をメモに追加",
+    title: t("contextMenuAppendSelection"),
     contexts: ["selection"],
     async onClick(click) {
       // The worker has no UI; the toolbar badge reports a failed append until the next success.

@@ -14,11 +14,11 @@ export function createChromeSiteAccess(
     async status() {
       const [tab] = await browser.tabs.query({ active: true, windowId });
       if (!tab || typeof tab.id !== "number" || !Number.isSafeInteger(tab.id) || tab.id < 0 || !tab.url) {
-        return { available: false, reason: "対象のタブが見つかりません。" };
+        return { available: false, reason: "no-tab" };
       }
       let url: URL;
-      try { url = new URL(tab.url); } catch { return { available: false, reason: "ページの URL を確認できません。" }; }
-      if (!["http:", "https:"].includes(url.protocol)) return { available: false, reason: "通常の Web ページを開いてください。" };
+      try { url = new URL(tab.url); } catch { return { available: false, reason: "invalid-url" }; }
+      if (!["http:", "https:"].includes(url.protocol)) return { available: false, reason: "unsupported-page" };
       const origin = siteOrigin(url.origin);
       const allowed = await browser.permissions.contains({ origins: [permissionPattern(origin)] });
       if (typeof allowed !== "boolean") throw new Error("サイトの権限を確認できません。");

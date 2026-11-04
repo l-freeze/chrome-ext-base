@@ -1,0 +1,421 @@
+{
+  "languageTag": {
+    "message": "ja",
+    "description": "BCP 47 tag of this catalog. Sets the page lang and number formatting; keep it equal to the locale folder."
+  },
+  "extensionName": {
+    "message": "Chrome Extension Base",
+    "description": "Extension name in the popup build."
+  },
+  "extensionNameSidepanel": {
+    "message": "Chrome Extension Base — サイドパネル",
+    "description": "Extension name in the sidepanel build."
+  },
+  "extensionDescription": {
+    "message": "TypeScript と Vite で作る Chrome 拡張のスターター。"
+  },
+  "actionTitle": {
+    "message": "Quick Note",
+    "description": "Toolbar button tooltip in the popup build."
+  },
+  "actionTitleSidepanel": {
+    "message": "Quick Note をサイドパネルで開く",
+    "description": "Toolbar button tooltip in the sidepanel build."
+  },
+  "contextMenuAppendSelection": {
+    "message": "選択した文章をメモに追加",
+    "description": "Context menu item shown for selected text."
+  },
+  "documentTitlePopup": {
+    "message": "Quick Note"
+  },
+  "documentTitleOptions": {
+    "message": "設定 · Quick Note"
+  },
+  "documentTitleSidepanel": {
+    "message": "Quick Note — サイドパネル"
+  },
+  "shellEyebrow": {
+    "message": "A LITTLE SPACE FOR YOUR IDEAS"
+  },
+  "shellLocalBadge": {
+    "message": "LOCAL"
+  },
+  "shellLocalBadgeLabel": {
+    "message": "メモはこのブラウザに保存"
+  },
+  "shellFooter": {
+    "message": "メモはこのブラウザだけに保存"
+  },
+  "openSettings": {
+    "message": "設定 ↗"
+  },
+  "previewBadge": {
+    "message": "プレビュー"
+  },
+  "noteLabel": {
+    "message": "今日のメモ"
+  },
+  "noteCount": {
+    "message": "$COUNT$ / $MAX$",
+    "description": "Characters used and allowed.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
+  },
+  "noteSave": {
+    "message": "保存する"
+  },
+  "noteSaving": {
+    "message": "保存中…"
+  },
+  "noteRemoteDraftKept": {
+    "message": "別の画面でメモが更新されました。編集中の内容を保持しています。保存すると上書きします。"
+  },
+  "noteRemoteApplied": {
+    "message": "別の画面で更新されたメモを反映しました。"
+  },
+  "noteStoredReadFailed": {
+    "message": "保存されたメモを読み出せませんでした。"
+  },
+  "importButton": {
+    "message": "サンプルを取得して保存"
+  },
+  "pageHeading": {
+    "message": "今見ているページ"
+  },
+  "captureButton": {
+    "message": "ページ情報を取得"
+  },
+  "captureCapturing": {
+    "message": "ページ情報を取得中…"
+  },
+  "captureUntitled": {
+    "message": "タイトルなし"
+  },
+  "captureNoSelection": {
+    "message": "選択された文章はありません。"
+  },
+  "captureSelectionOff": {
+    "message": "選択テキストの取得は OFF です。"
+  },
+  "captureUnsupportedPage": {
+    "message": "通常の Web ページを開いてから取得してください。"
+  },
+  "captureBlocked": {
+    "message": "このページでは取得できません。ブラウザの保護ページや移動中のページでは利用できません。"
+  },
+  "previewSampleIntro": {
+    "message": "プレビューでは固定のサンプル情報を表示します。"
+  },
+  "themeSystem": {
+    "message": "端末に合わせる"
+  },
+  "themeLight": {
+    "message": "ライト"
+  },
+  "themeDark": {
+    "message": "ダーク"
+  },
+  "settingsLoading": {
+    "message": "設定を読み込み中…"
+  },
+  "settingsAutoApply": {
+    "message": "設定画面の変更を自動で反映します。"
+  },
+  "popupIntro": {
+    "message": "思いついたことを、忘れないうちに。"
+  },
+  "popupNotePlaceholder": {
+    "message": "次にやりたいこと、気になったこと。\nここは、あなたの小さなメモ帳。"
+  },
+  "popupKeyboardHint": {
+    "message": "で保存",
+    "description": "Follows the Ctrl / ⌘ + Enter key caps."
+  },
+  "popupLoading": {
+    "message": "読み込み中…"
+  },
+  "popupReady": {
+    "message": "準備できました。このブラウザに保存できます。"
+  },
+  "popupLoadFailed": {
+    "message": "読み込めませんでした。開き直してください。"
+  },
+  "popupDirty": {
+    "message": "未保存の変更があります"
+  },
+  "popupClean": {
+    "message": "保存済みの内容です"
+  },
+  "popupSaved": {
+    "message": "保存しました"
+  },
+  "popupSaveFailed": {
+    "message": "保存できませんでした。再度お試しください。"
+  },
+  "popupImporting": {
+    "message": "サンプルを取得中…"
+  },
+  "popupImported": {
+    "message": "サンプルを保存しました"
+  },
+  "popupImportFailed": {
+    "message": "取得または保存に失敗しました。再度お試しください。"
+  },
+  "popupPageIntro": {
+    "message": "開いているページのタイトル・URL・選択テキストを取得します。"
+  },
+  "popupCapturedPreview": {
+    "message": "プレビュー用のサンプルです。実際のページ情報ではありません。"
+  },
+  "popupCaptured": {
+    "message": "取得しました。この画面での表示のみで、保存・外部送信はしません。"
+  },
+  "popupCaptureFailed": {
+    "message": "ページ情報を取得できませんでした。"
+  },
+  "popupSelectionTruncated": {
+    "message": "選択テキストは先頭 $LIMIT$ 文字まで表示しています。",
+    "placeholders": {
+      "limit": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupRestSummary": {
+    "message": "☕ REST サンプル · コーヒー情報を取得"
+  },
+  "popupRestHelp": {
+    "message": "SampleAPIs のコーヒー情報で、現在のメモを置き換えます。"
+  },
+  "popupLiveSettingsLabel": {
+    "message": "反映中の設定"
+  },
+  "popupLiveLoading": {
+    "message": "読み込み中"
+  },
+  "popupLiveSelection": {
+    "message": "選択テキスト"
+  },
+  "settingOn": {
+    "message": "ON"
+  },
+  "settingOff": {
+    "message": "OFF"
+  },
+  "popupSettingsChanged": {
+    "message": "設定の変更を受け取りました。再読み込みなしで反映しています。"
+  },
+  "popupSettingsUnreadable": {
+    "message": "設定を読み出せません。設定画面で初期設定に戻してください。"
+  },
+  "optionsEyebrow": {
+    "message": "MAKE IT YOURS"
+  },
+  "optionsHeading": {
+    "message": "あなたの使いやすさに。"
+  },
+  "optionsIntro": {
+    "message": "見た目と、ページから取得する情報を設定できます。"
+  },
+  "optionsGeneral": {
+    "message": "基本設定"
+  },
+  "optionsThemeLabel": {
+    "message": "画面のテーマ"
+  },
+  "optionsThemeHelpPopup": {
+    "message": "保存すると、この画面と開いているポップアップ UI に反映します。"
+  },
+  "optionsThemeHelpSidepanel": {
+    "message": "保存すると、この画面と開いているサイドパネルに反映します。"
+  },
+  "optionsSelectionLabel": {
+    "message": "選択テキストを取得する"
+  },
+  "optionsSelectionHelp": {
+    "message": "ページ情報の取得時に、選択した文章も含めます。本文全体やフォーム入力は取得しません。"
+  },
+  "optionsSave": {
+    "message": "設定を保存する"
+  },
+  "optionsLoaded": {
+    "message": "設定を読み込みました。"
+  },
+  "optionsRemoteDraftKept": {
+    "message": "別の画面で設定が更新されました。編集中の入力は保持しています。保存すると現在の入力で上書きします。"
+  },
+  "optionsRemoteApplied": {
+    "message": "別の画面の設定変更を反映しました。"
+  },
+  "optionsUnreadable": {
+    "message": "設定を読み出せません。リセットして初期設定に戻せます。"
+  },
+  "optionsSaveFailed": {
+    "message": "設定を保存できませんでした。入力を残しています。再度お試しください。"
+  },
+  "unsavedChanges": {
+    "message": "未保存の変更があります。"
+  },
+  "optionsSaved": {
+    "message": "設定を保存しました。開いている画面にも反映されます。"
+  },
+  "optionsResetDone": {
+    "message": "初期設定に戻しました。メモはそのまま残っています。"
+  },
+  "optionsResetHeading": {
+    "message": "初期設定に戻す"
+  },
+  "optionsResetHelp": {
+    "message": "テーマと選択テキストの設定を戻します。保存したメモは残ります。"
+  },
+  "optionsResetButton": {
+    "message": "リセット"
+  },
+  "optionsLiveBadge": {
+    "message": "LIVE PREVIEW"
+  },
+  "optionsLiveHeading": {
+    "message": "保存したら、もう反映。"
+  },
+  "optionsLiveBody": {
+    "message": "別の画面で変更した設定も、ストレージの変更通知で UI に届きます。"
+  },
+  "optionsLiveStep1": {
+    "message": "表示確認用ページを開く"
+  },
+  "optionsLiveStep2": {
+    "message": "ここでテーマを変更して保存する"
+  },
+  "optionsLiveStep3": {
+    "message": "開いたページに戻り、色の変化を確認する"
+  },
+  "optionsLiveLink": {
+    "message": "表示確認用ページを開く ↗"
+  },
+  "optionsLiveNotePopup": {
+    "message": "同じポップアップ UI を確認用にタブで開きます。通常はツールバーのアイコンから開く拡張です。"
+  },
+  "optionsLiveNoteSidepanel": {
+    "message": "同じサイドパネル UI を確認用にタブで開きます。通常はツールバーのアイコンから開きます。"
+  },
+  "optionsDialogTitle": {
+    "message": "初期設定に戻しますか？"
+  },
+  "optionsDialogBody": {
+    "message": "テーマは「端末に合わせる」、選択テキストの取得は ON に戻ります。メモは削除しません。"
+  },
+  "optionsDialogCancel": {
+    "message": "キャンセル"
+  },
+  "sidepanelTagline": {
+    "message": "ページのとなりに、小さなメモ帳。"
+  },
+  "sidepanelPageIntro": {
+    "message": "パネルを開いたまま文章を選び、取得できます。"
+  },
+  "sidepanelSiteChecking": {
+    "message": "ページを確認中…"
+  },
+  "sidepanelSiteNone": {
+    "message": "取得できるページがありません"
+  },
+  "sidepanelAccessChecking": {
+    "message": "アクセス状態を確認しています。"
+  },
+  "sidepanelAccessAllowed": {
+    "message": "このサイトは取得できます。文章を選んでから取得してください。"
+  },
+  "sidepanelAccessNeeded": {
+    "message": "初回は、このサイトへのアクセスを許可してください。"
+  },
+  "sidepanelAccessCheckFailed": {
+    "message": "ページを確認できません。パネルを開き直してください。"
+  },
+  "sidepanelAccessDenied": {
+    "message": "許可されませんでした。取得する場合はもう一度許可してください。"
+  },
+  "sidepanelAccessGrantFailed": {
+    "message": "サイトを許可できませんでした。もう一度お試しください。"
+  },
+  "sidepanelAccessNoTab": {
+    "message": "対象のタブが見つかりません。"
+  },
+  "sidepanelAccessInvalidUrl": {
+    "message": "ページの URL を確認できません。"
+  },
+  "sidepanelAccessUnsupported": {
+    "message": "通常の Web ページを開いてください。"
+  },
+  "sidepanelAllow": {
+    "message": "このサイトを許可"
+  },
+  "sidepanelPageReady": {
+    "message": "タイトル・URL・選択テキストを取得します。"
+  },
+  "sidepanelCapturedPreview": {
+    "message": "プレビュー用の固定データです。"
+  },
+  "sidepanelCaptured": {
+    "message": "取得しました。表示のみで、保存・外部送信はしません。"
+  },
+  "sidepanelCaptureFailed": {
+    "message": "取得できませんでした。"
+  },
+  "sidepanelSelectionTruncated": {
+    "message": "選択テキストは先頭 $LIMIT$ 文字までです。",
+    "placeholders": {
+      "limit": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelNotePlaceholder": {
+    "message": "調べたこと、気づいたこと。\nページを見ながら書き留めましょう。"
+  },
+  "sidepanelKeyboardHint": {
+    "message": "Ctrl / ⌘ + Enter で保存"
+  },
+  "sidepanelNoteLoading": {
+    "message": "メモを読み込み中…"
+  },
+  "sidepanelNoteReady": {
+    "message": "このブラウザに保存できます。"
+  },
+  "sidepanelNoteSaved": {
+    "message": "保存しました。"
+  },
+  "sidepanelNoteSaveFailed": {
+    "message": "保存できませんでした。入力を残しています。"
+  },
+  "sidepanelNoteClean": {
+    "message": "保存済みの内容です。"
+  },
+  "sidepanelNoteLoadFailed": {
+    "message": "メモを読み込めませんでした。開き直してください。"
+  },
+  "sidepanelRestSummary": {
+    "message": "REST サンプルを試す"
+  },
+  "sidepanelRestHelp": {
+    "message": "SampleAPIs のコーヒー情報を取得して、現在のメモを置き換えます。"
+  },
+  "sidepanelSettingsChanged": {
+    "message": "設定の変更を再読み込みなしで反映しました。"
+  },
+  "sidepanelSettingsUnreadable": {
+    "message": "設定を読み出せません。設定画面でリセットしてください。"
+  },
+  "sidepanelStorageNote": {
+    "message": "メモと設定は、このブラウザに保存されます。"
+  },
+  "sidepanelStartFailed": {
+    "message": "サイドパネルを起動できませんでした。開き直してください。"
+  }
+}

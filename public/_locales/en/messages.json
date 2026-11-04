@@ -1,0 +1,421 @@
+{
+  "languageTag": {
+    "message": "en",
+    "description": "BCP 47 tag of this catalog. Sets the page lang and number formatting; keep it equal to the locale folder."
+  },
+  "extensionName": {
+    "message": "Chrome Extension Base",
+    "description": "Extension name in the popup build."
+  },
+  "extensionNameSidepanel": {
+    "message": "Chrome Extension Base — Side Panel",
+    "description": "Extension name in the sidepanel build."
+  },
+  "extensionDescription": {
+    "message": "A Chrome extension starter built with TypeScript and Vite."
+  },
+  "actionTitle": {
+    "message": "Quick Note",
+    "description": "Toolbar button tooltip in the popup build."
+  },
+  "actionTitleSidepanel": {
+    "message": "Open Quick Note in the side panel",
+    "description": "Toolbar button tooltip in the sidepanel build."
+  },
+  "contextMenuAppendSelection": {
+    "message": "Add selection to note",
+    "description": "Context menu item shown for selected text."
+  },
+  "documentTitlePopup": {
+    "message": "Quick Note"
+  },
+  "documentTitleOptions": {
+    "message": "Settings · Quick Note"
+  },
+  "documentTitleSidepanel": {
+    "message": "Quick Note — Side Panel"
+  },
+  "shellEyebrow": {
+    "message": "A LITTLE SPACE FOR YOUR IDEAS"
+  },
+  "shellLocalBadge": {
+    "message": "LOCAL"
+  },
+  "shellLocalBadgeLabel": {
+    "message": "Notes are stored in this browser"
+  },
+  "shellFooter": {
+    "message": "Notes stay in this browser only"
+  },
+  "openSettings": {
+    "message": "Settings ↗"
+  },
+  "previewBadge": {
+    "message": "Preview"
+  },
+  "noteLabel": {
+    "message": "Today's note"
+  },
+  "noteCount": {
+    "message": "$COUNT$ / $MAX$",
+    "description": "Characters used and allowed.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "max": {
+        "content": "$2"
+      }
+    }
+  },
+  "noteSave": {
+    "message": "Save"
+  },
+  "noteSaving": {
+    "message": "Saving…"
+  },
+  "noteRemoteDraftKept": {
+    "message": "The note was updated elsewhere. Your draft is kept; saving will overwrite it."
+  },
+  "noteRemoteApplied": {
+    "message": "Applied the note updated elsewhere."
+  },
+  "noteStoredReadFailed": {
+    "message": "Couldn't read the saved note."
+  },
+  "importButton": {
+    "message": "Fetch and save sample"
+  },
+  "pageHeading": {
+    "message": "Current page"
+  },
+  "captureButton": {
+    "message": "Get page info"
+  },
+  "captureCapturing": {
+    "message": "Getting page info…"
+  },
+  "captureUntitled": {
+    "message": "Untitled"
+  },
+  "captureNoSelection": {
+    "message": "No text is selected."
+  },
+  "captureSelectionOff": {
+    "message": "Selected-text capture is OFF."
+  },
+  "captureUnsupportedPage": {
+    "message": "Open a regular web page first."
+  },
+  "captureBlocked": {
+    "message": "This page can't be read. Protected browser pages and pages that are loading aren't supported."
+  },
+  "previewSampleIntro": {
+    "message": "The preview shows fixed sample data."
+  },
+  "themeSystem": {
+    "message": "Match device"
+  },
+  "themeLight": {
+    "message": "Light"
+  },
+  "themeDark": {
+    "message": "Dark"
+  },
+  "settingsLoading": {
+    "message": "Loading settings…"
+  },
+  "settingsAutoApply": {
+    "message": "Changes in Settings apply automatically."
+  },
+  "popupIntro": {
+    "message": "Write it down before it slips away."
+  },
+  "popupNotePlaceholder": {
+    "message": "Things to do next, things that caught your eye.\nThis is your little notepad."
+  },
+  "popupKeyboardHint": {
+    "message": "to save",
+    "description": "Follows the Ctrl / ⌘ + Enter key caps."
+  },
+  "popupLoading": {
+    "message": "Loading…"
+  },
+  "popupReady": {
+    "message": "Ready. Notes are saved in this browser."
+  },
+  "popupLoadFailed": {
+    "message": "Couldn't load. Please reopen."
+  },
+  "popupDirty": {
+    "message": "You have unsaved changes"
+  },
+  "popupClean": {
+    "message": "All changes saved"
+  },
+  "popupSaved": {
+    "message": "Saved"
+  },
+  "popupSaveFailed": {
+    "message": "Couldn't save. Please try again."
+  },
+  "popupImporting": {
+    "message": "Fetching the sample…"
+  },
+  "popupImported": {
+    "message": "Sample saved"
+  },
+  "popupImportFailed": {
+    "message": "Couldn't fetch or save. Please try again."
+  },
+  "popupPageIntro": {
+    "message": "Gets the open page's title, URL, and selected text."
+  },
+  "popupCapturedPreview": {
+    "message": "This is preview sample data, not the real page."
+  },
+  "popupCaptured": {
+    "message": "Done. Shown here only; nothing is saved or sent."
+  },
+  "popupCaptureFailed": {
+    "message": "Couldn't get page info."
+  },
+  "popupSelectionTruncated": {
+    "message": "Showing the first $LIMIT$ characters of the selection.",
+    "placeholders": {
+      "limit": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupRestSummary": {
+    "message": "☕ REST sample · Fetch coffee info"
+  },
+  "popupRestHelp": {
+    "message": "Replaces the current note with coffee info from SampleAPIs."
+  },
+  "popupLiveSettingsLabel": {
+    "message": "Active settings"
+  },
+  "popupLiveLoading": {
+    "message": "Loading"
+  },
+  "popupLiveSelection": {
+    "message": "Selected text"
+  },
+  "settingOn": {
+    "message": "ON"
+  },
+  "settingOff": {
+    "message": "OFF"
+  },
+  "popupSettingsChanged": {
+    "message": "Settings changed and applied without reloading."
+  },
+  "popupSettingsUnreadable": {
+    "message": "Can't read settings. Reset them on the Settings page."
+  },
+  "optionsEyebrow": {
+    "message": "MAKE IT YOURS"
+  },
+  "optionsHeading": {
+    "message": "Make it work for you."
+  },
+  "optionsIntro": {
+    "message": "Choose how it looks and what it reads from pages."
+  },
+  "optionsGeneral": {
+    "message": "General"
+  },
+  "optionsThemeLabel": {
+    "message": "Theme"
+  },
+  "optionsThemeHelpPopup": {
+    "message": "Saving applies it to this page and any open popup."
+  },
+  "optionsThemeHelpSidepanel": {
+    "message": "Saving applies it to this page and any open side panel."
+  },
+  "optionsSelectionLabel": {
+    "message": "Capture selected text"
+  },
+  "optionsSelectionHelp": {
+    "message": "Includes your selection when getting page info. Never reads the full page or form input."
+  },
+  "optionsSave": {
+    "message": "Save settings"
+  },
+  "optionsLoaded": {
+    "message": "Settings loaded."
+  },
+  "optionsRemoteDraftKept": {
+    "message": "Settings were updated elsewhere. Your edits are kept; saving will overwrite them."
+  },
+  "optionsRemoteApplied": {
+    "message": "Applied settings changed elsewhere."
+  },
+  "optionsUnreadable": {
+    "message": "Can't read settings. You can reset them to defaults."
+  },
+  "optionsSaveFailed": {
+    "message": "Couldn't save settings. Your input is kept; please try again."
+  },
+  "unsavedChanges": {
+    "message": "You have unsaved changes."
+  },
+  "optionsSaved": {
+    "message": "Settings saved and applied to open screens."
+  },
+  "optionsResetDone": {
+    "message": "Settings reset. Your note is untouched."
+  },
+  "optionsResetHeading": {
+    "message": "Reset to defaults"
+  },
+  "optionsResetHelp": {
+    "message": "Resets the theme and selected-text settings. Your saved note stays."
+  },
+  "optionsResetButton": {
+    "message": "Reset"
+  },
+  "optionsLiveBadge": {
+    "message": "LIVE PREVIEW"
+  },
+  "optionsLiveHeading": {
+    "message": "Save, and it's already applied."
+  },
+  "optionsLiveBody": {
+    "message": "Settings changed on another screen reach the UI through storage change notifications."
+  },
+  "optionsLiveStep1": {
+    "message": "Open the preview page"
+  },
+  "optionsLiveStep2": {
+    "message": "Change and save the theme here"
+  },
+  "optionsLiveStep3": {
+    "message": "Go back to that page and see the colors change"
+  },
+  "optionsLiveLink": {
+    "message": "Open the preview page ↗"
+  },
+  "optionsLiveNotePopup": {
+    "message": "Opens the same popup UI in a tab for checking. Normally you open the extension from the toolbar icon."
+  },
+  "optionsLiveNoteSidepanel": {
+    "message": "Opens the same side panel UI in a tab for checking. Normally you open it from the toolbar icon."
+  },
+  "optionsDialogTitle": {
+    "message": "Reset to defaults?"
+  },
+  "optionsDialogBody": {
+    "message": "The theme returns to “Match device” and selected-text capture to ON. Your note isn't deleted."
+  },
+  "optionsDialogCancel": {
+    "message": "Cancel"
+  },
+  "sidepanelTagline": {
+    "message": "A little notepad beside the page."
+  },
+  "sidepanelPageIntro": {
+    "message": "Keep the panel open, select text, and capture it."
+  },
+  "sidepanelSiteChecking": {
+    "message": "Checking the page…"
+  },
+  "sidepanelSiteNone": {
+    "message": "No page can be captured"
+  },
+  "sidepanelAccessChecking": {
+    "message": "Checking site access."
+  },
+  "sidepanelAccessAllowed": {
+    "message": "This site can be captured. Select text, then capture."
+  },
+  "sidepanelAccessNeeded": {
+    "message": "Allow access to this site the first time."
+  },
+  "sidepanelAccessCheckFailed": {
+    "message": "Can't check the page. Please reopen the panel."
+  },
+  "sidepanelAccessDenied": {
+    "message": "Access wasn't granted. Allow it again to capture."
+  },
+  "sidepanelAccessGrantFailed": {
+    "message": "Couldn't allow the site. Please try again."
+  },
+  "sidepanelAccessNoTab": {
+    "message": "No target tab found."
+  },
+  "sidepanelAccessInvalidUrl": {
+    "message": "Can't read the page URL."
+  },
+  "sidepanelAccessUnsupported": {
+    "message": "Open a regular web page."
+  },
+  "sidepanelAllow": {
+    "message": "Allow this site"
+  },
+  "sidepanelPageReady": {
+    "message": "Gets the title, URL, and selected text."
+  },
+  "sidepanelCapturedPreview": {
+    "message": "Fixed preview data."
+  },
+  "sidepanelCaptured": {
+    "message": "Done. Shown only; nothing is saved or sent."
+  },
+  "sidepanelCaptureFailed": {
+    "message": "Couldn't capture."
+  },
+  "sidepanelSelectionTruncated": {
+    "message": "Only the first $LIMIT$ characters of the selection are shown.",
+    "placeholders": {
+      "limit": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelNotePlaceholder": {
+    "message": "What you looked up, what you noticed.\nJot it down while reading."
+  },
+  "sidepanelKeyboardHint": {
+    "message": "Ctrl / ⌘ + Enter to save"
+  },
+  "sidepanelNoteLoading": {
+    "message": "Loading note…"
+  },
+  "sidepanelNoteReady": {
+    "message": "Saved in this browser."
+  },
+  "sidepanelNoteSaved": {
+    "message": "Saved."
+  },
+  "sidepanelNoteSaveFailed": {
+    "message": "Couldn't save. Your input is kept."
+  },
+  "sidepanelNoteClean": {
+    "message": "All changes saved."
+  },
+  "sidepanelNoteLoadFailed": {
+    "message": "Couldn't load the note. Please reopen."
+  },
+  "sidepanelRestSummary": {
+    "message": "Try the REST sample"
+  },
+  "sidepanelRestHelp": {
+    "message": "Fetches coffee info from SampleAPIs and replaces the current note."
+  },
+  "sidepanelSettingsChanged": {
+    "message": "Applied settings changes without reloading."
+  },
+  "sidepanelSettingsUnreadable": {
+    "message": "Can't read settings. Reset them on the Settings page."
+  },
+  "sidepanelStorageNote": {
+    "message": "Notes and settings are saved in this browser."
+  },
+  "sidepanelStartFailed": {
+    "message": "Couldn't start the side panel. Please reopen it."
+  }
+}
