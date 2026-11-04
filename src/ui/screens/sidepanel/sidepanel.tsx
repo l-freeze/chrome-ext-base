@@ -1,5 +1,5 @@
 import { createSignal, onCleanup, Show } from "solid-js";
-import type { NoteActions } from "../../../features/notes/ports";
+import type { NoteActions, NoteChanges } from "../../../features/notes/ports";
 import { MAX_NOTE_LENGTH } from "../../../features/notes/note";
 import type { Note } from "../../../features/notes/note";
 import type { PageActions } from "../../../features/page/ports";
@@ -8,9 +8,10 @@ import type { SettingsActions, SettingsChanges } from "../../../features/setting
 import type { SiteAccessActions, SiteAccessChanges } from "../../../features/site-access/ports";
 import type { SiteAccess } from "../../../features/site-access/access";
 import { applyTheme, connectSettings } from "../../settings";
+import { connectLive } from "../../live";
 
 export interface SidepanelApplication {
-  notes: NoteActions; page: PageActions;
+  notes: NoteActions; noteChanges: NoteChanges; page: PageActions;
   settings: SettingsActions; settingsChanges: SettingsChanges;
   access: SiteAccessActions; accessChanges: SiteAccessChanges;
   preview: boolean;
@@ -116,10 +117,24 @@ export function Sidepanel(props: { app: SidepanelApplication }) {
     finally { if (!disposed) setNoteBusy(false); }
   }
 
-  void app.notes.loadNote(undefined).then((value) => {
-    if (disposed) return;
-    setText(value.text); setSavedText(value.text); setNoteBusy(false); setNoteStatus(message("このブラウザに保存できます。"));
-  }, () => { if (!disposed) setNoteStatus(message("メモを読み込めませんでした。開き直してください。", true)); });
+  // Notes saved elsewhere (another screen, the context menu) replace the view, never an unsaved draft.
+  let noteReady = false;
+  onCleanup(connectLive(() => app.notes.loadNote(undefined), (value, error) => app.noteChanges.subscribe(value, error), (value, changed) => {
+    if (!noteReady) {
+      noteReady = true;
+      setText(value.text); setSavedText(value.text); setNoteBusy(false); setNoteStatus(message("このブラウザに保存できます。"));
+      return;
+    }
+    if (!changed || noteBusy() || value.text === savedText()) return;
+    if (text() !== savedText()) {
+      setSavedText(value.text);
+      setNoteStatus(message("別の画面でメモが更新されました。編集中の内容を保持しています。保存すると上書きします。"));
+      return;
+    }
+    setText(value.text); setSavedText(value.text); setNoteStatus(message("別の画面で更新されたメモを反映しました。"));
+  }, () => {
+    setNoteStatus(message(noteReady ? "保存されたメモを読み出せませんでした。" : "メモを読み込めませんでした。開き直してください。", true));
+  }));
   void refreshAccess();
 
   return (
