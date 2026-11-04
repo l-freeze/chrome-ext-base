@@ -4,7 +4,10 @@ import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 
 const variant = import.meta.env.MODE === "sidepanel" ? "sidepanel" : "popup";
-const output = fileURLToPath(new URL(`../../dist/${variant}/`, import.meta.url));
+// EXTENSION_DIR points at another build of the selected variant, such as a release build.
+const output = process.env.EXTENSION_DIR
+  ? resolve(process.env.EXTENSION_DIR) + "/"
+  : fileURLToPath(new URL(`../../dist/${variant}/`, import.meta.url));
 
 // Inspect the built artifact. Names, permissions, and sample features are not fixed here.
 function localFile(path: string, base = output): string {

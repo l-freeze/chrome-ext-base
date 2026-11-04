@@ -39,6 +39,7 @@ GitHub Actions でも同じ `pnpm run check` を実行し、成功した配布�
 実行タイミングとダウンロード手順は [Actions ガイド](ci.md) を参照してください。
 
 配布物の確認だけを実行する場合は `pnpm run build` の後に `pnpm run test:extension` を使います。
+環境変数 `EXTENSION_DIR` で別の出力先を指定でき、公開用ビルドはこの仕組みで `release/<方式>/` を確認します。
 サイドパネルは `pnpm run build:sidepanel` の後に `pnpm run test:extension:sidepanel` を使います。
 既存の dist を検査するため、変更後はビルドし直してください。
 `pnpm test` は `tests/extension/`・`tests/examples/`・`tests/e2e/` を除外し、派生プロジェクトで追加した通常のテストも検出します。

@@ -17,11 +17,14 @@ function extensionVersion(): string {
 
 export default defineConfig(({ mode }) => {
   const sidepanel = mode === "sidepanel";
+  // Verification builds go to dist/; scripts/release.ts overrides outDir and turns off source maps.
   const outDir = `dist/${sidepanel ? "sidepanel" : "popup"}`;
+  let resolvedOutDir = outDir;
   return {
     base: "./",
     plugins: [solid(), tailwindcss(), {
       name: "extension-manifest",
+      configResolved(config) { resolvedOutDir = resolve(config.root, config.build.outDir); },
       buildStart() { this.addWatchFile(resolve("public/manifest.json")); this.addWatchFile(resolve("package.json")); },
       writeBundle() {
         const manifest = { ...JSON.parse(readFileSync("public/manifest.json", "utf8")), version: extensionVersion() } as chrome.runtime.ManifestV3;
@@ -37,7 +40,7 @@ export default defineConfig(({ mode }) => {
           manifest.side_panel = { default_path: "sidepanel.html" };
           manifest.options_ui = { page: "sidepanel-options.html", open_in_tab: true };
         }
-        writeFileSync(resolve(outDir, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
+        writeFileSync(resolve(resolvedOutDir, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
       },
     }],
     // The Solid plugin selects jsdom unless an environment is set; the base tests are DOM-independent.

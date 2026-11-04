@@ -21,6 +21,8 @@
     "build": "pnpm run build:popup",
     "build:popup": "pnpm run typecheck && vite build --mode popup",
     "build:sidepanel": "pnpm run typecheck && vite build --mode sidepanel",
+    "release": "pnpm run test && pnpm run typecheck && node scripts/release.ts popup",
+    "release:sidepanel": "pnpm run test && pnpm run typecheck && node scripts/release.ts sidepanel",
     "check": "pnpm run test && pnpm run build:popup && pnpm run test:extension",
     "check:sidepanel": "pnpm run test && pnpm run build:sidepanel && pnpm run test:extension:sidepanel",
     "samples:remove": "node scripts/samples.ts remove",
