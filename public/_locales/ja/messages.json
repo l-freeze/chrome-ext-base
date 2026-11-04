@@ -42,16 +42,23 @@
     "message": "LOCAL"
   },
   "shellLocalBadgeLabel": {
-    "message": "メモはこのブラウザに保存"
+    "message": "データはこのブラウザに保存"
   },
   "shellFooter": {
-    "message": "メモはこのブラウザだけに保存"
+    "message": "データはこのブラウザだけに保存"
   },
   "openSettings": {
     "message": "設定 ↗"
   },
   "previewBadge": {
     "message": "プレビュー"
+  },
+  "emptyTitle": {
+    "message": "ここに機能を追加します",
+    "description": "Shown when no feature section is placed on the screen."
+  },
+  "emptyBody": {
+    "message": "画面の部品を src/ui/screens に作り、起動点で配置してください。"
   },
   "noteLabel": {
     "message": "今日のメモ"
@@ -71,7 +78,7 @@
   "noteSave": {
     "message": "保存する"
   },
-  "noteSaving": {
+  "statusSaving": {
     "message": "保存中…"
   },
   "noteRemoteDraftKept": {
@@ -103,6 +110,12 @@
   },
   "captureSelectionOff": {
     "message": "選択テキストの取得は OFF です。"
+  },
+  "captureIncludeSelection": {
+    "message": "選択テキストも取得する"
+  },
+  "capturePreferencesFailed": {
+    "message": "取得の設定を読み書きできませんでした。"
   },
   "captureUnsupportedPage": {
     "message": "通常の Web ページを開いてから取得してください。"
@@ -197,17 +210,8 @@
   "popupLiveSettingsLabel": {
     "message": "反映中の設定"
   },
-  "popupLiveLoading": {
-    "message": "読み込み中"
-  },
-  "popupLiveSelection": {
-    "message": "選択テキスト"
-  },
-  "settingOn": {
-    "message": "ON"
-  },
-  "settingOff": {
-    "message": "OFF"
+  "popupLiveTheme": {
+    "message": "テーマ"
   },
   "popupSettingsChanged": {
     "message": "設定の変更を受け取りました。再読み込みなしで反映しています。"
@@ -222,7 +226,7 @@
     "message": "あなたの使いやすさに。"
   },
   "optionsIntro": {
-    "message": "見た目と、ページから取得する情報を設定できます。"
+    "message": "画面の見た目を設定できます。"
   },
   "optionsGeneral": {
     "message": "基本設定"
@@ -235,12 +239,6 @@
   },
   "optionsThemeHelpSidepanel": {
     "message": "保存すると、この画面と開いているサイドパネルに反映します。"
-  },
-  "optionsSelectionLabel": {
-    "message": "選択テキストを取得する"
-  },
-  "optionsSelectionHelp": {
-    "message": "ページ情報の取得時に、選択した文章も含めます。本文全体やフォーム入力は取得しません。"
   },
   "optionsSave": {
     "message": "設定を保存する"
@@ -267,13 +265,13 @@
     "message": "設定を保存しました。開いている画面にも反映されます。"
   },
   "optionsResetDone": {
-    "message": "初期設定に戻しました。メモはそのまま残っています。"
+    "message": "初期設定に戻しました。保存したデータはそのまま残っています。"
   },
   "optionsResetHeading": {
     "message": "初期設定に戻す"
   },
   "optionsResetHelp": {
-    "message": "テーマと選択テキストの設定を戻します。保存したメモは残ります。"
+    "message": "テーマを初期設定に戻します。保存したデータは残ります。"
   },
   "optionsResetButton": {
     "message": "リセット"
@@ -309,7 +307,7 @@
     "message": "初期設定に戻しますか？"
   },
   "optionsDialogBody": {
-    "message": "テーマは「端末に合わせる」、選択テキストの取得は ON に戻ります。メモは削除しません。"
+    "message": "テーマは「端末に合わせる」に戻ります。保存したデータは削除しません。"
   },
   "optionsDialogCancel": {
     "message": "キャンセル"
@@ -413,7 +411,7 @@
     "message": "設定を読み出せません。設定画面でリセットしてください。"
   },
   "sidepanelStorageNote": {
-    "message": "メモと設定は、このブラウザに保存されます。"
+    "message": "設定とデータは、このブラウザに保存されます。"
   },
   "sidepanelStartFailed": {
     "message": "サイドパネルを起動できませんでした。開き直してください。"

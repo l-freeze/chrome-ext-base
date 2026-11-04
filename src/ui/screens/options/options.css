@@ -11,8 +11,6 @@
   .settings-card h3 { font-size: 16px; font-weight: 700; }
   .setting-label { display: block; font-size: 13px; font-weight: 650; }
   .setting-description { font-size: 12px; line-height: 1.8; color: var(--ui-muted); margin-block: 7px 14px; }
-  .selection-option { display: flex; align-items: start; gap: 18px; border-top: 1px solid var(--color-base-300); padding-top: 22px; margin-top: 24px; }
-  .selection-option .toggle { flex-shrink: 0; margin-top: 3px; }
   .settings-card fieldset > button { margin-top: 14px; }
   #options-status { font-size: 12px; line-height: 1.8; color: var(--ui-muted); min-height: 42px; }
   .reset-section { border-top: 1px solid var(--color-base-300); padding: 22px 26px; display: flex; align-items: center; gap: 20px; }

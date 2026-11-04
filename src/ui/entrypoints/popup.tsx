@@ -5,12 +5,25 @@ import { loadTranslator } from "../../composition/i18n";
 import { I18nProvider, prepareDocument } from "../i18n";
 import { ExtensionShell } from "../layouts/extension-shell";
 import { Popup } from "../screens/popup/popup";
+// @sample-begin
+import { NoteSection } from "../screens/popup/note";
+import { PageSection } from "../screens/popup/page";
+// @sample-end
 
 const application = createPopupApplication();
 void loadTranslator().then((translator) => {
   prepareDocument(translator, "documentTitlePopup");
   const dispose = render(() => (
-    <I18nProvider translator={translator}><ExtensionShell><Popup app={application} /></ExtensionShell></I18nProvider>
+    <I18nProvider translator={translator}>
+      <ExtensionShell>
+        <Popup app={application}>
+          {/* @sample-begin */}
+          <NoteSection notes={application.notes} noteChanges={application.noteChanges} />
+          <PageSection page={application.page} preview={application.preview} />
+          {/* @sample-end */}
+        </Popup>
+      </ExtensionShell>
+    </I18nProvider>
   ), document.querySelector<HTMLElement>("#app")!);
   window.addEventListener("pagehide", (event) => { if (!event.persisted) dispose(); });
 });

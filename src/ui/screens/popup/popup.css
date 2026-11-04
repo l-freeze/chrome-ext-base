@@ -10,7 +10,21 @@
   .popup-page .btn svg { flex-shrink: 0; }
   .popup-page .app-footer { display: none; }
   .popup-page .feedback { grid-template-columns: 14px minmax(0, 1fr); min-height: 0; padding-block: 6px; margin-block: 6px; font-size: 12px; overflow-wrap: anywhere; }
-  .intro-copy { margin: 14px 0 12px; font-size: 12px; color: var(--ui-muted); }
+  .popup-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 5px; margin-block: 8px; }
+  .popup-toolbar .intro-copy { margin: 0; font-size: 12px; flex: 1; min-width: 0; color: var(--ui-muted); }
+  .popup-toolbar .btn { flex-shrink: 0; font-size: 12px; }
+  .popup-page .empty-state { border: 1px dashed var(--color-base-300); }
+  .popup-page .empty-state .card-body { padding: 16px; gap: 6px; }
+  .popup-page .empty-state h2 { font-size: 14px; font-weight: 650; }
+  .popup-page .empty-state p { font-size: 12px; line-height: 1.7; color: var(--ui-muted); overflow-wrap: anywhere; }
+  .live-settings { padding: 10px 2px 0; font-size: 11px; color: var(--ui-muted); line-height: 1.8; }
+  .live-settings p:last-child { margin-top: 4px; font-size: 11px; }
+  .settings-divider { margin-inline: 8px; opacity: .5; }
+  .live-dot { display: inline-block; width: 5px; height: 5px; margin-right: 4px; background: var(--color-success); border-radius: 50%; }
+}
+
+/* @sample-begin */
+@layer utilities {
   .note-card { border: 1px solid var(--color-base-300); box-shadow: 0 5px 20px color-mix(in oklch, var(--color-neutral) 4%, transparent); }
   .note-card .card-body { padding: 14px; gap: 10px; }
   .note-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
@@ -31,39 +45,25 @@
   .save-button { min-width: min(100%, 112px); max-width: 100%; margin-left: auto; font-size: 14px; }
   .sample-card { background: var(--ui-coffee); color: var(--ui-coffee-content); border: 1px solid color-mix(in oklch, var(--ui-coffee-content) 12%, transparent); }
   .sample-card .card-body { gap: 11px; padding: 16px; }
-  .sample-heading { display: flex; align-items: center; gap: 11px; }
-  .coffee-illustration { display: grid; place-items: center; width: 48px; height: 48px; flex-shrink: 0; border-radius: 14px; background: color-mix(in oklch, var(--ui-coffee-content) 8%, transparent); }
-  .coffee-illustration svg { width: 38px; height: 38px; }
-  .sample-eyebrow { font-size: 7px; letter-spacing: 1px; font-weight: 650; opacity: .8; }
-  .sample-copy h2 { margin: 3px 0 4px; font-size: 15px; font-weight: 650; letter-spacing: -.3px; }
-  .sample-copy p:last-child { font-size: 10px; }
   .sample-button { width: 100%; border: 1px solid color-mix(in oklch, var(--ui-coffee-content) 16%, transparent); color: var(--ui-coffee-content); background: color-mix(in oklch, var(--color-base-100) 65%, transparent); font-size: 12px; }
   .sample-button:hover:not(:disabled) { background: color-mix(in oklch, var(--ui-coffee-content) 10%, var(--color-base-100)); }
   .sample-help { margin-top: -3px; font-size: 11px; line-height: 1.7; }
-  @media (max-width: 360px) {
-    .keyboard-hint > span { display: none; }
-  }
-}
-
-@layer utilities {
-  .popup-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 5px; margin-block: 8px; }
-  .popup-toolbar .intro-copy { margin: 0; font-size: 12px; flex: 1; min-width: 0; }
-  .popup-toolbar .btn { flex-shrink: 0; font-size: 12px; }
-  .page-card { border: 1px solid var(--color-base-300); }
+  .coffee-details { margin-top: 12px; }
+  .coffee-details summary { padding: 13px 15px; cursor: pointer; font-size: 12px; font-weight: 600; }
+  .coffee-details .card-body { padding-top: 0; }
+  .page-card { margin-top: 12px; border: 1px solid var(--color-base-300); }
   .page-card .card-body { padding: 15px; gap: 10px; }
   .page-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
   .page-heading h2 { font-size: 14px; font-weight: 650; }
+  .page-option { display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; }
   .page-help { font-size: 12px; line-height: 1.7; color: var(--ui-muted); }
   #capture-page { font-size: 14px; }
   .page-result { padding: 12px; border-radius: 10px; background: var(--ui-paper); }
   .page-result h3 { font-size: 12px; font-weight: 650; overflow-wrap: anywhere; }
   .page-url { margin-top: 5px; font-size: 10px; color: var(--ui-muted); overflow-wrap: anywhere; }
   .page-result blockquote { margin-top: 10px; padding-left: 10px; border-left: 2px solid var(--color-primary); font-size: 12px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 150px; overflow: auto; }
-  .coffee-details { margin-top: 12px; }
-  .coffee-details summary { padding: 13px 15px; cursor: pointer; font-size: 12px; font-weight: 600; }
-  .coffee-details .card-body { padding-top: 0; }
-  .live-settings { padding: 10px 2px 0; font-size: 11px; color: var(--ui-muted); line-height: 1.8; }
-  .live-settings p:last-child { margin-top: 4px; font-size: 11px; }
-  .settings-divider { margin-inline: 8px; opacity: .5; }
-  .live-dot { display: inline-block; width: 5px; height: 5px; margin-right: 4px; background: var(--color-success); border-radius: 50%; }
+  @media (max-width: 360px) {
+    .keyboard-hint > span { display: none; }
+  }
 }
+/* @sample-end */

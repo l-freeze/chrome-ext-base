@@ -1,10 +1,11 @@
 import { ValidationError } from "../../lib/validation";
 
 export type Theme = "system" | "light" | "dark";
-export interface Settings { theme: Theme; includeSelection: boolean }
+// Base settings shared by every screen. Feature-specific preferences belong to their feature.
+export interface Settings { theme: Theme }
 
 export function defaultSettings(): Settings {
-  return { theme: "system", includeSelection: true };
+  return { theme: "system" };
 }
 
 export function settingsTheme(raw: unknown): Theme {

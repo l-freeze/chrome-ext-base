@@ -42,16 +42,23 @@
     "message": "LOCAL"
   },
   "shellLocalBadgeLabel": {
-    "message": "Notes are stored in this browser"
+    "message": "Data is stored in this browser"
   },
   "shellFooter": {
-    "message": "Notes stay in this browser only"
+    "message": "Data stays in this browser only"
   },
   "openSettings": {
     "message": "Settings ↗"
   },
   "previewBadge": {
     "message": "Preview"
+  },
+  "emptyTitle": {
+    "message": "Add your features here",
+    "description": "Shown when no feature section is placed on the screen."
+  },
+  "emptyBody": {
+    "message": "Create screen sections in src/ui/screens and place them in the entrypoint."
   },
   "noteLabel": {
     "message": "Today's note"
@@ -71,7 +78,7 @@
   "noteSave": {
     "message": "Save"
   },
-  "noteSaving": {
+  "statusSaving": {
     "message": "Saving…"
   },
   "noteRemoteDraftKept": {
@@ -103,6 +110,12 @@
   },
   "captureSelectionOff": {
     "message": "Selected-text capture is OFF."
+  },
+  "captureIncludeSelection": {
+    "message": "Include selected text"
+  },
+  "capturePreferencesFailed": {
+    "message": "Couldn't load or save the capture setting."
   },
   "captureUnsupportedPage": {
     "message": "Open a regular web page first."
@@ -197,17 +210,8 @@
   "popupLiveSettingsLabel": {
     "message": "Active settings"
   },
-  "popupLiveLoading": {
-    "message": "Loading"
-  },
-  "popupLiveSelection": {
-    "message": "Selected text"
-  },
-  "settingOn": {
-    "message": "ON"
-  },
-  "settingOff": {
-    "message": "OFF"
+  "popupLiveTheme": {
+    "message": "Theme"
   },
   "popupSettingsChanged": {
     "message": "Settings changed and applied without reloading."
@@ -222,7 +226,7 @@
     "message": "Make it work for you."
   },
   "optionsIntro": {
-    "message": "Choose how it looks and what it reads from pages."
+    "message": "Choose how the extension looks."
   },
   "optionsGeneral": {
     "message": "General"
@@ -235,12 +239,6 @@
   },
   "optionsThemeHelpSidepanel": {
     "message": "Saving applies it to this page and any open side panel."
-  },
-  "optionsSelectionLabel": {
-    "message": "Capture selected text"
-  },
-  "optionsSelectionHelp": {
-    "message": "Includes your selection when getting page info. Never reads the full page or form input."
   },
   "optionsSave": {
     "message": "Save settings"
@@ -267,13 +265,13 @@
     "message": "Settings saved and applied to open screens."
   },
   "optionsResetDone": {
-    "message": "Settings reset. Your note is untouched."
+    "message": "Settings reset. Your saved data is untouched."
   },
   "optionsResetHeading": {
     "message": "Reset to defaults"
   },
   "optionsResetHelp": {
-    "message": "Resets the theme and selected-text settings. Your saved note stays."
+    "message": "Resets the theme. Your saved data stays."
   },
   "optionsResetButton": {
     "message": "Reset"
@@ -309,7 +307,7 @@
     "message": "Reset to defaults?"
   },
   "optionsDialogBody": {
-    "message": "The theme returns to “Match device” and selected-text capture to ON. Your note isn't deleted."
+    "message": "The theme returns to “Match device”. Your saved data isn't deleted."
   },
   "optionsDialogCancel": {
     "message": "Cancel"
@@ -413,7 +411,7 @@
     "message": "Can't read settings. Reset them on the Settings page."
   },
   "sidepanelStorageNote": {
-    "message": "Notes and settings are saved in this browser."
+    "message": "Settings and data are saved in this browser."
   },
   "sidepanelStartFailed": {
     "message": "Couldn't start the side panel. Please reopen it."
