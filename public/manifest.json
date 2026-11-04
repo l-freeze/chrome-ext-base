@@ -7,7 +7,8 @@
   "permissions": [
     "storage",
     "activeTab",
-    "scripting"
+    "scripting",
+    "contextMenus"
   ],
   "host_permissions": [
     "https://api.sampleapis.com/*"
@@ -15,6 +16,10 @@
   "action": {
     "default_title": "Quick Note",
     "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'none'"

@@ -13,3 +13,8 @@ export function noteText(input: unknown): string {
   }
   return input;
 }
+
+// Appending keeps the same invariant as any other way of producing a Note.
+export function appendText(note: Note, text: string): Note {
+  return { text: noteText(note.text === "" ? text : `${note.text}\n\n${text}`) };
+}

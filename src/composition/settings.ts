@@ -8,5 +8,5 @@ export function createSettingsContext() {
   const driver = extension ? createChromeStorage(chrome.storage.local) : createLocalStorage(localStorage);
   const events = extension ? createChromeChanges(chrome.storage.onChanged) : createWebChanges(window, localStorage);
   const repository = createSettingsStorage(driver);
-  return { driver, repository, actions: createSettingsApplication(repository), changes: createSettingsChanges(events), extension };
+  return { driver, events, repository, actions: createSettingsApplication(repository), changes: createSettingsChanges(events), extension };
 }
