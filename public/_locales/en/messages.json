@@ -334,6 +334,27 @@
   "optionsResetButton": {
     "message": "Reset"
   },
+  "optionsBackupHeading": {
+    "message": "Backup"
+  },
+  "optionsBackupHelp": {
+    "message": "Export your settings to a file and load them after reinstalling or on another device."
+  },
+  "optionsExport": {
+    "message": "Export"
+  },
+  "optionsImport": {
+    "message": "Import"
+  },
+  "optionsExported": {
+    "message": "Settings exported."
+  },
+  "optionsImported": {
+    "message": "Settings imported and applied to open screens."
+  },
+  "optionsImportInvalid": {
+    "message": "This file can't be imported. Choose a file exported from these settings. Nothing was changed."
+  },
   "optionsLiveBadge": {
     "message": "LIVE PREVIEW"
   },

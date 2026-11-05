@@ -334,6 +334,27 @@
   "optionsResetButton": {
     "message": "リセット"
   },
+  "optionsBackupHeading": {
+    "message": "バックアップ"
+  },
+  "optionsBackupHelp": {
+    "message": "設定をファイルに書き出し、再インストール後や別の環境で読み込めます。"
+  },
+  "optionsExport": {
+    "message": "書き出す"
+  },
+  "optionsImport": {
+    "message": "読み込む"
+  },
+  "optionsExported": {
+    "message": "設定を書き出しました。"
+  },
+  "optionsImported": {
+    "message": "設定を読み込みました。開いている画面にも反映されます。"
+  },
+  "optionsImportInvalid": {
+    "message": "このファイルは読み込めません。書き出した設定ファイルを選んでください。設定は変更していません。"
+  },
   "optionsLiveBadge": {
     "message": "LIVE PREVIEW"
   },

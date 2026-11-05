@@ -31,3 +31,16 @@ it("確認されていないリセットは拒否し、保存内容を維持す�
   await expect(app.reset({ confirmed: false })).rejects.toBeInstanceOf(ValidationError);
   expect(await app.load(undefined)).toEqual(saved);
 });
+
+it("書き出したバックアップを読み込むと同じ設定に戻り、形式の違うファイルは拒否して設定を変えない", async () => {
+  const app = application();
+  await app.save({ theme: "dark" });
+  const backup = await app.exportBackup(undefined);
+  expect(backup).toMatchObject({ version: 1, settings: { theme: "dark" } });
+  await app.reset({ confirmed: true });
+  expect(await app.importBackup(JSON.parse(JSON.stringify(backup)))).toEqual({ theme: "dark" });
+
+  await expect(app.importBackup({ format: "something-else", version: 1, settings: { theme: "light" } })).rejects.toBeInstanceOf(ValidationError);
+  await expect(app.importBackup({ ...backup, settings: { theme: "purple" } })).rejects.toBeInstanceOf(ValidationError);
+  expect(await app.load(undefined)).toEqual({ theme: "dark" });
+});

@@ -2,6 +2,7 @@ import { createSignal, onCleanup } from "solid-js";
 import type { Settings } from "../../../features/settings/settings";
 import type { SettingsActions, SettingsChanges } from "../../../features/settings/ports";
 import { applyTheme, connectSettings } from "../../settings";
+import { ValidationError } from "../../../lib/validation";
 import { useI18n } from "../../i18n";
 import type { MessageKey } from "../../i18n";
 
@@ -15,6 +16,7 @@ export interface OptionsVariant {
 export function Options(props: { actions: SettingsActions; changes: SettingsChanges; variant: OptionsVariant }) {
   const { t } = useI18n();
   let dialog!: HTMLDialogElement;
+  let fileInput!: HTMLInputElement;
   let disposed = false;
   const [theme, setTheme] = createSignal<string>("system");
   const [ready, setReady] = createSignal(false);
@@ -44,7 +46,7 @@ export function Options(props: { actions: SettingsActions; changes: SettingsChan
   }));
   onCleanup(() => { disposed = true; });
 
-  async function perform(operation: () => Promise<Settings>, message: MessageKey) {
+  async function perform(operation: () => Promise<Settings>, message: MessageKey, failure: (error: unknown) => MessageKey = () => "optionsSaveFailed") {
     if (busy()) return;
     setBusy(true);
     setStatus("statusSaving");
@@ -53,11 +55,35 @@ export function Options(props: { actions: SettingsActions; changes: SettingsChan
       if (disposed) return;
       render(value);
       setStatus(message);
-    } catch {
-      if (!disposed) setStatus("optionsSaveFailed");
+    } catch (error) {
+      if (!disposed) setStatus(failure(error));
     } finally {
       if (!disposed) setBusy(false);
     }
+  }
+
+  // Reading and saving the file is the screen's job; the feature defines and validates the backup format.
+  async function exportBackup() {
+    if (busy()) return;
+    try {
+      const backup = await props.actions.exportBackup(undefined);
+      const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2) + "\n"], { type: "application/json" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "settings-backup.json";
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      if (!disposed) setStatus("optionsExported");
+    } catch {
+      if (!disposed) setStatus("optionsSaveFailed");
+    }
+  }
+  async function importBackup(file: File) {
+    let content: unknown;
+    try { content = JSON.parse(await file.text()); }
+    catch { if (!disposed) setStatus("optionsImportInvalid"); return; }
+    await perform(() => props.actions.importBackup(content), "optionsImported",
+      (error) => error instanceof ValidationError ? "optionsImportInvalid" : "optionsSaveFailed");
   }
 
   return (
@@ -88,6 +114,15 @@ export function Options(props: { actions: SettingsActions; changes: SettingsChan
           <div class="reset-section">
             <div><h3>{t("optionsResetHeading")}</h3><p>{t("optionsResetHelp")}</p></div>
             <button class="btn btn-outline btn-sm" type="button" disabled={busy()} onClick={() => { if (!busy()) dialog.showModal(); }}>{t("optionsResetButton")}</button>
+          </div>
+          <div class="reset-section backup-section">
+            <div><h3>{t("optionsBackupHeading")}</h3><p>{t("optionsBackupHelp")}</p></div>
+            <div class="backup-actions">
+              <button id="export-settings" class="btn btn-outline btn-sm" type="button" disabled={busy()} onClick={() => void exportBackup()}>{t("optionsExport")}</button>
+              <button class="btn btn-outline btn-sm" type="button" disabled={busy()} onClick={() => fileInput.click()}>{t("optionsImport")}</button>
+              <input ref={fileInput} id="import-settings" type="file" accept="application/json,.json" hidden
+                onChange={(event) => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ""; if (file) void importBackup(file); }} />
+            </div>
           </div>
         </section>
         <aside class="card live-guide" aria-labelledby="live-title">
