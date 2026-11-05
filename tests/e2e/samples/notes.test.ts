@@ -7,7 +7,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { Worker } from "playwright";
 import type { LoadedExtension, Variant } from "../support/extension";
-import { launchExtension, screenPath } from "../support/extension";
+import { launchExtension, openTab, screenPath, serveSite, withHostPermissions } from "../support/extension";
 
 const stored = (worker: Worker) => worker.evaluate(async () => (await chrome.storage.local.get("quick-note"))["quick-note"]);
 // Headless Chromium cannot open the native menu, so the test fires the worker's click event directly.
@@ -107,5 +107,40 @@ describe.each<Variant>(["popup", "sidepanel"])("%s", (variant) => {
     await screen.getByRole("button", { name: "サンプルを取得して保存" }).click();
     await screen.close();
     await expect.poll(() => stored(extension.worker), { timeout: 10_000 }).toMatch(/^Fixed Coffee/);
+  });
+});
+
+// The shortcut reads the selection of the tab it was pressed on and shows a notice there. A real key
+// press grants activeTab; the dispatched test event does not, so the extension copy gets host access.
+describe("ショートカットとページ上の通知", () => {
+  let extension: LoadedExtension | undefined;
+  let copy: ReturnType<typeof withHostPermissions> | undefined;
+  afterEach(async () => { await extension?.close(); copy?.dispose(); extension = undefined; copy = undefined; });
+
+  it.each<Variant>(["popup", "sidepanel"])("%s: 選択した文章を追加してページに通知し、選択がなければ失敗を通知してバッジを付ける", async (variant) => {
+    const site = await serveSite({ "/a.html": '<!doctype html><title>記事</title><p id="text">ショートカットの文章</p>' });
+    copy = withHostPermissions(variant, ["http://localhost/*"]);
+    extension = await launchExtension({ variant, path: copy.path });
+    const screen = await extension.open(screenPath(extension));
+    const tab = await openTab(screen, site.url("/a.html"));
+    const press = () => extension!.worker.evaluate(async (url) => {
+      const [target] = await chrome.tabs.query({ url });
+      (chrome.commands.onCommand as unknown as { dispatch(name: string, tab: unknown): void }).dispatch("append-selection", target);
+    }, site.url("/a.html"));
+    const toastHost = () => tab.evaluate(() => !!document.getElementById("chrome-ext-base-page-toast"));
+
+    await tab.evaluate(() => { const range = document.createRange(); range.selectNodeContents(document.querySelector("#text")!); getSelection()!.addRange(range); });
+    await press();
+    await expect.poll(() => stored(extension!.worker)).toBe("ショートカットの文章");
+    await expect.poll(toastHost).toBe(true);
+    expect(await extension.worker.evaluate(() => chrome.action.getBadgeText({}))).toBe("");
+
+    await tab.evaluate(() => getSelection()!.removeAllRanges());
+    await tab.evaluate(() => document.getElementById("chrome-ext-base-page-toast")?.remove());
+    await press();
+    await expect.poll(() => extension!.worker.evaluate(() => chrome.action.getBadgeText({}))).toBe("!");
+    await expect.poll(toastHost).toBe(true);
+    expect(await stored(extension.worker)).toBe("ショートカットの文章");
+    await site.close();
   });
 });

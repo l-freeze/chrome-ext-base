@@ -34,6 +34,13 @@
         "mac": "Command+Shift+Y"
       },
       "description": "__MSG_commandOpen__"
+    },
+    "append-selection": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+U",
+        "mac": "Command+Shift+U"
+      },
+      "description": "__MSG_commandAppendSelection__"
     }
   },
   "background": {

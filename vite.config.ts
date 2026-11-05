@@ -52,8 +52,9 @@ export default defineConfig(({ mode }) => {
           manifest.name = "__MSG_extensionNameSidepanel__";
           manifest.permissions = [...(manifest.permissions ?? []), "sidePanel"];
           // @sample-begin
-          // Page capture follows the panel window's active tab with per-site permissions instead of activeTab.
-          manifest.permissions = [...manifest.permissions.filter((name) => name !== "activeTab"), "tabs"];
+          // Page capture follows the panel window's active tab with per-site permissions. activeTab stays for
+          // the context menu and shortcut, which act on the tab where the user invoked them.
+          manifest.permissions = [...manifest.permissions, "tabs"];
           manifest.optional_host_permissions = ["http://*/*", "https://*/*"];
           // @sample-end
           // Keep the toolbar icon; the side panel replaces only the popup and the title.

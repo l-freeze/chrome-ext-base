@@ -13,7 +13,7 @@ export function createWorkerApplication() {
   const menus: ContextMenuItem[] = [];
   const commands: CommandItem[] = [];
   // @sample-begin
-  registerNoteWorker(driver, router, menus);
+  registerNoteWorker({ driver, router, menus, commands });
   // @sample-end
   return { driver, router, menus, commands };
 }

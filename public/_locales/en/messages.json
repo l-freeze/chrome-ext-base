@@ -34,6 +34,28 @@
     "message": "Open the extension",
     "description": "Keyboard shortcut that opens the popup or side panel."
   },
+  "commandAppendSelection": {
+    "message": "Add the selected text to the note",
+    "description": "Keyboard shortcut description."
+  },
+  "toastAppended": {
+    "message": "Added to your note.",
+    "description": "Notice shown on the web page."
+  },
+  "toastNoSelection": {
+    "message": "No text is selected. Select some text and try again."
+  },
+  "toastTooLong": {
+    "message": "Couldn't add it: the note would exceed $LIMIT$ characters.",
+    "placeholders": {
+      "limit": {
+        "content": "$1"
+      }
+    }
+  },
+  "toastAppendFailed": {
+    "message": "Couldn't add it to your note."
+  },
   "documentTitlePopup": {
     "message": "$APP$",
     "description": "Tab title of the popup page.",

@@ -8,6 +8,11 @@ export interface NoteActions {
   appendNote(input: unknown): Promise<Note>;
 }
 
+// Operations that read the user's selection in a tab; only the service worker offers them.
+export interface NoteSelectionActions {
+  appendSelection(input: unknown): Promise<Note>;
+}
+
 export interface NoteRepository {
   save(input: Note): Promise<void>;
   load(): Promise<Note>;
@@ -25,4 +30,9 @@ export interface NoteSource {
 // UI event subscription for notes saved by another screen or the service worker.
 export interface NoteChanges {
   subscribe(onValue: (value: Note) => void, onError: (error: unknown) => void): () => void;
+}
+
+// Reads the text the user has selected in a tab.
+export interface SelectionReader {
+  read(input: { tabId: number }): Promise<string>;
 }

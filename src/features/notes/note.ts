@@ -15,8 +15,23 @@ export function noteText(input: unknown): string {
 }
 
 // Appending keeps the same invariant as any other way of producing a Note.
+// Why an append could not happen. The UI (or the worker's page notice) words them.
+export type AppendFailure = "no-selection" | "too-long";
+
+export class NoteAppendError extends Error {
+  override name = "NoteAppendError";
+  readonly reason: AppendFailure;
+  constructor(reason: AppendFailure) {
+    super(`Note append failed: ${reason}`);
+    this.reason = reason;
+  }
+}
+
 export function appendText(note: Note, text: string): Note {
-  return { text: noteText(note.text === "" ? text : `${note.text}\n\n${text}`) };
+  if (text.trim() === "") throw new NoteAppendError("no-selection");
+  const joined = note.text === "" ? text : `${note.text}\n\n${text}`;
+  if (joined.length > MAX_NOTE_LENGTH) throw new NoteAppendError("too-long");
+  return { text: noteText(joined) };
 }
 
 // Why an import failed. Gateways translate transport and service errors into these; the UI words them.
