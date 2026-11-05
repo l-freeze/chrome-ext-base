@@ -1,9 +1,11 @@
 import { createContext, useContext } from "solid-js";
 import type { JSX } from "solid-js";
+import type en from "../../public/_locales/en/messages.json";
 import type { Translator } from "../infrastructure/i18n";
-import type { MessageKey } from "../composition/i18n";
 
-export type { MessageKey };
+// The UI owns its wording, so it defines the message keys from the default locale's catalog.
+// composition/i18n.ts derives the same type from the same catalog for translators it creates.
+export type MessageKey = keyof typeof en;
 export type UiTranslator = Translator<MessageKey>;
 
 const I18nContext = createContext<UiTranslator>();
