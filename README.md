@@ -62,7 +62,6 @@ pnpm run check
 | `pnpm run typecheck` | ブラウザコード・テスト・ビルド設定の型チェック |
 | `pnpm test` | 共通基盤の Input / Output 契約テスト（ビルド不要） |
 | `pnpm run test:watch` | テストの監視実行 |
-| `pnpm run test:examples` | 開発者向けの参考テストを任意実行 |
 | `pnpm run build` / `pnpm run build:popup` | 型チェックと `dist/popup/` 生成 |
 | `pnpm run build:sidepanel` | 型チェックと `dist/sidepanel/` 生成 |
 | `pnpm run release` / `pnpm run release:sidepanel` | 公開用ビルド。ソースマップなしで `release/<方式>/` に出力し、配布物の確認後に `release/<name>-<方式>-<version>.zip` を作る |
@@ -71,13 +70,23 @@ pnpm run check
 | `pnpm run check` | 契約テスト・型チェック・ビルド・配布物の構成確認 |
 | `pnpm run check:sidepanel` | 同じ検証をサイドパネル版で実行 |
 | `pnpm run test:e2e` | 両方式をビルドし、Chromium に拡張として読み込んで操作する E2E テスト（任意実行） |
+
+<!-- @sample-begin -->
+サンプル用のコマンドです。`pnpm run samples:remove` で一緒に削除されます。
+
+| コマンド | 内容 |
+| --- | --- |
+| `pnpm run test:examples` | 開発者向けの参考テストを任意実行 |
 | `pnpm run samples:remove` | サンプルを削除してベースだけにする |
 | `pnpm run samples:verify` | 一時的な複製でサンプルを削除し、ベースの検証が通ることを確認する |
+<!-- @sample-end -->
 
 ベースのテストはサンプル固有の仕様を固定しません。メモ・設定・Coffee の項目や表示を
 変更しても、共通基盤の契約を変えなければそのテストを書き換える必要はありません。
+<!-- @sample-begin -->
 `tests/examples/` の参考テストには、独自機能の開発時には参考にしてから削除する旨をコメントしています。
 通常のテスト実行には含めませんが、型チェック対象のためサンプルの差し替え時に一緒に削除してください。
+<!-- @sample-end -->
 保証する範囲と派生プロジェクトでの追加方針は [テスト方針](docs/testing.md) を参照してください。
 
 ## パッケージ管理
@@ -98,6 +107,7 @@ pnpm run check
 CI や取得直後の検証には `pnpm install --frozen-lockfile` を使います。
 Node.js 26 と pnpm を準備済みのクラウド環境でも、セットアップコマンドは同じです。
 
+<!-- @sample-begin -->
 ## サンプルを外してベースだけにする
 
 メモ・ページ取得・サイト単位の許可はサンプルです。自分の機能を作り始めるときは、コミット後に次を実行します。
@@ -111,6 +121,7 @@ pnpm run check:sidepanel
 テーマを切り替えられる空の画面、何も登録していない service worker、ベースのテストが残ります。
 サンプル用の権限・文言・参考テストも一緒に削除します。CI はサンプルを消してもベースが壊れないことを毎回確認しています。
 ベースとサンプルの分担と、サンプルの印の付け方は [サンプルのガイド](docs/samples.md) を参照してください。
+<!-- @sample-end -->
 
 ## 確認用ビルドと公開用ビルド
 
@@ -240,7 +251,7 @@ src/
     └── styles/             daisyUI / Tailwind・テーマ
 public/_locales/            ja / en の文言（chrome.i18n の messages.json）
 tests/                      共通基盤の契約・配布物の構成テスト、任意の参考例、任意実行の E2E（tests/e2e）
-scripts/samples.ts          サンプルの削除と、削除後の検証
+scripts/                    公開用ビルドとサンプルの削除のスクリプト
 ```
 
 controller は inbound adapter、gateway は outbound adapter に相当します。

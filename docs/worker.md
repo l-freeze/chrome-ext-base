@@ -33,7 +33,7 @@ worker の起動処理そのものを書き換える必要はありません。
   画面と共有するのは features・infrastructure・integrations のコードだけです。
 - **動的 `import()` は使えない**。service worker では動的 import が禁止されています。必要なモジュールは静的に import します。
 - **通信の待ちは停止までの時間を延ばさない**。再試行を使う場合は、時間切れ・回数・待ち時間の合計が
-  30 秒を十分に下回るようにします（`createRetryPolicy` の `maxElapsedMs`）。サンプルは 1 回 8 秒・合計 15 秒です。
+  30 秒を十分に下回るようにします（`createRetryPolicy` の `maxElapsedMs`）。サンプルは 1 回 8 秒・時間切れを含めて合計 20 秒以内です。
 - **長時間の処理を前提にしない**。イベントや拡張 API の呼び出しで停止までの時間は延びますが、
   長い処理は分割し、途中経過を storage に保存してください。
 
@@ -68,12 +68,14 @@ sequenceDiagram
   Caller->>Worker: runtime.sendMessage（種類と内容）
   Worker->>Worker: 送信元が同じ拡張か確認
   Worker->>Worker: request.parse → 処理 → response.parse
-  Worker-->>Caller: 成功の値、またはエラー名とメッセージ
+  Worker-->>Caller: 成功の値、またはエラーの名前・メッセージ・理由のコード
   Caller->>Caller: response.parse（受け取った値を検証）
 ```
 
-処理で発生したエラーは、名前とメッセージだけが呼び出し側に届き、`MessageError` として投げられます。
-元の名前は `remoteName` で確認できます。エラーのクラスや追加のプロパティは届きません。
+処理で発生したエラーは、名前・メッセージと、文字列の `reason`（機能の理由のコード）があればそれも呼び出し側に届き、
+`MessageError` として投げられます。元の名前は `remoteName`、理由は `reason` で確認できます。
+エラーのクラスやその他のプロパティは届かないため、画面に理由を伝えたい場合は gateway が `remoteName` と `reason` から
+機能のエラーを作り直します（例: `features/notes/gateways/worker.ts`）。
 
 ### 追加する手順
 

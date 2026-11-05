@@ -14,15 +14,19 @@ src/
 │   ├── controllers/
 │   │   ├── load.ts            読み出し入力の検証と入口
 │   │   ├── save.ts            保存入力の検証と入口
-│   │   └── import.ts          取り込み入力の検証と入口
+│   │   ├── import.ts          取り込み入力の検証と入口
+│   │   └── append.ts          追加入力の検証と入口（右クリックメニュー）
 │   ├── use-cases/
 │   │   ├── load.ts            読み出しのシーケンス
 │   │   ├── save.ts            保存のシーケンス
-│   │   └── import.ts          取り込みのシーケンス
+│   │   ├── import.ts          取り込みのシーケンス
+│   │   └── append.ts          追加のシーケンス
 │   ├── gateways/
 │   │   ├── storage.ts         メモの保存形式と Repository 実装
 │   │   ├── coffee.ts          外部 Coffee をメモへ変換
 │   │   ├── rest.ts            メモ形式の REST サービスとの接続
+│   │   ├── worker.ts          取り込みを worker に依頼するメッセージと gateway
+│   │   ├── failure.ts         取得の失敗を取り込みの理由に変換
 │   │   └── mock.ts            取得元のモック
 │   └── compose.ts             controller と UseCase の接続
 ├── features/settings/        設定操作・保存形式・変更通知（同じ役割分け）
@@ -74,8 +78,9 @@ controller は inbound adapter、gateway は outbound adapter に相当します
   `GET` と `HEAD` 以外は、方針を渡しても再試行しません。
 - `createRetryPolicy()` は汎用の方針です。通信エラー・時間切れ・408/429/5xx を、間隔を倍にしながら再試行し、
   `Retry-After`（秒数または日時）があればそれに従います。回数・1 回の待ちの上限・合計時間の上限を持ちます。
+  合計時間は、待ち時間に次の試行の時間切れまでを足しても上限に収まる場合だけ再試行する、という形で守ります。
 - service worker は約 30 秒操作がないと停止し、通信や待ちの間は延長されません。worker で使う方針は、
-  時間切れ × 試行回数 ＋ 待ち時間が 30 秒を十分に下回るように設定してください。
+  `maxElapsedMs` が 30 秒を十分に下回るように設定してください。`timeoutMs` が `maxElapsedMs` より長いと再試行しません。
 - いつ・何回再試行するか、ページ送り（`Link` ヘッダーなど）、認証は、サービスごとに `integrations` が決めます。
 
 失敗を画面に伝えるときは、gateway が `TransportError` / `HttpError` を機能の理由のコードに変換します。
@@ -91,6 +96,7 @@ worker とのメッセージでは、エラーの `reason` も呼び出し側に
 | 読み出し | `controllers/load.ts`: 引数が undefined であること | `use-cases/load.ts` |
 | 保存 | `controllers/save.ts`: メモ入力の構造・文字数 | `use-cases/save.ts` |
 | 取り込み | `controllers/import.ts`: ID が正の安全な整数であること | `use-cases/import.ts` |
+| 追加 | `controllers/append.ts`: 空でない文章と文字数 | `use-cases/append.ts` |
 
 各ファイルの非公開 `input` バリデーターを `validatedAction(input, execute)` に渡します。
 UI が呼ぶ `NoteActions` は unknown を受け、UseCase は検証済みの Input 型を受けます。
@@ -195,7 +201,7 @@ UI は双方向のイベントを扱えます。サンプルでは保存・取�
 
 ポップアップは ID 1 を取得し、タイトル・説明・材料をメモに変換して保存します。
 画像 URL はデータとして検証するだけで追加取得・表示しません。
-1 回の通信は 8 秒で時間切れにし、通信エラー・時間切れ・5xx などは間隔を広げて 2 回まで再試行します（合計 15 秒以内）。
+1 回の通信は 8 秒で時間切れにし、通信エラー・時間切れ・5xx などは間隔を広げて 2 回まで再試行します（時間切れも含めて合計 20 秒以内）。
 失敗は gateway が `NoteImportError` の理由（`network`・`timeout`・`server`・`response`）に変換し、画面が文言を選びます。
 取得や変換に失敗したら保存を開始しません。
 
@@ -232,7 +238,9 @@ Chrome / Web Storage / メモリの driver は get / set だけを実装し、�
 内部の呼び出し回数や詳細な順序、DOM スナップショットは検証しません。
 `pnpm run check` で実行時の契約・型契約・本番ビルド・配布物の構成を確認します。
 具体的な範囲は [テスト方針](testing.md) を参照してください。
+<!-- @sample-begin -->
 `tests/examples/` には、独自機能の開発時に参考にしてから削除する任意実行のテストを置いています。
+<!-- @sample-end -->
 UI の責務と daisyUI の設定は [UI ガイド](ui.md) を参照してください。
 
 ディレクトリ名に唯一の標準はありません。ヘキサゴナルで必要な依存方向を守り、
@@ -277,17 +285,19 @@ worker は画面と同じ features を使う、もう一つの入口です。`co
 - `infrastructure/messaging` と `context-menus.ts` は機能を知りません。メッセージの契約は処理を所有する機能の gateway が定義します。
 - 画面からはメッセージを直接送らず、port を実装した gateway（例: `delegateImportToWorker`）を composition が注入します。
   画面は処理がその場で動くか worker で動くかを知りません。
-- worker は `src/ui` を import しません。Solid と DOM を含まないことを配布物で確認しています。
+- worker は `src/ui` を import しません。worker とそこから静的に読み込むファイルが DOM を参照しないことを、配布物のテストで確認しています。
 - `NoteChanges` は `SettingsChanges` と同じく、保存基盤の通知を検証して UI に届ける port です。
 
 制約と追加の手順は [service worker ガイド](worker.md) を参照してください。
 
+<!-- @sample-begin -->
 ## ベースとサンプルの境界
 
 ベースのコードは、サンプルを `@sample-begin` / `@sample-end` の印の中でだけ参照します。
 画面の枠は機能の部品を子として受け取り、起動点が配置します。サンプルの機能は `composition/<機能>.ts` で組み立てます。
 `pnpm run samples:verify` が、印とサンプルのファイルを消した状態でもビルドとテストが通ることを確認します。
 詳細は [サンプルのガイド](samples.md) を参照してください。
+<!-- @sample-end -->
 
 ## 文言の境界
 

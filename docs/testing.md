@@ -46,6 +46,7 @@ GitHub Actions でも同じ `pnpm run check` を実行し、成功した配布�
 `vite-plugin-solid` は未指定なら Vitest の環境を jsdom にするため、`vite.config.ts` で `node` を明示しています。
 UI コンポーネントのテストを追加する場合は、そのテストで DOM 環境を選び、必要な依存を追加してください。
 
+<!-- @sample-begin -->
 ## 削除して使う参考テスト
 
 `tests/examples/` に、メモの保存・入力拒否・モックからの取り込み、設定リセット、サイトアクセス許可の例を置いています。
@@ -57,6 +58,7 @@ UI コンポーネントのテストを追加する場合は、そのテスト�
 サンプルを差し替える際は、対応する参考テストも削除してください。
 全て不要なら `tests/examples/` を削除し、`package.json` の `test:examples` も削除できます。
 独自機能のテストはこのディレクトリに置かず、通常のテストとして追加してください。
+<!-- @sample-end -->
 
 ## 実際の拡張での E2E テスト（任意実行）
 
@@ -68,15 +70,20 @@ UI コンポーネントのテストを追加する場合は、そのテスト�
 | --- | --- |
 | `tests/e2e/support/extension.ts` | 拡張の読み込み、manifest からの画面の特定、localhost のページ配信、拡張のウィンドウへのタブ追加、host permission を足した検証用コピー |
 | `tests/e2e/settings.test.ts` | ベース。設定画面で保存したテーマが、開いている画面に再読み込みなしで反映されること |
-| `tests/e2e/samples/` | サンプルの参考テスト。メモ・右クリックメニュー・worker での取り込み・ページ取得 |
+
+<!-- @sample-begin -->
+`tests/e2e/samples/` はサンプルの参考テストです。メモ・右クリックメニュー・worker での取り込み・ページ取得を確認します。
+<!-- @sample-end -->
 
 ヘッドレスの Chromium では、許可ダイアログへの応答・ネイティブの右クリックメニュー・ツールバーからの起動を操作できません。
 参考テストでは、host permission を足したコピー（配布しない）や、worker 内でのクリックイベントの発火で代わりに確認しています。
 
+<!-- @sample-begin -->
 ## サンプルを消しても壊れないことの確認
 
 `pnpm run samples:verify` は、作業ツリーの複製からサンプルを削除して `check` と `check:sidepanel` を実行します。
 CI でも実行します。仕組みは [サンプルのガイド](samples.md) を参照してください。
+<!-- @sample-end -->
 
 ## 派生プロジェクトで追加するもの
 
