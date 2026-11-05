@@ -31,6 +31,14 @@ service worker へのメッセージ通信と右クリックメニューの仕�
 | --- | --- |
 | ![サイドパネル・ライト](docs/screenshots/sidepanel-light.png) | ![サイドパネル・ダーク](docs/screenshots/sidepanel-dark.png) |
 
+上の画像は日本語の表示です。Chrome の表示言語が日本語以外のときは英語で表示します。
+
+| 英語表示 | ライト | ダーク |
+| --- | --- | --- |
+| ポップアップ | ![英語表示のポップアップ・ライト](docs/screenshots/popup-light-en.png) | ![英語表示のポップアップ・ダーク](docs/screenshots/popup-dark-en.png) |
+| サイドパネル | ![英語表示のサイドパネル・ライト](docs/screenshots/sidepanel-light-en.png) | ![英語表示のサイドパネル・ダーク](docs/screenshots/sidepanel-dark-en.png) |
+| 設定画面 | ![英語表示の設定画面・ライト](docs/screenshots/options-light-en.png) | ![英語表示の設定画面・ダーク](docs/screenshots/options-dark-en.png) |
+
 ## セットアップとコマンド
 
 Node.js 26 LTS と pnpm 12.16.1 を使用します。`.nvmrc` は検証した 26.13.0 に固定しています。
