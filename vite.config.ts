@@ -23,6 +23,26 @@ export default defineConfig(({ mode }) => {
   return {
     base: "./",
     plugins: [solid(), tailwindcss(), {
+      // The worker has no DOM. Functions it injects into pages may use the DOM, but UI modules must not be
+      // reachable from it, and service workers cannot use dynamic import.
+      name: "worker-boundary",
+      generateBundle(_options, bundle) {
+        const worker = Object.values(bundle).find((output) => output.type === "chunk" && output.isEntry && output.name === "worker");
+        if (!worker || worker.type !== "chunk") return;
+        const problems: string[] = [];
+        const seen = new Set<string>();
+        const pending = [worker.fileName];
+        while (pending.length > 0) {
+          const output = bundle[pending.pop()!];
+          if (!output || output.type !== "chunk" || seen.has(output.fileName)) continue;
+          seen.add(output.fileName);
+          for (const id of output.moduleIds) if (/[\\/]src[\\/]ui[\\/]|[\\/]solid-js[\\/]/.test(id)) problems.push(id);
+          if (output.dynamicImports.length > 0) problems.push(`${output.fileName} uses dynamic import`);
+          pending.push(...output.imports);
+        }
+        if (problems.length > 0) this.error(`The service worker reaches UI code or dynamic imports:\n${problems.join("\n")}`);
+      },
+    }, {
       name: "extension-manifest",
       configResolved(config) { resolvedOutDir = resolve(config.root, config.build.outDir); },
       buildStart() { this.addWatchFile(resolve("public/manifest.json")); this.addWatchFile(resolve("package.json")); },

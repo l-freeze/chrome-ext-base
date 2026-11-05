@@ -51,9 +51,9 @@ it("Manifest V3 と、登録された画面・スクリプト・アイコンが�
   for (const path of typeof actionIcon === "string" ? [actionIcon] : Object.values(actionIcon ?? {})) localFile(path);
 });
 
-// The worker has no DOM. Following its static imports catches UI code (Solid, screens) pulled in by
-// a shared chunk, which would fail only at runtime.
-it("service worker と、そこから静的に読み込むファイルは DOM を参照しない", () => {
+// The build itself (the worker-boundary plugin in vite.config.ts) rejects UI code reachable from the
+// worker. This only checks that the emitted worker and its static imports exist.
+it("service worker が静的に読み込むファイルが配布物に揃っている", () => {
   const manifest = JSON.parse(readFileSync(localFile("manifest.json"), "utf8")) as chrome.runtime.ManifestV3;
   const entry = manifest.background?.service_worker;
   if (!entry) return;
@@ -64,8 +64,6 @@ it("service worker と、そこから静的に読み込むファイルは DOM �
     if (seen.has(file)) continue;
     seen.add(file);
     const code = readFileSync(file, "utf8");
-    expect(/\b(?:document|window)\s*\./.test(code), relative(output, file)).toBe(false);
-    expect(/\bimport\s*\(/.test(code), `${relative(output, file)} uses dynamic import`).toBe(false);
     for (const match of code.matchAll(/\b(?:from|import)\s*["']([^"']+)["']/g)) pending.push(localFile(match[1]!, dirname(file)));
   }
   expect(seen.size).toBeGreaterThan(0);
