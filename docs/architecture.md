@@ -207,6 +207,7 @@ UI は双方向のイベントを扱えます。サンプルでは保存・取�
 取得や変換に失敗したら保存を開始しません。
 
 `gateways/rest.ts` は別サービスの `GET {baseUrl}/notes/{id}` → `{ id, text }` 用です。
+取得元を差し替えて使う例は、参考テストの `tests/examples/note-source.test.ts` にあります。
 SampleAPIs に `/notes` があるという意味ではありません。
 内部 port の引数は controller で検証済みの型を受けます。これらの gateway を UI の入口にはしません。
 

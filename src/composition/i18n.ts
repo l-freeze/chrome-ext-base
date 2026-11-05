@@ -2,7 +2,8 @@ import type en from "../../public/_locales/en/messages.json";
 import type { MessageCatalog, Translator } from "../infrastructure/i18n";
 import { createCatalogTranslator, createChromeTranslator } from "../infrastructure/i18n";
 
-// The default locale's catalog defines the keys; every locale must provide the same keys.
+// The default locale's catalog defines the keys; every locale must provide the same keys. ui/i18n.tsx
+// derives the same type from the same catalog, so the UI does not depend on composition.
 export type MessageKey = keyof typeof en;
 export const DEFAULT_LOCALE = "en";
 
