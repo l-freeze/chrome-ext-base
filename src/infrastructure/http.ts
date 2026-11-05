@@ -37,6 +37,7 @@ export interface HttpRequest {
 export interface RetryContext {
   attempt: number;     // 0 for the first try
   elapsedMs: number;   // since the first try started, including waits
+  timeoutMs: number;   // the longest a further try can take
 }
 
 // Returns how many milliseconds to wait before trying again, or null to stop.
@@ -91,12 +92,12 @@ export function createHttpClient(options: { fetch: Fetch; timeoutMs?: number; sl
         let waitMs: number | null;
         try {
           const response = await once(request);
-          waitMs = policy?.onResponse?.(response, { attempt, elapsedMs: now() - started }) ?? null;
+          waitMs = policy?.onResponse?.(response, { attempt, elapsedMs: now() - started, timeoutMs }) ?? null;
           if (waitMs === null) return response;
           await response.body?.cancel();
         } catch (error) {
           if (!(error instanceof TransportError) || error.kind === "aborted") throw error;
-          waitMs = policy?.onError?.(error, { attempt, elapsedMs: now() - started }) ?? null;
+          waitMs = policy?.onError?.(error, { attempt, elapsedMs: now() - started, timeoutMs }) ?? null;
           if (waitMs === null) throw error;
         }
         try { await sleep(waitMs, request.signal); }
@@ -119,7 +120,7 @@ export interface RetryOptions {
   maxRetries?: number;            // retries after the first try (default 2)
   baseDelayMs?: number;           // backoff for the first retry, doubled each time (default 500)
   maxDelayMs?: number;            // longest single wait; a longer Retry-After stops retrying (default 10 s)
-  maxElapsedMs?: number;          // total time budget including requests and waits (default 20 s)
+  maxElapsedMs?: number;          // total time budget: a retry starts only if the wait and a full next try fit (default 20 s)
   statuses?: readonly number[];   // statuses worth retrying (default 408, 429, 500, 502, 503, 504)
 }
 
@@ -131,8 +132,9 @@ export function createRetryPolicy(options: RetryOptions = {}): RetryPolicy {
   const maxDelayMs = options.maxDelayMs ?? 10_000;
   const maxElapsedMs = options.maxElapsedMs ?? 20_000;
   const statuses = new Set(options.statuses ?? [408, 429, 500, 502, 503, 504]);
+  // Counting the next try's timeout keeps the whole request, not just the waits, inside the budget.
   const decide = (delayMs: number, context: RetryContext) =>
-    context.attempt < maxRetries && delayMs <= maxDelayMs && context.elapsedMs + delayMs <= maxElapsedMs ? delayMs : null;
+    context.attempt < maxRetries && delayMs <= maxDelayMs && context.elapsedMs + delayMs + context.timeoutMs <= maxElapsedMs ? delayMs : null;
   return {
     onResponse(response, context) {
       if (!statuses.has(response.status)) return null;
