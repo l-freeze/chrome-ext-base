@@ -1,4 +1,5 @@
-// Chrome serializes this function into the active page's isolated world.
+// The in-page half of the Chrome gateway: chrome.ts injects this function with scripting.executeScript.
+// Chrome serializes it into the active page's isolated world.
 // Keep it self-contained: no imports or values from the extension's scope.
 export function readPage(includeSelection: boolean) {
   const editing = document.activeElement?.closest("input, textarea, [contenteditable]:not([contenteditable='false'])");

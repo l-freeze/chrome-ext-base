@@ -16,7 +16,6 @@ const SAMPLE_PATHS = [
   "src/features/page",
   "src/features/site-access",
   "src/integrations/sampleapis",
-  "src/content/page.ts",
   "src/composition/notes.ts",
   "src/composition/page.ts",
   "src/ui/screens/popup/note.tsx",
@@ -89,7 +88,7 @@ function pruneMessages(root: string) {
 function remove(root: string) {
   const deleted = SAMPLE_PATHS.filter((path) => existsSync(join(root, path)));
   for (const path of deleted) rmSync(join(root, path), { recursive: true });
-  for (const empty of ["src/content", "src/integrations", "tests/e2e/samples"]) {
+  for (const empty of ["src/integrations", "tests/e2e/samples"]) {
     const absolute = join(root, empty);
     if (existsSync(absolute) && readdirSync(absolute).length === 0) rmSync(absolute, { recursive: true });
   }
