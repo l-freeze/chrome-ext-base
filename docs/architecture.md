@@ -30,9 +30,8 @@ src/
 │   │   └── mock.ts            取得元のモック
 │   └── compose.ts             controller と UseCase の接続
 ├── features/settings/        設定操作・保存形式・変更通知（同じ役割分け）
-├── features/page/            ページ取得（同じ役割分け）
+├── features/page/            ページ取得（同じ役割分け。ページ内で動く関数は gateways/content.ts）
 ├── features/site-access/     サイト確認・許可（同じ役割分け）
-├── content/page.ts           ページ内で動く自己完結した関数
 ├── background/               service worker の入口と、受信口・メニューの登録
 ├── integrations/sampleapis/
 │   └── coffee.ts              Coffee 取得の型・通信・境界検証
@@ -49,7 +48,7 @@ src/
 │   ├── context-menus.ts       右クリックメニューの作成とクリックの振り分け
 │   └── i18n.ts                chrome.i18n とプレビュー用カタログの翻訳
 ├── lib/validation.ts          検証の型と実行ラッパー。操作の条件は持たない
-├── composition/               画面・worker・翻訳ごとの具体実装の選択
+├── composition/               実行環境（environment.ts）と、機能・入口・翻訳ごとの具体実装の選択
 └── ui/                       起動点・画面・表示部品・スタイル
 ```
 
@@ -165,7 +164,9 @@ UseCase 入力の検証と、外部から戻るデータの検証は別の境界
 
 `features/notes/compose.ts` は検証付き controller と UseCase を一対一で接続します。
 `composition/notes.ts` は具体 gateway を選んでメモ機能を組み立て、画面用と worker 用の両方を提供します。
-`composition/popup.ts` などの入口ごとの composition は、環境に応じた driver と各機能の組み立てを集めます。
+`composition/environment.ts` は実行環境を表します。拡張の中かブラウザプレビューかを判定し、保存先の driver・変更通知・
+キーごとのロックを作ります。`composition/popup.ts` などの入口ごとの composition は、実行環境を 1 回だけ作って
+各機能の組み立て（`composition/settings.ts`・`notes.ts`・`page.ts`）に渡し、結果を集めます。
 `ui/entrypoints` がその結果を画面へ注入します。自動解決や DI コンテナーは使いません。
 
 ```ts
@@ -275,7 +276,8 @@ UI の責務と daisyUI の設定は [UI ガイド](ui.md) を参照してくだ
 `StorageChanges` は保存基盤の通知、`SettingsChanges` は検証済みの設定を UI に届ける port です。
 通知の購読は UI に属し、UseCase の順次処理から独立しています。
 UI は port と型に依存し、Chrome API や storage driver を直接扱いません。
-ページ内の DOM アクセスは `content/page.ts` だけに閉じ込め、Chrome gateway が注入と応答検証を担当します。
+ページ内の DOM アクセスは `features/page/gateways/content.ts` だけに閉じ込めます。これは Chrome gateway の
+ページ側の半分で、`gateways/chrome.ts` が注入と応答の検証を担当します。
 
 設定のリセット確認・変更通知の流れ・content script と service worker の説明は
 [拡張サンプルのガイド](extension.md) にまとめています。
