@@ -1,9 +1,11 @@
-import type { Settings } from "./settings";
+import type { Settings, SettingsBackup } from "./settings";
 
 export interface SettingsActions {
   load(input: unknown): Promise<Settings>;
   save(input: unknown): Promise<Settings>;
   reset(input: unknown): Promise<Settings>;
+  exportBackup(input: unknown): Promise<SettingsBackup>;
+  importBackup(input: unknown): Promise<Settings>;
 }
 
 export interface SettingsRepository {

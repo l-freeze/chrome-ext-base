@@ -1,20 +1,23 @@
-# service worker・メッセージ通信・右クリックメニュー
+# service worker・メッセージ通信・右クリックメニュー・ショートカット
 
 ポップアップ版とサイドパネル版の両方に、同じ処理を登録する service worker を含めています。
 ベースが用意するのは、機能に依存しない受け渡しの仕組みと、機能ごとに処理を登録する場所です。
-新しい処理は「メッセージやメニュー項目を定義して composition に登録する」だけで追加でき、
+新しい処理は「メッセージ・メニュー項目・ショートカットを定義して composition に登録する」だけで追加でき、
 worker の起動処理そのものを書き換える必要はありません。
 
 ## 配置
 
 | 配置 | 責務 |
 | --- | --- |
-| `background/worker.ts` | `startWorker()`。メッセージの受信口と右クリックメニューを登録する |
+| `background/worker.ts` | `startWorker()`。メッセージの受信口・右クリックメニュー・ショートカットを登録する |
 | `background/popup.ts` / `background/sidepanel.ts` | 方式ごとの worker の入口。サイドパネル版はパネルの起動設定を追加する |
-| `composition/worker.ts` | worker の router とメニュー項目の一覧。各機能の登録関数を呼ぶ |
+| `composition/worker.ts` | worker の router、メニュー項目とショートカットの一覧。各機能の登録関数を呼ぶ |
 | `composition/<機能>.ts` | 機能の組み立てと、worker への登録（例: `composition/notes.ts` の `registerNoteWorker`） |
 | `infrastructure/messaging/` | メッセージの契約・router・client・Chrome の受信口。機能を知らない |
 | `infrastructure/context-menus.ts` | メニュー項目の作成と、クリックの振り分け |
+| `infrastructure/commands.ts` | ショートカットの振り分け |
+| `infrastructure/badge.ts` | ツールバーのアイコンのバッジ |
+| `infrastructure/page-toast.ts` | ページ上の通知。Shadow DOM でページの CSS から隔離する |
 | `features/notes/gateways/worker.ts` | 取り込みを worker に依頼するサンプルのメッセージと gateway |
 
 ビルドでは方式ごとの入口が `worker.js` として出力され、manifest の `background.service_worker` に登録されます。
@@ -127,14 +130,66 @@ content script も同じ拡張として届くため、ページ由来の値は�
 - `contextMenus` 権限を両方式の manifest に含めています。
 - クリック情報のうち `selectionText` や `pageUrl` はページ由来の値です。表示や保存の前に、処理側で検証してください。
 - worker には画面がないため、処理の失敗は `startWorker()` の `report` でログに出ます。
-  サンプルでは、失敗するとツールバーのアイコンに `!` のバッジを付け、次に成功したときに消します。
+  利用者への結果は、下のバッジとページ上の通知で示します。
+
+## キーボードショートカット
+
+キーと説明は manifest の `commands` に宣言し、処理は機能の登録関数で `commands` に `CommandItem` を追加します。
+
+```json
+"commands": {
+  "_execute_action": { "suggested_key": { "default": "Ctrl+Shift+Y", "mac": "Command+Shift+Y" }, "description": "__MSG_commandOpen__" },
+  "example-run": { "suggested_key": { "default": "Ctrl+Shift+U", "mac": "Command+Shift+U" }, "description": "__MSG_exampleCommand__" }
+}
+```
+
+```ts
+worker.commands.push({
+  name: "example-run",              // manifest の commands のキーと同じ名前
+  async run({ tabId, url }) {       // 押したときのアクティブタブ。タブがなければ undefined
+    await feature.handle({ tabId });
+  },
+});
+```
+
+- `_execute_action` はベースの宣言で、ツールバーのボタンを押したのと同じ動作をします（ポップアップ版はポップアップを開きます。
+  サイドパネル版はパネルを開く設定に従います。実際のキー操作は未検証です）。処理の登録は不要で、`commands.onCommand` には届きません。
+- キーを押すと、そのタブに `activeTab` が付きます。`activeTab` 権限があれば、host permission なしでそのタブに `executeScript` できます。
+- `suggested_key` は既定の割り当てで、他の拡張と衝突すると割り当てられません。利用者は `chrome://extensions/shortcuts` で変更できます。
+  `suggested_key` を指定できるのは 4 つまでです（`_execute_action` を含む）。
+- 処理の失敗は `report` でログに出ます。名前が重複した項目は登録時に拒否します。
+
+参考: [chrome.commands](https://developer.chrome.com/docs/extensions/reference/api/commands)。
+
+## バッジとページ上の通知
+
+worker の処理結果を利用者に示す部品です。どちらも文言や表示の条件を知らず、機能の composition が選んで渡します。
+
+```ts
+const badge = createActionBadge(chrome.action);
+await badge.show("!", "#ad334a");   // 文字は 4 文字程度まで
+await badge.clear();
+
+const toasts = createPageToasts(chrome.scripting);
+const shown = await toasts.show(tabId, t("exampleDone"), "success"); // 実行できないページでは false
+```
+
+- バッジは拡張全体で一つです（タブごとにはしていません）。worker が停止しても Chrome が保持し、`clear()` まで残ります。
+- 通知は `scripting.executeScript` でページに要素を一つ追加し、closed の Shadow DOM の中に表示します。
+  ページの CSS は中に届かず、外側の要素もスタイルを `!important` で初期化するため、ページの指定で隠れたり動いたりしません。
+  文言は `textContent` で入れ、HTML として解釈しません。数秒後に自動で消え、OS のライト／ダークと「視差効果を減らす」に従います。
+- 通知にはそのタブへの実行権限が必要です（`scripting` と、`activeTab` または host permission）。
+  `chrome://` のページや Chrome Web Store などでは表示できず、`false` を返します。バッジは権限なしで表示できます。
+- ページ内で実行する関数（`renderPageToast`）は Chrome が文字列にして送るため、import や外側の変数を使えません。
+  配色を変える場合は関数内の CSS を変えます。
 
 ## サンプル
 
 - **REST の取り込み**: 画面の `importNote` は、拡張では worker に `notes.import` を依頼します。
   ポップアップを閉じても worker が取得から保存まで完了します。ブラウザプレビューには worker がないため、画面内で実行します。
-- **選択した文章をメモに追加**: 文章を選んで右クリックすると、worker がメモの末尾に追加します。
-  追加後に 2,000 文字を超える場合は保存せず、バッジで失敗を示します。
+- **選択した文章をメモに追加**: 文章を選んで右クリックするか `Ctrl+Shift+U`（Mac は `⌘+Shift+U`）を押すと、
+  worker がメモの末尾に追加し、ページに結果を通知します。ショートカットは `scripting` でタブの選択を読みます（入力欄の選択は除きます）。
+  選択がない、または追加後に 2,000 文字を超える場合は保存せず、通知と `!` のバッジで示します。バッジは次の成功で消えます。
 - **開いている画面の追従**: 画面はメモの保存を storage の変更通知で受け取り、表示を更新します。
   編集中の下書きがあるときは上書きせず、別の画面で更新されたことを知らせます。その後の保存は下書きで上書きします。
 
@@ -142,5 +197,6 @@ content script も同じ拡張として届くため、ページ由来の値は�
 
 - worker のログは `chrome://extensions` の拡張のカードにある「Service Worker」のリンクから DevTools で確認します。
 - worker やメニュー項目を変更したら、拡張管理画面で拡張を再読み込みしてください。再読み込みでメニュー項目も作り直されます。
-- 必須テストは `tests/infrastructure/messaging.test.ts` と `context-menus.test.ts` で、仕組みの契約だけを確認します。
+- 必須テストは `tests/infrastructure/messaging.test.ts`・`context-menus.test.ts`・`commands.test.ts` で、仕組みの契約だけを確認します。
+- worker から `src/ui`・Solid・動的 import に届くとビルドが失敗します（`vite.config.ts` の `worker-boundary`）。
 - 実際の Chromium に拡張を読み込んだ確認の範囲は [拡張サンプルのガイド](extension.md#検証範囲) にあります。

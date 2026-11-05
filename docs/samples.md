@@ -41,14 +41,16 @@ pnpm run check:sidepanel
 止まります。`--force` を付けると確認せずに続行します。ZIP で取得した場合は、`git init` してコミットしてから実行するのが安全です。
 
 - サンプルのファイルと、印で囲んだ部分を削除する。
-- manifest からサンプル用の権限（`activeTab`・`scripting`・`contextMenus`）と SampleAPIs の host permission を削除する。
+- manifest からサンプル用の権限（`activeTab`・`scripting`・`contextMenus`）と SampleAPIs の host permission、
+  サンプルのショートカット（`commands` の `append-selection`）を削除する。拡張を開く `_execute_action` は残ります。
   サイドパネル版の `tabs`・`optional_host_permissions` は `vite.config.ts` の印の中にあり、一緒に消えます。
 - `package.json` からサンプル用のスクリプト（`test:examples`・`samples:remove`・`samples:verify`）を削除する。
 - 残ったコードと manifest が参照しない文言を `_locales` から削除する。
 - CI の「サンプルなしの検証」の手順と、このスクリプト自身を削除する。
 - README・ドキュメントのうち、サンプル専用のコマンドや参考テスト、このガイドへの案内を削除する。
 
-削除後に残るのは、テーマを切り替えられる空の画面、何も登録していない worker、ベースのテストです。
+削除後に残るのは、テーマを切り替えられる空の画面、設定の書き出し・読み込み、何も登録していない worker、ベースのテストです。
+ショートカット・バッジ・ページ上の通知の仕組み（`infrastructure/commands.ts`・`badge.ts`・`page-toast.ts`）もベースとして残ります。
 ドキュメントのうち印で囲んだ部分は消えますが、サンプルを例にした説明の文章は残るので、必要に応じて整理してください。
 製品名は `_locales` の `appName`（画面の見出しとタブの題名）と、`extensionName*`・`actionTitle*`（manifest）で変えます。
 `docs/screenshots/` もサンプル入りの画面なので、自分の画面で撮り直してください。

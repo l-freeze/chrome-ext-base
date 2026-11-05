@@ -7,10 +7,11 @@
  * 実行: pnpm run test:examples
  */
 import { expect, it } from "vitest";
-import { createNoteApplication } from "../../src/features/notes/compose";
+import { createNoteApplication, createNoteSelectionApplication } from "../../src/features/notes/compose";
 import { createNoteStorage } from "../../src/features/notes/gateways/storage";
 import { createMockNoteSource } from "../../src/features/notes/gateways/mock";
 import { createMemoryStorage } from "../../src/infrastructure/storage/drivers/memory";
+import { MAX_NOTE_LENGTH } from "../../src/features/notes/note";
 import { ValidationError } from "../../src/lib/validation";
 
 function application() {
@@ -40,4 +41,22 @@ it("外部取得はモックを注入し、取り込み結果と保存結果を�
   const { app } = application();
   expect(await app.importNote({ id: 1 })).toEqual({ text: "取得したメモ" });
   expect(await app.loadNote(undefined)).toEqual({ text: "取得したメモ" });
+});
+
+// The selection reader (a gateway that runs a script in the tab) is replaced by a fixed answer.
+it("タブで選択した文章をメモの末尾に追加し、追加できない理由はコードで返してメモを変えない", async () => {
+  const driver = createMemoryStorage();
+  const repository = createNoteStorage(driver);
+  let selected = "選択した文章";
+  const selection = createNoteSelectionApplication({ reader: { read: async () => selected }, repository });
+  await repository.save({ text: "元のメモ" });
+
+  expect(await selection.appendSelection({ tabId: 1 })).toEqual({ text: "元のメモ\n\n選択した文章" });
+
+  selected = "   ";
+  await expect(selection.appendSelection({ tabId: 1 })).rejects.toMatchObject({ name: "NoteAppendError", reason: "no-selection" });
+  selected = "x".repeat(MAX_NOTE_LENGTH);
+  await expect(selection.appendSelection({ tabId: 1 })).rejects.toMatchObject({ name: "NoteAppendError", reason: "too-long" });
+  await expect(selection.appendSelection({ tabId: -1 })).rejects.toBeInstanceOf(ValidationError);
+  expect(await repository.load()).toEqual({ text: "元のメモ\n\n選択した文章" });
 });

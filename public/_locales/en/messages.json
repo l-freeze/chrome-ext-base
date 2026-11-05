@@ -30,6 +30,32 @@
     "message": "Add selection to note",
     "description": "Context menu item shown for selected text."
   },
+  "commandOpen": {
+    "message": "Open the extension",
+    "description": "Keyboard shortcut that opens the popup or side panel."
+  },
+  "commandAppendSelection": {
+    "message": "Add the selected text to the note",
+    "description": "Keyboard shortcut description."
+  },
+  "toastAppended": {
+    "message": "Added to your note.",
+    "description": "Notice shown on the web page."
+  },
+  "toastNoSelection": {
+    "message": "No text is selected. Select some text and try again."
+  },
+  "toastTooLong": {
+    "message": "Couldn't add it: the note would exceed $LIMIT$ characters.",
+    "placeholders": {
+      "limit": {
+        "content": "$1"
+      }
+    }
+  },
+  "toastAppendFailed": {
+    "message": "Couldn't add it to your note."
+  },
   "documentTitlePopup": {
     "message": "$APP$",
     "description": "Tab title of the popup page.",
@@ -307,6 +333,27 @@
   },
   "optionsResetButton": {
     "message": "Reset"
+  },
+  "optionsBackupHeading": {
+    "message": "Backup"
+  },
+  "optionsBackupHelp": {
+    "message": "Export your settings to a file and load them after reinstalling or on another device."
+  },
+  "optionsExport": {
+    "message": "Export"
+  },
+  "optionsImport": {
+    "message": "Import"
+  },
+  "optionsExported": {
+    "message": "Settings exported."
+  },
+  "optionsImported": {
+    "message": "Settings imported and applied to open screens."
+  },
+  "optionsImportInvalid": {
+    "message": "This file can't be imported. Choose a file exported from these settings. Nothing was changed."
   },
   "optionsLiveBadge": {
     "message": "LIVE PREVIEW"

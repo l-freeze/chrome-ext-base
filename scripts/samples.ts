@@ -31,6 +31,8 @@ const SAMPLE_PATHS = [
 // Permissions and hosts only the samples need. The base keeps storage (and sidePanel in that build).
 const SAMPLE_PERMISSIONS = ["activeTab", "scripting", "contextMenus"];
 const SAMPLE_HOSTS = ["https://api.sampleapis.com/*"];
+// Keyboard shortcuts only the samples handle. `_execute_action` (open the extension) belongs to the base.
+const SAMPLE_COMMANDS = ["append-selection"];
 const SAMPLE_SCRIPTS = ["test:examples", "samples:remove", "samples:verify"];
 const MARKED_ROOTS = ["src", "tests", "vite.config.ts", ".github/workflows", "README.md", "docs"];
 const MARKED_EXTENSIONS = /\.(?:ts|tsx|css|html|ya?ml|md)$/;
@@ -106,6 +108,8 @@ function remove(root: string) {
     const hosts = ((manifest.host_permissions as string[] | undefined) ?? []).filter((host) => !SAMPLE_HOSTS.includes(host));
     if (hosts.length > 0) manifest.host_permissions = hosts;
     else delete manifest.host_permissions;
+    const commands = (manifest.commands ?? {}) as Record<string, unknown>;
+    for (const name of SAMPLE_COMMANDS) delete commands[name];
   });
   editJson(root, "package.json", (pkg) => {
     const scripts = pkg.scripts as Record<string, string>;

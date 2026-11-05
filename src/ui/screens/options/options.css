@@ -17,6 +17,7 @@
   .reset-section h3 { font-size: 13px; }
   .reset-section p { font-size: 11px; color: var(--ui-muted); line-height: 1.8; margin-top: 5px; }
   .reset-section button { flex-shrink: 0; }
+  .backup-actions { display: flex; flex-wrap: wrap; gap: 8px; flex-shrink: 0; }
   .live-guide { background: color-mix(in oklch, var(--color-primary) 6%, var(--color-base-100)); border: 1px solid var(--color-base-300); }
   .live-guide .card-body { padding: 24px; gap: 18px; }
   .live-guide h3 { font-size: 21px; font-weight: 700; letter-spacing: -.6px; }

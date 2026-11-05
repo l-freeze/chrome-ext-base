@@ -14,3 +14,12 @@ export function settingsTheme(raw: unknown): Theme {
   }
   return raw;
 }
+
+// A file a user can keep and load back. The format name and version let a later release recognize and
+// convert older backups; the settings inside keep the same rules as saved settings.
+export const SETTINGS_BACKUP_FORMAT = "chrome-ext-base/settings";
+export interface SettingsBackup { format: typeof SETTINGS_BACKUP_FORMAT; version: 1; settings: Settings }
+
+export function toBackup(settings: Settings): SettingsBackup {
+  return { format: SETTINGS_BACKUP_FORMAT, version: 1, settings: { ...settings } };
+}

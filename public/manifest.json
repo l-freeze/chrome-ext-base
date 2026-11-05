@@ -4,6 +4,12 @@
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",
   "minimum_chrome_version": "124",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
   "permissions": [
     "storage",
     "activeTab",
@@ -15,7 +21,27 @@
   ],
   "action": {
     "default_title": "__MSG_actionTitle__",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    },
     "default_popup": "index.html"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "__MSG_commandOpen__"
+    },
+    "append-selection": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+U",
+        "mac": "Command+Shift+U"
+      },
+      "description": "__MSG_commandAppendSelection__"
+    }
   },
   "background": {
     "service_worker": "worker.js",

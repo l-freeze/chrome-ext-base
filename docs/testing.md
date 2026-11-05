@@ -14,13 +14,18 @@
 | `tests/infrastructure/changes.test.ts` | 指定した local storage のキーの通知と購読解除。データは機能に依存しない任意の値 |
 | `tests/infrastructure/messaging.test.ts` | 要求・応答の両方の検証、不正な要求で処理を実行しないこと、エラーの伝達、自分宛てでないメッセージの無視、同じ拡張からの要求だけへの返信 |
 | `tests/infrastructure/context-menus.test.ts` | インストール時の項目の作り直し、クリックの振り分け、失敗の通知、ID 重複の拒否 |
+| `tests/infrastructure/commands.test.ts` | ショートカットの名前による振り分け、タブ情報の検証、失敗の通知、名前の重複の拒否 |
 | `tests/infrastructure/i18n.test.ts` | ロケールの選択と既定への切り替え、プレースホルダーと置換、カタログの言語タグ、未定義の文言 |
-| `tests/extension/build.test.ts` | 出力された Manifest V3 の基本項目、登録画面・worker・content script・アイコンの存在、画面が参照する JS/CSS の存在、manifest が参照する文言と全ロケールのキー・プレースホルダーの一致、manifest と `package.json` のバージョンの一致 |
+| `tests/extension/build.test.ts` | 出力された Manifest V3 の基本項目、登録画面・worker・worker が読み込むファイル・content script・アイコンの存在、画面が参照する JS/CSS の存在、manifest が参照する文言と全ロケールのキー・プレースホルダーの一致、manifest と `package.json` のバージョンの一致 |
 
 拡張の構成テストは `dist/popup/manifest.json` または `dist/sidepanel/manifest.json` から対象を読み取ります。ポップアップのファイル名、
 個別のサイトの権限、設定画面の有無、サンプルの名称を期待値にしません。
 選んだ表示方式の起動先が登録され、もう一方の起動先が混ざらないことも確認します。
 これは Chrome の manifest 検証全体を再実装するものではなく、主要な参照漏れを検出する確認です。
+
+worker が `src/ui`・Solid を読み込んでいないこと、動的 import を使っていないことは、テストではなくビルドで確認します。
+`vite.config.ts` の `worker-boundary` が worker から静的に読み込まれるファイルをたどり、違反があればビルドを失敗させます。
+ページに注入する関数（`executeScript` の `func`）は DOM を使うため worker の出力にも含まれますが、ページ内でだけ実行されます。
 
 API と Chrome のイベントはテスト内の代替実装を注入します。
 必須テストはサンプルの `features`・`integrations`・`ui`・`content` を import しません。
