@@ -56,6 +56,19 @@
   "toastAppendFailed": {
     "message": "Couldn't add it to your note."
   },
+  "toastUndo": {
+    "message": "Undo",
+    "description": "Button on the page notice after an append."
+  },
+  "toastUndone": {
+    "message": "Removed the added text."
+  },
+  "toastUndoChanged": {
+    "message": "The note changed after that, so it wasn't undone."
+  },
+  "toastUndoFailed": {
+    "message": "Couldn't undo."
+  },
   "documentTitlePopup": {
     "message": "$APP$",
     "description": "Tab title of the popup page.",

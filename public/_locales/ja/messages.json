@@ -56,6 +56,19 @@
   "toastAppendFailed": {
     "message": "メモに追加できませんでした。"
   },
+  "toastUndo": {
+    "message": "元に戻す",
+    "description": "Button on the page notice after an append."
+  },
+  "toastUndone": {
+    "message": "追加を取り消しました。"
+  },
+  "toastUndoChanged": {
+    "message": "メモがその後変更されたため、元に戻せませんでした。"
+  },
+  "toastUndoFailed": {
+    "message": "元に戻せませんでした。"
+  },
   "documentTitlePopup": {
     "message": "$APP$",
     "description": "Tab title of the popup page.",

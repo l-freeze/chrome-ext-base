@@ -148,4 +148,28 @@ describe("ショートカットとページ上の通知", () => {
     expect(await stored(extension.worker)).toBe("ショートカットの文章");
     await site.close();
   });
+
+  // The notice after an append is a content script; its Undo button sends a message to the worker.
+  it.each<Variant>(["popup", "sidepanel"])("%s: ページの通知の「元に戻す」で、worker が追加前のメモに戻す", async (variant) => {
+    const site = await serveSite({ "/a.html": '<!doctype html><title>記事</title><p id="text">取り消す文章</p>' });
+    copy = withHostPermissions(variant, ["http://localhost/*"]);
+    extension = await launchExtension({ variant, path: copy.path });
+    await extension.worker.evaluate(() => chrome.storage.local.set({ "quick-note": "元のメモ" }));
+    const screen = await extension.open(screenPath(extension));
+    const tab = await openTab(screen, site.url("/a.html"));
+    await tab.evaluate(() => { const range = document.createRange(); range.selectNodeContents(document.querySelector("#text")!); getSelection()!.addRange(range); });
+    await extension.worker.evaluate(async (url) => {
+      const [target] = await chrome.tabs.query({ url });
+      (chrome.commands.onCommand as unknown as { dispatch(name: string, tab: unknown): void }).dispatch("append-selection", target);
+    }, site.url("/a.html"));
+    await expect.poll(() => stored(extension!.worker)).toBe("元のメモ\n\n取り消す文章");
+    await expect.poll(() => tab.evaluate(() => !!document.getElementById("chrome-ext-base-page-toast"))).toBe(true);
+
+    // The notice sits in a closed shadow root, so the test reaches its button with the keyboard, as a user can.
+    await tab.bringToFront();
+    await tab.keyboard.press("Tab");
+    await tab.keyboard.press("Enter");
+    await expect.poll(() => stored(extension!.worker)).toBe("元のメモ");
+    await site.close();
+  });
 });

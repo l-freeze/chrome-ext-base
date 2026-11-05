@@ -34,6 +34,31 @@ export function appendText(note: Note, text: string): Note {
   return { text: noteText(joined) };
 }
 
+// What one append changed, kept so the user can undo it from the page's notice.
+export interface AppendRecord {
+  before: string;
+  after: string;
+}
+
+// Why an undo could not happen: nothing was appended, or the note changed after the append.
+export type UndoFailure = "nothing" | "changed";
+
+export class NoteUndoError extends Error {
+  override name = "NoteUndoError";
+  readonly reason: UndoFailure;
+  constructor(reason: UndoFailure) {
+    super(`Note undo failed: ${reason}`);
+    this.reason = reason;
+  }
+}
+
+// Undo only restores the note the append replaced; a later edit is never overwritten.
+export function undoAppend(note: Note, record: AppendRecord | null): Note {
+  if (!record) throw new NoteUndoError("nothing");
+  if (note.text !== record.after) throw new NoteUndoError("changed");
+  return { text: noteText(record.before) };
+}
+
 // Why an import failed. Gateways translate transport and service errors into these; the UI words them.
 export type ImportFailure = "network" | "timeout" | "server" | "response";
 
