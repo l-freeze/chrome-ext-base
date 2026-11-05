@@ -3,6 +3,8 @@ import type { Validator } from "../../lib/validation";
 export interface KeyValueStorage {
   get(key: string): Promise<unknown>;
   set(key: string, value: unknown): Promise<void>;
+  // Runs a task while no other write to the same key runs. Drivers delegate to their KeyLocks.
+  lock<T>(key: string, task: () => Promise<T>): Promise<T>;
 }
 
 export interface StorageContract<SaveInput, LoadOutput> {

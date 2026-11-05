@@ -1,9 +1,12 @@
 import type { KeyValueStorage, StorageChanges } from "../contracts";
+import type { KeyLocks } from "../locks";
+import { createProcessLocks } from "../locks";
 
 const prefix = "chrome-ext-base:";
 
-export function createLocalStorage(storage: Pick<Storage, "getItem" | "setItem">): KeyValueStorage {
+export function createLocalStorage(storage: Pick<Storage, "getItem" | "setItem">, locks: KeyLocks = createProcessLocks()): KeyValueStorage {
   return {
+    lock: (key, task) => locks.run(key, task),
     async get(key) {
       const json = storage.getItem(prefix + key);
       return json === null ? storage.getItem(key) ?? undefined : JSON.parse(json);
