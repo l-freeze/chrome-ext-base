@@ -36,7 +36,9 @@ export default defineConfig(({ mode }) => {
           manifest.permissions = [...manifest.permissions.filter((name) => name !== "activeTab"), "tabs"];
           manifest.optional_host_permissions = ["http://*/*", "https://*/*"];
           // @sample-end
-          manifest.action = { default_title: "__MSG_actionTitleSidepanel__" };
+          // Keep the toolbar icon; the side panel replaces only the popup and the title.
+          const { default_popup: _popup, ...action } = manifest.action ?? {};
+          manifest.action = { ...action, default_title: "__MSG_actionTitleSidepanel__" };
           manifest.side_panel = { default_path: "sidepanel.html" };
           manifest.options_ui = { page: "sidepanel-options.html", open_in_tab: true };
         }
