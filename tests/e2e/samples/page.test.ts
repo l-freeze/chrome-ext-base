@@ -38,6 +38,9 @@ describe("popup", () => {
 
     await popup.locator(".page-option input").uncheck();
     expect(await popup.locator(".page-result blockquote").textContent()).toBe("選択テキストの取得は OFF です。");
+    // The toggle saves asynchronously; wait for the stored preference before reopening the popup.
+    await expect.poll(() => extension!.worker.evaluate(async () => (await chrome.storage.local.get("page-capture"))["page-capture"]))
+      .toMatchObject({ includeSelection: false });
     await popup.reload();
     await expect.poll(() => popup.locator(".page-option input").isEnabled()).toBe(true);
     expect(await popup.locator(".page-option input").isChecked()).toBe(false);

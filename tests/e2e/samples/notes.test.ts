@@ -45,6 +45,16 @@ describe.each<Variant>(["popup", "sidepanel"])("%s", (variant) => {
     await expect.poll(() => editor.inputValue()).toBe("一つ目\n\n二つ目");
   });
 
+  it("同時に起きた右クリックの追加も、どちらも失わない", async () => {
+    const { extension } = await open();
+    // Both clicks are fired in the same turn, so their read-modify-writes would overlap without the key lock.
+    await extension.worker.evaluate(() => {
+      const clicked = chrome.contextMenus.onClicked as unknown as { dispatch(info: unknown, tab: unknown): void };
+      for (const text of ["one", "two"]) clicked.dispatch({ menuItemId: "notes.append-selection", selectionText: text, editable: false }, { id: 1 });
+    });
+    await expect.poll(() => stored(extension.worker)).toMatch(/^(one\n\ntwo|two\n\none)$/);
+  });
+
   it("編集中の下書きは worker の追加で上書きしない", async () => {
     const { extension, editor } = await open();
     await editor.fill("下書き");

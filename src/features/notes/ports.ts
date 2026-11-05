@@ -11,6 +11,8 @@ export interface NoteActions {
 export interface NoteRepository {
   save(input: Note): Promise<void>;
   load(): Promise<Note>;
+  // For changes derived from the current note; runs without interleaving with other writes.
+  update(change: (current: Note) => Note): Promise<Note>;
 }
 
 export interface FetchNoteInput { id: number }
