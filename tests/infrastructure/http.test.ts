@@ -104,9 +104,18 @@ describe("再試行", () => {
       .rejects.toMatchObject({ status: 500 });
     expect(byCount.requests).toHaveLength(3);
     const byTime = scripted(...Array.from({ length: 5 }, () => new TypeError("offline")));
-    await expect(getJson(client(byTime.fetch).http, endpoint, { retry: createRetryPolicy({ maxRetries: 9, baseDelayMs: 400, maxElapsedMs: 1_000 }) }))
+    await expect(getJson(client(byTime.fetch, 100).http, endpoint, { retry: createRetryPolicy({ maxRetries: 9, baseDelayMs: 400, maxElapsedMs: 1_000 }) }))
       .rejects.toMatchObject({ kind: "network" });
     expect(byTime.requests).toHaveLength(2);
+  });
+  it("時間の上限には次の試行の時間切れも含め、応答しない相手でも上限内で終える", async () => {
+    const { fetch, requests } = scripted("hang", "hang", "hang");
+    const http = createHttpClient({ fetch, timeoutMs: 60 });
+    const started = Date.now();
+    await expect(getJson(http, endpoint, { retry: createRetryPolicy({ maxRetries: 5, baseDelayMs: 5, maxElapsedMs: 150 }) }))
+      .rejects.toMatchObject({ kind: "timeout" });
+    expect(Date.now() - started).toBeLessThan(150);
+    expect(requests).toHaveLength(2);
   });
   it("GET 以外と、再試行しない状態コードは方針があっても繰り返さない", async () => {
     const post = scripted(new Response(null, { status: 503 }), Response.json({}));

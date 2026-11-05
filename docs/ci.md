@@ -17,8 +17,10 @@
 Node.js は `.nvmrc`、pnpm は `package.json` の `packageManager` に合わせます。
 `pnpm install --frozen-lockfile` の後に、既定では `pnpm run check`、
 サイドパネル選択時は `pnpm run check:sidepanel` を実行します。
+<!-- @sample-begin -->
 `tests/examples/` の参考テストは実行しませんが、残っているファイルの型はチェックします。
 ポップアップ版の実行では `pnpm run samples:verify` も行い、サンプルを削除した状態でもベースのビルドとテストが通ることを確認します。
+<!-- @sample-end -->
 実際の拡張での E2E テスト（`pnpm run test:e2e`）は CI では実行しません。
 
 ## ZIP を取得して Chrome で確認する

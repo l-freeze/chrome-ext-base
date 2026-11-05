@@ -19,8 +19,8 @@ export function useI18n(): UiTranslator {
   return translator;
 }
 
-// Applies the language and title before the first render.
+// Applies the language and title before the first render. Titles receive the product name as $1.
 export function prepareDocument(translator: UiTranslator, title: MessageKey) {
   document.documentElement.lang = translator.language;
-  document.title = translator.t(title);
+  document.title = translator.t(title, translator.t("appName"));
 }

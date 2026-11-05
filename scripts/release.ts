@@ -4,7 +4,8 @@
 // Verification builds (`pnpm run build`) keep source maps in dist/ for debugging and are not for release.
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
+import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 import { crc32, deflateRawSync } from "node:zlib";
 import { build } from "vite";
 
@@ -14,7 +15,7 @@ if (variant !== "popup" && variant !== "sidepanel") {
   process.exit(1);
 }
 
-const root = join(dirname(new URL(import.meta.url).pathname), "..");
+const root = fileURLToPath(new URL("..", import.meta.url));
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as { name: string; version: string };
 const releaseDir = join(root, "release");
 const outDir = join(releaseDir, variant);

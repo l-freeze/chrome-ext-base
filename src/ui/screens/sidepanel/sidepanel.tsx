@@ -26,7 +26,7 @@ export function Sidepanel(props: { app: SidepanelApplication; children?: JSX.Ele
   return (
     <main class="panel-shell">
       <header class="panel-header">
-        <div class="panel-brand"><span class="panel-mark" aria-hidden="true">Q</span><div><h1>Quick Note<span> .</span></h1><p>{t("sidepanelTagline")}</p></div></div>
+        <div class="panel-brand"><span class="panel-mark" aria-hidden="true">{t("appName").charAt(0)}</span><div><h1>{t("appName")}<span> .</span></h1><p>{t("sidepanelTagline")}</p></div></div>
         <a href="./sidepanel-options.html" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">{t("openSettings")}</a>
       </header>
       <Show when={sections.toArray().length > 0} fallback={<EmptyState class="panel-card" />}>{sections()}</Show>

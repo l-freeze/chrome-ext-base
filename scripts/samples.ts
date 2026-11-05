@@ -2,12 +2,14 @@
 //   node scripts/samples.ts remove [--force]   Edit this checkout in place (refuses uncommitted changes without --force).
 //   node scripts/samples.ts verify             Remove the samples from a temporary copy and run both variants' checks there.
 //
-// Sample code is either a whole file listed in SAMPLE_PATHS or a region between lines containing
-// "@sample-begin" and "@sample-end" in a source, style, config, or workflow file.
+// Sample code is either a whole file listed in SAMPLE_PATHS or a region between marker lines in a source,
+// style, config, workflow, or Markdown file. A marker line starts with a comment token followed by
+// @sample-begin or @sample-end: `// …`, `/* … */`, `{/* … */}`, `# …`, or `<!-- … -->`.
 import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const SAMPLE_PATHS = [
   "src/features/notes",
@@ -31,33 +33,34 @@ const SAMPLE_PATHS = [
 const SAMPLE_PERMISSIONS = ["activeTab", "scripting", "contextMenus"];
 const SAMPLE_HOSTS = ["https://api.sampleapis.com/*"];
 const SAMPLE_SCRIPTS = ["test:examples", "samples:remove", "samples:verify"];
-const MARKED_ROOTS = ["src", "tests", "vite.config.ts", ".github/workflows"];
-const MARKED_EXTENSIONS = /\.(?:ts|tsx|css|html|ya?ml)$/;
-const BEGIN = "@sample-begin";
-const END = "@sample-end";
+const MARKED_ROOTS = ["src", "tests", "vite.config.ts", ".github/workflows", "README.md", "docs"];
+const MARKED_EXTENSIONS = /\.(?:ts|tsx|css|html|ya?ml|md)$/;
+const SKIPPED_DIRECTORIES = new Set([".git", "node_modules", "dist", "release"]);
+const BEGIN = /^\s*(?:\/\/|\/\*|\{\/\*|#|<!--)\s*@sample-begin\b/;
+const END = /^\s*(?:\/\/|\/\*|\{\/\*|#|<!--)\s*@sample-end\b/;
 
 function files(root: string, path: string): string[] {
   const absolute = join(root, path);
   if (!existsSync(absolute)) return [];
   if (!statSync(absolute).isDirectory()) return [path];
-  return readdirSync(absolute).flatMap((name) => files(root, join(path, name)));
+  return readdirSync(absolute).filter((name) => !SKIPPED_DIRECTORIES.has(name)).flatMap((name) => files(root, join(path, name)));
 }
 
 function stripRegions(text: string, path: string): string {
   const kept: string[] = [];
   let open: number | undefined;
   text.split("\n").forEach((line, index) => {
-    if (line.includes(BEGIN)) {
-      if (open !== undefined) throw new Error(`${path}:${index + 1}: nested ${BEGIN} (opened at line ${open + 1}).`);
+    if (BEGIN.test(line)) {
+      if (open !== undefined) throw new Error(`${path}:${index + 1}: nested @sample-begin (opened at line ${open + 1}).`);
       open = index;
-    } else if (line.includes(END)) {
-      if (open === undefined) throw new Error(`${path}:${index + 1}: ${END} without ${BEGIN}.`);
+    } else if (END.test(line)) {
+      if (open === undefined) throw new Error(`${path}:${index + 1}: @sample-end without @sample-begin.`);
       open = undefined;
     } else if (open === undefined) {
       kept.push(line);
     }
   });
-  if (open !== undefined) throw new Error(`${path}:${open + 1}: ${BEGIN} is never closed.`);
+  if (open !== undefined) throw new Error(`${path}:${open + 1}: @sample-begin is never closed.`);
   return kept.join("\n");
 }
 
@@ -94,7 +97,7 @@ function remove(root: string) {
   const edited: string[] = [];
   for (const path of MARKED_ROOTS.flatMap((entry) => files(root, entry)).filter((path) => MARKED_EXTENSIONS.test(path))) {
     const text = readFileSync(join(root, path), "utf8");
-    if (!text.includes(BEGIN) && !text.includes(END)) continue;
+    if (!text.split("\n").some((line) => BEGIN.test(line) || END.test(line))) continue;
     writeFileSync(join(root, path), stripRegions(text, path));
     edited.push(path);
   }
@@ -118,34 +121,50 @@ function remove(root: string) {
 
 function run(command: string, args: string[], cwd: string) {
   console.log(`\n$ ${command} ${args.join(" ")}`);
-  execFileSync(command, args, { cwd, stdio: "inherit" });
+  // pnpm is a .cmd shim on Windows, which Node only starts through a shell.
+  execFileSync(command, args, { cwd, stdio: "inherit", shell: process.platform === "win32" });
 }
 
 const [command, ...flags] = process.argv.slice(2);
-const root = join(dirname(new URL(import.meta.url).pathname), "..");
+const root = fileURLToPath(new URL("..", import.meta.url));
+
+// The files to copy for verification: git's view when available, otherwise everything but build output.
+function sourceFiles(): string[] {
+  try {
+    return execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] })
+      .split("\n").filter((path) => path && existsSync(join(root, path)));
+  } catch {
+    return files(root, ".").map((path) => path.replace(/^\.\//, ""));
+  }
+}
 
 if (command === "remove") {
-  let dirty = "";
+  // Removal deletes files and edits sources, so it needs git to show the user's changes are safe.
+  let dirty: string | undefined;
   try { dirty = execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }); }
-  catch { dirty = ""; }
-  if (dirty.trim() && !flags.includes("--force")) {
-    console.error("Commit or stash your changes first, or pass --force. Removal deletes files and edits sources.");
-    process.exit(1);
+  catch { dirty = undefined; }
+  if (!flags.includes("--force")) {
+    if (dirty === undefined) {
+      console.error("This folder is not a git work tree, so uncommitted changes cannot be checked. Back it up or run `git init` and commit, or pass --force.");
+      process.exit(1);
+    }
+    if (dirty.trim()) {
+      console.error("Commit or stash your changes first, or pass --force. Removal deletes files and edits sources.");
+      process.exit(1);
+    }
   }
   remove(root);
-  console.log("\nNext: pnpm run check && pnpm run check:sidepanel, then delete the sample sections from the docs.");
+  console.log("\nNext: pnpm run check && pnpm run check:sidepanel. Sample passages marked in the docs are gone; review the remaining text that uses the samples as examples.");
 } else if (command === "verify") {
   const copy = mkdtempSync(join(tmpdir(), "chrome-ext-base-without-samples-"));
-  const tracked = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], { cwd: root, encoding: "utf8" })
-    .split("\n").filter((path) => path && existsSync(join(root, path)));
-  for (const path of tracked) {
+  for (const path of sourceFiles()) {
     mkdirSync(dirname(join(copy, path)), { recursive: true });
     cpSync(join(root, path), join(copy, path));
   }
   symlinkSync(join(root, "node_modules"), join(copy, "node_modules"), "dir");
   remove(copy);
-  const leftovers = [...files(copy, "src"), ...files(copy, "tests")]
-    .filter((path) => /@sample-(?:begin|end)/.test(readFileSync(join(copy, path), "utf8")));
+  const leftovers = MARKED_ROOTS.flatMap((entry) => files(copy, entry)).filter((path) => MARKED_EXTENSIONS.test(path))
+    .filter((path) => readFileSync(join(copy, path), "utf8").split("\n").some((line) => BEGIN.test(line) || END.test(line)));
   if (leftovers.length > 0) throw new Error(`Markers remain in ${leftovers.join(", ")}.`);
   run("pnpm", ["run", "check"], copy);
   run("pnpm", ["run", "check:sidepanel"], copy);

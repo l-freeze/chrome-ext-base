@@ -42,8 +42,9 @@ function parseResponse(raw: unknown): FetchCoffeeOutput {
   };
 }
 
-// A public sample API: retry brief outages twice, finishing well inside the worker's idle limit.
-const retry = createRetryPolicy({ maxRetries: 2, baseDelayMs: 500, maxElapsedMs: 15_000 });
+// A public sample API: retry brief outages up to twice. With 8 s per try, 20 s in total stays well
+// inside the service worker's ~30 s idle limit.
+const retry = createRetryPolicy({ maxRetries: 2, baseDelayMs: 500, maxElapsedMs: 20_000 });
 
 export function createSampleApisCoffeeClient(client: HttpClient): CoffeeClient {
   return {
