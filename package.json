@@ -1,6 +1,7 @@
 {
   "name": "chrome-ext-base",
   "version": "0.1.0",
+  "palette": "purple",
   "private": true,
   "type": "module",
   "engines": {

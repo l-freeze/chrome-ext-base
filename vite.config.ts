@@ -3,7 +3,7 @@ import { build, defineConfig } from "vite";
 import type { Plugin, Rolldown } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import solid from "vite-plugin-solid";
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
 
 // package.json is the only place to change the version; the build writes it into the manifest.
@@ -14,6 +14,17 @@ function extensionVersion(): string {
     throw new Error(`package.json version "${String(version)}" is not a valid Chrome extension version (e.g. 1.2.3).`);
   }
   return version;
+}
+
+// package.json "palette" picks one folder under src/palettes (default: purple). Only that palette's theme,
+// colors and icons are built; the others never reach the output. The import alias #palette points at it.
+function paletteDir(): string {
+  const { palette = "purple" } = JSON.parse(readFileSync("package.json", "utf8")) as { palette?: unknown };
+  const available = readdirSync("src/palettes", { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+  if (typeof palette !== "string" || !available.includes(palette)) {
+    throw new Error(`package.json palette "${String(palette)}" is not one of: ${available.join(", ")}.`);
+  }
+  return resolve("src/palettes", palette);
 }
 
 // Modules that need a DOM document or a page of their own. The worker has no DOM, and content scripts run
@@ -43,7 +54,7 @@ function contentEntries(root: string): string[] {
   return readdirSync(dir).filter((name) => /^[\w-]+\.ts$/.test(name)).map((name) => resolve(dir, name));
 }
 
-function contentScripts(): Plugin {
+function contentScripts(alias: Record<string, string>): Plugin {
   let root = "";
   let outDir = "";
   let sourcemap: boolean | "inline" | "hidden" = false;
@@ -56,7 +67,7 @@ function contentScripts(): Plugin {
       for (const entry of contentEntries(root)) {
         const name = basename(entry, ".ts");
         await build({
-          root, configFile: false, logLevel: "warn", publicDir: false,
+          root, configFile: false, logLevel: "warn", publicDir: false, resolve: { alias },
           plugins: [{
             name: "content-boundary",
             generateBundle(_options, bundle) {
@@ -79,9 +90,11 @@ export default defineConfig(({ mode }) => {
   // Verification builds go to dist/; scripts/release.ts overrides outDir and turns off source maps.
   const outDir = `dist/${sidepanel ? "sidepanel" : "popup"}`;
   let resolvedOutDir = outDir;
+  const palette = paletteDir();
   return {
     base: "./",
-    plugins: [solid(), tailwindcss(), contentScripts(), {
+    resolve: { alias: { "#palette": palette } },
+    plugins: [solid(), tailwindcss(), contentScripts({ "#palette": palette }), {
       // Functions the worker injects into pages may use the DOM; UI modules must not be reachable from it.
       name: "worker-boundary",
       generateBundle(_options, bundle) {
@@ -95,6 +108,8 @@ export default defineConfig(({ mode }) => {
       configResolved(config) { resolvedOutDir = resolve(config.root, config.build.outDir); },
       buildStart() { this.addWatchFile(resolve("public/manifest.json")); this.addWatchFile(resolve("package.json")); },
       writeBundle() {
+        // The manifest's icons/ paths come from the selected palette.
+        cpSync(resolve(palette, "icons"), resolve(resolvedOutDir, "icons"), { recursive: true });
         const manifest = { ...JSON.parse(readFileSync("public/manifest.json", "utf8")), version: extensionVersion() } as chrome.runtime.ManifestV3;
         if (sidepanel) {
           manifest.name = "__MSG_extensionNameSidepanel__";

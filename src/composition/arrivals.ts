@@ -14,13 +14,13 @@ import { createBadgeIndicator, silentIndicator } from "../features/arrivals/gate
 import { checkArrivalsMessage, delegateCheckToWorker } from "../features/arrivals/gateways/worker";
 import type { Environment } from "./environment";
 import type { WorkerRegistry } from "./worker";
+import { colors } from "#palette/colors";
 
 const CHECK = "arrivals.check";
 const CHECK_MINUTES = 30;
 // Above the notes reminder: a count says more than a dot.
 const BADGE_SLOT = "arrivals";
 const BADGE_PRIORITY = 20;
-const BADGE_COLOR = "#1f7a5c";
 
 function createArrivals(driver: KeyValueStorage, badges: BadgeBoard | undefined) {
   return createArrivalsApplication({
@@ -29,7 +29,7 @@ function createArrivals(driver: KeyValueStorage, badges: BadgeBoard | undefined)
       timeoutMs: 8_000,
     }))),
     repository: createArrivalsStorage(driver),
-    indicator: badges ? createBadgeIndicator(badges.slot(BADGE_SLOT, BADGE_PRIORITY), BADGE_COLOR) : silentIndicator,
+    indicator: badges ? createBadgeIndicator(badges.slot(BADGE_SLOT, BADGE_PRIORITY), colors.badge.positive) : silentIndicator,
     clock: { now: () => Date.now() },
   });
 }

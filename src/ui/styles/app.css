@@ -1,5 +1,5 @@
 @import "tailwindcss" source(none);
-@import "./themes.css";
+@import "#palette/theme.css";
 @import "../layouts/extension-shell.css";
 @import "../components/feedback.css";
 @import "../screens/popup/popup.css";

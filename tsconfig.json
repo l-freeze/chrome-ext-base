@@ -15,7 +15,9 @@
     "noUnusedParameters": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    // Type-checks against the default palette; every palette's colors.ts satisfies the same interface.
+    "paths": { "#palette/*": ["./src/palettes/purple/*"] }
   },
   "include": ["src"]
 }

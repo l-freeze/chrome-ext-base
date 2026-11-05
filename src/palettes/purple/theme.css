@@ -1,3 +1,5 @@
+/* Purple palette: the default. package.json "palette" selects which folder under src/palettes is built;
+   the other palettes are not part of the output. Keep the theme names: the settings switch between them. */
 @plugin "daisyui/theme" {
   name: "notebook";
   default: true;
