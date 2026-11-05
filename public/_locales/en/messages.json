@@ -30,6 +30,10 @@
     "message": "Add selection to note",
     "description": "Context menu item shown for selected text."
   },
+  "commandOpen": {
+    "message": "Open the extension",
+    "description": "Keyboard shortcut that opens the popup or side panel."
+  },
   "documentTitlePopup": {
     "message": "$APP$",
     "description": "Tab title of the popup page.",

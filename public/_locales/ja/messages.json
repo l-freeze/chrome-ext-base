@@ -30,6 +30,10 @@
     "message": "選択した文章をメモに追加",
     "description": "Context menu item shown for selected text."
   },
+  "commandOpen": {
+    "message": "拡張を開く",
+    "description": "Keyboard shortcut that opens the popup or side panel."
+  },
   "documentTitlePopup": {
     "message": "$APP$",
     "description": "Tab title of the popup page.",

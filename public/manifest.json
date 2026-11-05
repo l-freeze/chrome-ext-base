@@ -27,6 +27,15 @@
     },
     "default_popup": "index.html"
   },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "__MSG_commandOpen__"
+    }
+  },
   "background": {
     "service_worker": "worker.js",
     "type": "module"

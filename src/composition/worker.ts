@@ -1,6 +1,7 @@
 import { createEnvironment } from "./environment";
 import { createMessageRouter } from "../infrastructure/messaging/router";
 import type { ContextMenuItem } from "../infrastructure/context-menus";
+import type { CommandItem } from "../infrastructure/commands";
 // @sample-begin
 import { registerNoteWorker } from "./notes";
 // @sample-end
@@ -10,8 +11,9 @@ export function createWorkerApplication() {
   const { driver } = createEnvironment();
   const router = createMessageRouter();
   const menus: ContextMenuItem[] = [];
+  const commands: CommandItem[] = [];
   // @sample-begin
   registerNoteWorker(driver, router, menus);
   // @sample-end
-  return { driver, router, menus };
+  return { driver, router, menus, commands };
 }
