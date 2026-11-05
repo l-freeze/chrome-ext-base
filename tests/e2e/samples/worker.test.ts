@@ -1,6 +1,6 @@
 /**
- * 開発者向けの参考例です。service worker のサンプル（アラームによる定期確認とバッジの件数、
- * メモの見直しリマインダー）を、実際の拡張として Chromium に読み込んで確認します。
+ * 開発者向けの参考例です。service worker のサンプル（インストール時の案内ページ、アラームによる定期確認と
+ * バッジの件数、メモの見直しリマインダー）を、実際の拡張として Chromium に読み込んで確認します。
  * 独自機能の開発を始める際は、イベントの発火・バッジやアラームの確認の書き方を参考にしたうえで、
  * このテストを削除してください。`pnpm run samples:remove` でもサンプルと一緒に削除されます。
  * 実行: pnpm run test:e2e
@@ -8,7 +8,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { Worker } from "playwright";
 import type { LoadedExtension, Variant } from "../support/extension";
-import { launchExtension, screenPath } from "../support/extension";
+import { findPage, launchExtension, screenPath } from "../support/extension";
 
 // Waiting for real alarms would take minutes, so the tests fire the worker's alarm event directly.
 const ring = (worker: Worker, name: string) => worker.evaluate((alarm) => {
@@ -20,6 +20,20 @@ const coffees = (...ids: number[]) => ids.map((id) => ({ id, title: `Coffee ${id
 describe.each<Variant>(["popup", "sidepanel"])("%s", (variant) => {
   let extension: LoadedExtension | undefined;
   afterEach(async () => { await extension?.close(); extension = undefined; });
+
+  it("インストール時だけ案内ページを開き、Chrome が割り当てたショートカットを表示する", async () => {
+    extension = await launchExtension({ variant, keepWelcome: true });
+    const welcome = await findPage(extension.context, "/welcome.html");
+    await expect.poll(() => welcome.locator("[data-command=append-selection] kbd").textContent()).toMatch(/Shift\+U/);
+    expect(await welcome.locator("[data-command=_execute_action] dt").textContent()).not.toBe("");
+    await welcome.close();
+
+    await extension.worker.evaluate(() => {
+      (chrome.runtime.onInstalled as unknown as { dispatch(details: unknown): void }).dispatch({ reason: "update", previousVersion: "0.0.1" });
+    });
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(extension.context.pages().some((page) => page.url().endsWith("/welcome.html"))).toBe(false);
+  });
 
   it("定期確認は初回に一覧を記録し、増えた件数をバッジに出し、画面で開くと既読にする", async () => {
     extension = await launchExtension({ variant });

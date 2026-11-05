@@ -124,6 +124,10 @@ export default defineConfig(({ mode }) => {
           ...(sidepanel
             ? { sidepanel: "sidepanel.html", options: "sidepanel-options.html", worker: "src/background/sidepanel.ts" }
             : { popup: "index.html", options: "options.html", worker: "src/background/popup.ts" }),
+          // @sample-begin
+          // Opened by the worker on install; the same page serves both variants.
+          welcome: "welcome.html",
+          // @sample-end
         },
         output: { entryFileNames: (chunk) => chunk.name === "worker" ? "worker.js" : "assets/[name]-[hash].js" },
       },

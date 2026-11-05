@@ -136,6 +136,48 @@
       }
     }
   },
+  "documentTitleWelcome": {
+    "message": "Welcome · $APP$",
+    "placeholders": {
+      "app": {
+        "content": "$1"
+      }
+    }
+  },
+  "welcomeEyebrow": {
+    "message": "WELCOME"
+  },
+  "welcomeHeading": {
+    "message": "Thanks for installing."
+  },
+  "welcomeIntro": {
+    "message": "Open it from the toolbar button. Common actions also have keyboard shortcuts."
+  },
+  "welcomePinHint": {
+    "message": "If you can't find the button, pin it from the puzzle icon in the toolbar."
+  },
+  "welcomeShortcutsHeading": {
+    "message": "Keyboard shortcuts"
+  },
+  "welcomeShortcutsHelp": {
+    "message": "These are the keys Chrome actually assigned. A key another extension already uses is left unassigned."
+  },
+  "welcomeShortcutUnset": {
+    "message": "Not set",
+    "description": "Shown when Chrome assigned no key to a shortcut."
+  },
+  "welcomeShortcutsFailed": {
+    "message": "Couldn't load the shortcuts."
+  },
+  "welcomeChangeShortcuts": {
+    "message": "Change shortcuts"
+  },
+  "welcomeOpenSettings": {
+    "message": "Open settings"
+  },
+  "welcomePreviewNote": {
+    "message": "The browser preview shows a fixed example."
+  },
   "shellEyebrow": {
     "message": "A LITTLE SPACE FOR YOUR IDEAS"
   },

@@ -1,4 +1,7 @@
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+// @sample-begin
+import { existsSync } from "node:fs";
+// @sample-end
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
@@ -27,7 +30,16 @@ export interface LoadedExtension {
 
 // Loads a built extension into Chromium. Headless Chromium supports extensions when the full
 // browser ("chromium" channel) is used. CHROMIUM_PATH selects an existing browser binary.
-export async function launchExtension(options: { variant: Variant; path?: string; language?: string }): Promise<LoadedExtension> {
+export interface LaunchOptions {
+  variant: Variant;
+  path?: string;
+  language?: string;
+  // @sample-begin
+  keepWelcome?: boolean;
+  // @sample-end
+}
+
+export async function launchExtension(options: LaunchOptions): Promise<LoadedExtension> {
   const path = options.path ?? dist(options.variant);
   const language = options.language ?? "ja";
   const profile = mkdtempSync(join(tmpdir(), "e2e-profile-"));
@@ -40,6 +52,10 @@ export async function launchExtension(options: { variant: Variant; path?: string
   });
   const worker = context.serviceWorkers()[0] ?? await context.waitForEvent("serviceworker");
   const id = new URL(worker.url()).host;
+  // @sample-begin
+  // The welcome sample opens a tab on install. Close it so each test starts from the same window.
+  if (existsSync(join(path, "welcome.html")) && !options.keepWelcome) await (await findPage(context, "/welcome.html")).close();
+  // @sample-end
   return {
     context, worker, id, manifest: readManifest(path),
     async open(page) {
@@ -52,6 +68,17 @@ export async function launchExtension(options: { variant: Variant; path?: string
       rmSync(profile, { recursive: true, force: true });
     },
   };
+}
+
+// Waits for a tab the extension opened itself, e.g. with tabs.create.
+export async function findPage(context: BrowserContext, pathname: string, timeoutMs = 10_000): Promise<Page> {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    const page = context.pages().find((candidate) => candidate.url().endsWith(pathname));
+    if (page) { await page.waitForLoadState(); return page; }
+    if (Date.now() > deadline) throw new Error(`No page ${pathname} opened within ${timeoutMs} ms.`);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
 }
 
 // The screen a variant opens from the toolbar, read from its manifest.

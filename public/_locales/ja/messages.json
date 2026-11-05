@@ -136,6 +136,48 @@
       }
     }
   },
+  "documentTitleWelcome": {
+    "message": "ようこそ · $APP$",
+    "placeholders": {
+      "app": {
+        "content": "$1"
+      }
+    }
+  },
+  "welcomeEyebrow": {
+    "message": "WELCOME"
+  },
+  "welcomeHeading": {
+    "message": "インストールありがとうございます。"
+  },
+  "welcomeIntro": {
+    "message": "ツールバーのボタンから開けます。よく使う操作は、キーボードからも呼び出せます。"
+  },
+  "welcomePinHint": {
+    "message": "ボタンが見つからないときは、ツールバーのパズルのアイコンから固定してください。"
+  },
+  "welcomeShortcutsHeading": {
+    "message": "キーボードショートカット"
+  },
+  "welcomeShortcutsHelp": {
+    "message": "Chrome が実際に割り当てたキーです。他の拡張と重なったキーは割り当てられません。"
+  },
+  "welcomeShortcutUnset": {
+    "message": "未設定",
+    "description": "Shown when Chrome assigned no key to a shortcut."
+  },
+  "welcomeShortcutsFailed": {
+    "message": "ショートカットを読み込めませんでした。"
+  },
+  "welcomeChangeShortcuts": {
+    "message": "ショートカットを変更"
+  },
+  "welcomeOpenSettings": {
+    "message": "設定を開く"
+  },
+  "welcomePreviewNote": {
+    "message": "ブラウザプレビューでは、固定の例を表示しています。"
+  },
   "shellEyebrow": {
     "message": "A LITTLE SPACE FOR YOUR IDEAS"
   },

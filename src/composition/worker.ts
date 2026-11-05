@@ -8,6 +8,7 @@ import type { InstallTask } from "../infrastructure/lifecycle";
 // @sample-begin
 import { registerNoteWorker } from "./notes";
 import { registerArrivalsWorker } from "./arrivals";
+import { registerWelcomeWorker } from "./welcome";
 // @sample-end
 
 // Concrete implementations for the service worker. Each feature registers its messages, menu items,
@@ -26,6 +27,7 @@ export function createWorkerApplication() {
   // @sample-begin
   registerNoteWorker(worker);
   registerArrivalsWorker(worker);
+  registerWelcomeWorker(worker);
   // @sample-end
   return worker;
 }
