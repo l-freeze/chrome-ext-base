@@ -1,18 +1,20 @@
-import { createSettingsContext } from "./settings";
+import { createEnvironment } from "./environment";
+import { createSettings } from "./settings";
 // @sample-begin
 import { createNoteScreens } from "./notes";
 import { createSidepanelPage } from "./page";
 // @sample-end
 
 export async function createSidepanelApplication() {
-  const context = createSettingsContext();
+  const environment = createEnvironment();
+  const settings = createSettings(environment);
   return {
-    settings: context.actions,
-    settingsChanges: context.changes,
-    preview: !context.extension,
+    settings: settings.actions,
+    settingsChanges: settings.changes,
+    preview: !environment.extension,
     // @sample-begin
-    ...createNoteScreens(context),
-    ...(await createSidepanelPage(context)),
+    ...createNoteScreens(environment),
+    ...(await createSidepanelPage(environment)),
     // @sample-end
   };
 }

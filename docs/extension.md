@@ -67,7 +67,7 @@ Chrome では `chrome.storage.onChanged`、プレビューでは別ドキュメ�
 画面要素の変更検知も content script の担当です。`MutationObserver` で検知し、必要なら
 service worker にメッセージで保存や通知を依頼します。worker 自身は DOM を監視できません。
 
-このサンプルは `src/content/page.ts` の自己完結した関数を、
+このサンプルは `src/features/page/gateways/content.ts` の自己完結した関数を、
 `chrome.scripting.executeScript` の `func` としてクリック時に実行します。
 宣言型の `content_scripts` や別ファイルの常駐スクリプトは登録していません。
 Chrome は関数をコピーして実行するため、関数内から拡張側の変数や import を参照しないでください。

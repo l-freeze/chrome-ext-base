@@ -243,14 +243,13 @@ src/
 │   ├── gateways/           メモの取得・変換・保存の実装
 │   └── compose.ts          controller と UseCase を接続
 ├── features/settings/      設定の保存・リセット・変更通知（notes と同じ役割分け）
-├── features/page/          現在のページ情報を取得（同じ役割分け）
+├── features/page/          現在のページ情報を取得（同じ役割分け。ページ内で動く関数は gateways/content.ts）
 ├── features/site-access/   サイドパネルのサイト確認・許可（同じ役割分け）
-├── content/                ページ内で実行する自己完結した関数
 ├── background/             service worker の入口（方式ごと）と共通の登録処理
 ├── integrations/           サービスごとの型・client・境界検証
 ├── infrastructure/         共通の通信・保存・メッセージ・右クリックメニュー・多言語化の基盤
 ├── lib/validation.ts       検証の型と実行ラッパー
-├── composition/            環境に合わせた具体実装の選択（画面・worker・翻訳）
+├── composition/            実行環境（environment.ts）と、機能・入口ごとの具体実装の選択
 └── ui/
     ├── entrypoints/        起動点（Solid の render）
     ├── screens/            画面コンポーネント
@@ -273,7 +272,8 @@ controller は inbound adapter、gateway は outbound adapter に相当します
 保存 Input / 読み出し Output のバリデーターは両方必須です。片方だけでは初期化できません。
 既存のメモ文字列は引き続き読み出せます。未保存は空メモ、破損データはエラーとして扱います。
 API とストレージの実装は、機能ごとの `src/composition/notes.ts` / `page.ts` で差し替えられます。
-入口ごとの `composition/popup.ts` / `sidepanel.ts` / `worker.ts` は、それらを集めるだけです。
+入口ごとの `composition/popup.ts` / `sidepanel.ts` / `worker.ts` は、`composition/environment.ts` で実行環境（保存先・変更通知・ロック）を
+1 回だけ作り、それを各機能の組み立てに渡して集めるだけです。
 
 依存関係は `pnpm-lock.yaml` で固定しています。
 バージョンは `package.json` の `version` だけで管理し、ビルドが manifest に書き込みます（`pnpm version patch` などで更新できます）。

@@ -2,7 +2,7 @@ import type { PageInfo } from "../page";
 import { PageCaptureError } from "../page";
 import type { PageReader } from "../ports";
 import { ValidationError } from "../../../lib/validation";
-import { readPage } from "../../../content/page";
+import { readPage } from "./content";
 
 export interface PageBrowser {
   query(query: { active: true; currentWindow: true }): Promise<{ id?: number | undefined; url?: string | undefined }[]>;

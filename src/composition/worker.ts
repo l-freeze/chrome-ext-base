@@ -1,5 +1,4 @@
-import { createChromeStorage } from "../infrastructure/storage/drivers/chrome";
-import { createWebLocks } from "../infrastructure/storage/locks";
+import { createEnvironment } from "./environment";
 import { createMessageRouter } from "../infrastructure/messaging/router";
 import type { ContextMenuItem } from "../infrastructure/context-menus";
 // @sample-begin
@@ -8,7 +7,7 @@ import { registerNoteWorker } from "./notes";
 
 // Concrete implementations for the service worker. Each feature registers its messages and menu items here.
 export function createWorkerApplication() {
-  const driver = createChromeStorage(chrome.storage.local, createWebLocks(navigator.locks));
+  const { driver } = createEnvironment();
   const router = createMessageRouter();
   const menus: ContextMenuItem[] = [];
   // @sample-begin
