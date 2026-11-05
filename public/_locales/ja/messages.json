@@ -56,6 +56,61 @@
   "toastAppendFailed": {
     "message": "メモに追加できませんでした。"
   },
+  "toastUndo": {
+    "message": "元に戻す",
+    "description": "Button on the page notice after an append."
+  },
+  "toastUndone": {
+    "message": "追加を取り消しました。"
+  },
+  "toastUndoChanged": {
+    "message": "メモがその後変更されたため、元に戻せませんでした。"
+  },
+  "toastUndoFailed": {
+    "message": "元に戻せませんでした。"
+  },
+  "arrivalsSummary": {
+    "message": "コーヒーの新着",
+    "description": "Collapsible section title."
+  },
+  "arrivalsCount": {
+    "message": "$COUNT$ 件",
+    "description": "Number of new items next to the section title.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivalsHelp": {
+    "message": "30 分ごとに SampleAPIs のコーヒー一覧を確認し、増えた件数をツールバーのバッジに表示します。ここを開くと既読になります。"
+  },
+  "arrivalsEmpty": {
+    "message": "前回見てから増えたコーヒーはありません。"
+  },
+  "arrivalsNotChecked": {
+    "message": "まだ確認していません。最初の確認で今の一覧を記録し、次から増えた分を数えます。"
+  },
+  "arrivalsLastChecked": {
+    "message": "最終確認: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivalsCheck": {
+    "message": "今すぐ確認"
+  },
+  "arrivalsChecking": {
+    "message": "確認しています…"
+  },
+  "arrivalsFailed": {
+    "message": "確認できませんでした。時間をおいてもう一度お試しください。"
+  },
+  "arrivalsLoadFailed": {
+    "message": "新着を読み込めませんでした。"
+  },
   "documentTitlePopup": {
     "message": "$APP$",
     "description": "Tab title of the popup page.",
@@ -80,6 +135,48 @@
         "content": "$1"
       }
     }
+  },
+  "documentTitleWelcome": {
+    "message": "ようこそ · $APP$",
+    "placeholders": {
+      "app": {
+        "content": "$1"
+      }
+    }
+  },
+  "welcomeEyebrow": {
+    "message": "WELCOME"
+  },
+  "welcomeHeading": {
+    "message": "インストールありがとうございます。"
+  },
+  "welcomeIntro": {
+    "message": "ツールバーのボタンから開けます。よく使う操作は、キーボードからも呼び出せます。"
+  },
+  "welcomePinHint": {
+    "message": "ボタンが見つからないときは、ツールバーのパズルのアイコンから固定してください。"
+  },
+  "welcomeShortcutsHeading": {
+    "message": "キーボードショートカット"
+  },
+  "welcomeShortcutsHelp": {
+    "message": "Chrome が実際に割り当てたキーです。他の拡張と重なったキーは割り当てられません。"
+  },
+  "welcomeShortcutUnset": {
+    "message": "未設定",
+    "description": "Shown when Chrome assigned no key to a shortcut."
+  },
+  "welcomeShortcutsFailed": {
+    "message": "ショートカットを読み込めませんでした。"
+  },
+  "welcomeChangeShortcuts": {
+    "message": "ショートカットを変更"
+  },
+  "welcomeOpenSettings": {
+    "message": "設定を開く"
+  },
+  "welcomePreviewNote": {
+    "message": "ブラウザプレビューでは、固定の例を表示しています。"
   },
   "shellEyebrow": {
     "message": "A LITTLE SPACE FOR YOUR IDEAS"

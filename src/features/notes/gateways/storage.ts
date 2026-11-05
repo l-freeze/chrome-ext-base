@@ -1,5 +1,5 @@
-import type { NoteChanges, NoteRepository } from "../ports";
-import type { Note } from "../note";
+import type { AppendHistory, NoteChanges, NoteRepository } from "../ports";
+import type { AppendRecord, Note } from "../note";
 import { noteText } from "../note";
 import { ValidationError } from "../../../lib/validation";
 import type { KeyValueStorage, StorageChanges, StorageContract } from "../../../infrastructure/storage/contracts";
@@ -20,6 +20,25 @@ const contract: StorageContract<Note, Note> = {
 
 export function createNoteStorage(driver: KeyValueStorage): NoteRepository {
   return createTypedStorage(driver, contract);
+}
+
+function parseRecord(raw: unknown): AppendRecord | null {
+  if (raw === undefined || raw === null) return null;
+  if (typeof raw !== "object" || Array.isArray(raw) || !("before" in raw) || !("after" in raw)) {
+    throw new ValidationError("An append record must be { before, after }.");
+  }
+  return { before: noteText(raw.before), after: noteText(raw.after) };
+}
+
+const historyContract: StorageContract<AppendRecord | null, AppendRecord | null> = {
+  key: "quick-note-last-append",
+  input: { parse: parseRecord },
+  output: { parse: parseRecord },
+  encode: (input) => input,
+};
+
+export function createAppendHistory(driver: KeyValueStorage): AppendHistory {
+  return createTypedStorage(driver, historyContract);
 }
 
 export function createNoteChanges(changes: StorageChanges): NoteChanges {

@@ -69,7 +69,7 @@ describe.each<Variant>(["popup", "sidepanel"])("%s", (variant) => {
     await extension.context.route("https://api.sampleapis.com/**", (route) => ++calls === 1
       ? route.fulfill({ status: 503 })
       : route.fulfill({ json: { id: 1, title: "Second Try", description: "Hot.", ingredients: ["Coffee"], image: "https://example.test/x.jpg" } }));
-    await screen.locator("summary").click();
+    await screen.locator("summary", { hasText: "REST" }).click();
     await screen.getByRole("button", { name: "サンプルを取得して保存" }).click();
     await expect.poll(() => editor.inputValue(), { timeout: 10_000 }).toMatch(/^Second Try/);
     expect(calls).toBe(2);
@@ -80,7 +80,7 @@ describe.each<Variant>(["popup", "sidepanel"])("%s", (variant) => {
     await editor.fill("残すメモ");
     await editor.press("Control+Enter");
     await expect.poll(() => stored(extension.worker)).toBe("残すメモ");
-    await screen.locator("summary").click();
+    await screen.locator("summary", { hasText: "REST" }).click();
     const importButton = screen.getByRole("button", { name: "サンプルを取得して保存" });
     const cases: Array<[(route: import("playwright").Route) => Promise<void>, string]> = [
       [(route) => route.abort("internetdisconnected"), "通信できませんでした。"],
@@ -103,7 +103,7 @@ describe.each<Variant>(["popup", "sidepanel"])("%s", (variant) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       await route.fulfill({ json: { id: 1, title: "Fixed Coffee", description: "Hot.", ingredients: ["Coffee"], image: "https://example.test/x.jpg" } });
     });
-    await screen.locator("summary").click();
+    await screen.locator("summary", { hasText: "REST" }).click();
     await screen.getByRole("button", { name: "サンプルを取得して保存" }).click();
     await screen.close();
     await expect.poll(() => stored(extension.worker), { timeout: 10_000 }).toMatch(/^Fixed Coffee/);
@@ -117,7 +117,7 @@ describe("ショートカットとページ上の通知", () => {
   let copy: ReturnType<typeof withHostPermissions> | undefined;
   afterEach(async () => { await extension?.close(); copy?.dispose(); extension = undefined; copy = undefined; });
 
-  it.each<Variant>(["popup", "sidepanel"])("%s: 選択した文章を追加してページに通知し、選択がなければ失敗を通知してバッジを付ける", async (variant) => {
+  it.each<Variant>(["popup", "sidepanel"])("%s: 選択した文章を追加してページに通知し、選択がなければ失敗を通知してそのタブにバッジを付ける", async (variant) => {
     const site = await serveSite({ "/a.html": '<!doctype html><title>記事</title><p id="text">ショートカットの文章</p>' });
     copy = withHostPermissions(variant, ["http://localhost/*"]);
     extension = await launchExtension({ variant, path: copy.path });
@@ -128,19 +128,48 @@ describe("ショートカットとページ上の通知", () => {
       (chrome.commands.onCommand as unknown as { dispatch(name: string, tab: unknown): void }).dispatch("append-selection", target);
     }, site.url("/a.html"));
     const toastHost = () => tab.evaluate(() => !!document.getElementById("chrome-ext-base-page-toast"));
+    const badges = () => extension!.worker.evaluate(async (url) => {
+      const [target] = await chrome.tabs.query({ url });
+      return [await chrome.action.getBadgeText({ tabId: target!.id! }), await chrome.action.getBadgeText({})];
+    }, site.url("/a.html"));
 
     await tab.evaluate(() => { const range = document.createRange(); range.selectNodeContents(document.querySelector("#text")!); getSelection()!.addRange(range); });
     await press();
     await expect.poll(() => stored(extension!.worker)).toBe("ショートカットの文章");
     await expect.poll(toastHost).toBe(true);
-    expect(await extension.worker.evaluate(() => chrome.action.getBadgeText({}))).toBe("");
+    expect(await badges()).toEqual(["", ""]);
 
     await tab.evaluate(() => getSelection()!.removeAllRanges());
     await tab.evaluate(() => document.getElementById("chrome-ext-base-page-toast")?.remove());
     await press();
-    await expect.poll(() => extension!.worker.evaluate(() => chrome.action.getBadgeText({}))).toBe("!");
+    // The failure marks only that tab; the shared badge is left for other features.
+    await expect.poll(badges).toEqual(["!", ""]);
     await expect.poll(toastHost).toBe(true);
     expect(await stored(extension.worker)).toBe("ショートカットの文章");
+    await site.close();
+  });
+
+  // The notice after an append is a content script; its Undo button sends a message to the worker.
+  it.each<Variant>(["popup", "sidepanel"])("%s: ページの通知の「元に戻す」で、worker が追加前のメモに戻す", async (variant) => {
+    const site = await serveSite({ "/a.html": '<!doctype html><title>記事</title><p id="text">取り消す文章</p>' });
+    copy = withHostPermissions(variant, ["http://localhost/*"]);
+    extension = await launchExtension({ variant, path: copy.path });
+    await extension.worker.evaluate(() => chrome.storage.local.set({ "quick-note": "元のメモ" }));
+    const screen = await extension.open(screenPath(extension));
+    const tab = await openTab(screen, site.url("/a.html"));
+    await tab.evaluate(() => { const range = document.createRange(); range.selectNodeContents(document.querySelector("#text")!); getSelection()!.addRange(range); });
+    await extension.worker.evaluate(async (url) => {
+      const [target] = await chrome.tabs.query({ url });
+      (chrome.commands.onCommand as unknown as { dispatch(name: string, tab: unknown): void }).dispatch("append-selection", target);
+    }, site.url("/a.html"));
+    await expect.poll(() => stored(extension!.worker)).toBe("元のメモ\n\n取り消す文章");
+    await expect.poll(() => tab.evaluate(() => !!document.getElementById("chrome-ext-base-page-toast"))).toBe(true);
+
+    // The notice sits in a closed shadow root, so the test reaches its button with the keyboard, as a user can.
+    await tab.bringToFront();
+    await tab.keyboard.press("Tab");
+    await tab.keyboard.press("Enter");
+    await expect.poll(() => stored(extension!.worker)).toBe("元のメモ");
     await site.close();
   });
 });

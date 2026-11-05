@@ -77,6 +77,21 @@ describe("メッセージの Request / Response 契約", () => {
   });
 });
 
+describe("入力のない要求", () => {
+  const ping: MessageContract<void, string> = {
+    type: "example.ping",
+    request: { parse(raw) { if (raw !== undefined) throw new TypeError("Expected no input"); } },
+    response: { parse(raw) { if (typeof raw !== "string") throw new TypeError("Expected a string"); return raw; } },
+  };
+  it("JSON で送られて payload が消えても、入力なしとして処理する", async () => {
+    const router = createMessageRouter();
+    router.handle(ping, async () => "pong");
+    // chrome.runtime.sendMessage serializes the message as JSON, which drops an undefined payload.
+    const client = createMessageClient({ send: async (message) => router.dispatch(JSON.parse(JSON.stringify(message)), sender) });
+    expect(await client.request(ping, undefined)).toBe("pong");
+  });
+});
+
 describe("Chrome の受信口", () => {
   type Listener = (message: unknown, sender: chrome.runtime.MessageSender, respond: (reply: unknown) => void) => boolean;
   function runtime() {

@@ -2,6 +2,7 @@ import { createEnvironment } from "./environment";
 import { createSettings } from "./settings";
 // @sample-begin
 import { createNoteScreens } from "./notes";
+import { createArrivalsScreens } from "./arrivals";
 import { createPopupPage } from "./page";
 // @sample-end
 
@@ -14,6 +15,7 @@ export function createPopupApplication() {
     preview: !environment.extension,
     // @sample-begin
     ...createNoteScreens(environment),
+    ...createArrivalsScreens(environment),
     ...createPopupPage(environment),
     // @sample-end
   };

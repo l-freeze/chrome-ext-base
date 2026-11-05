@@ -10,8 +10,14 @@ export interface FetchCoffeeOutput {
   ingredients: string[];
   image: string;
 }
+// One entry of the list. Only the fields a caller needs to tell entries apart are validated.
+export interface CoffeeSummary {
+  id: number;
+  title: string;
+}
 export interface CoffeeClient {
   fetchCoffee(input: FetchCoffeeInput): Promise<FetchCoffeeOutput>;
+  listCoffees(): Promise<CoffeeSummary[]>;
 }
 
 function parseRequest(raw: unknown): FetchCoffeeInput {
@@ -42,6 +48,20 @@ function parseResponse(raw: unknown): FetchCoffeeOutput {
   };
 }
 
+function parseList(raw: unknown): CoffeeSummary[] {
+  if (!Array.isArray(raw)) throw new ValidationError("SampleAPIs returned an unexpected coffee list.");
+  return raw.map((item: unknown) => {
+    if (
+      typeof item !== "object" || item === null || Array.isArray(item) || !("id" in item) ||
+      typeof item.id !== "number" || !Number.isSafeInteger(item.id) || item.id < 1 ||
+      !("title" in item) || typeof item.title !== "string"
+    ) {
+      throw new ValidationError("SampleAPIs returned an unexpected coffee list entry.");
+    }
+    return { id: item.id, title: item.title };
+  });
+}
+
 // A public sample API: retry brief outages up to twice. With 8 s per try, 20 s in total stays well
 // inside the service worker's ~30 s idle limit.
 const retry = createRetryPolicy({ maxRetries: 2, baseDelayMs: 500, maxElapsedMs: 20_000 });
@@ -52,6 +72,9 @@ export function createSampleApisCoffeeClient(client: HttpClient): CoffeeClient {
       const input = parseRequest(raw);
       const data = await getJson(client, new URL(`https://api.sampleapis.com/coffee/hot/${input.id}`), { retry });
       return parseResponse(data);
+    },
+    async listCoffees() {
+      return parseList(await getJson(client, new URL("https://api.sampleapis.com/coffee/hot"), { retry }));
     },
   };
 }

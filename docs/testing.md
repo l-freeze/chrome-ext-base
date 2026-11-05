@@ -12,11 +12,14 @@
 | `tests/infrastructure/storage.test.ts` | 保存 Input と復元 Output の同時指定、異なる型での保存・復元、不正な保存形式の拒否、I/O エラーの伝達、`update` による現在の値からの更新、同時に走る `update` と `save` の直列化、同じ実行環境のロックと Web Locks の順序 |
 | `tests/infrastructure/http.test.ts` | JSON の送受信、状態コード付きの HTTP エラー、通信失敗・時間切れ・中断の区別、方針に従う再試行（GET のみ・回数と時間の上限・Retry-After）、待機中の中断 |
 | `tests/infrastructure/changes.test.ts` | 指定した local storage のキーの通知と購読解除。データは機能に依存しない任意の値 |
-| `tests/infrastructure/messaging.test.ts` | 要求・応答の両方の検証、不正な要求で処理を実行しないこと、エラーの伝達、自分宛てでないメッセージの無視、同じ拡張からの要求だけへの返信 |
+| `tests/infrastructure/messaging.test.ts` | 要求・応答の両方の検証、不正な要求で処理を実行しないこと、入力のない要求が JSON で送られても届くこと、エラーの伝達、自分宛てでないメッセージの無視、同じ拡張からの要求だけへの返信 |
 | `tests/infrastructure/context-menus.test.ts` | インストール時の項目の作り直し、クリックの振り分け、失敗の通知、ID 重複の拒否 |
 | `tests/infrastructure/commands.test.ts` | ショートカットの名前による振り分け、タブ情報の検証、失敗の通知、名前の重複の拒否 |
+| `tests/infrastructure/alarms.test.ts` | 繰り返すアラームのインストール時・起動時の作成（同じ間隔なら作り直さない）、名前による振り分け、失敗の通知、重複と短すぎる間隔の拒否、一度だけのアラームの予約と取り消し |
+| `tests/infrastructure/lifecycle.test.ts` | インストール・更新の理由の検証と全処理への受け渡し、一つの失敗で他を止めないこと、名前の重複の拒否 |
+| `tests/infrastructure/badge.test.ts` | 共有のバッジの優先度による表示と切り替え、別の実行環境からの消去と再起動後の描き直し、壊れた保存値の無視、タブごとのバッジの表示と解除 |
 | `tests/infrastructure/i18n.test.ts` | ロケールの選択と既定への切り替え、プレースホルダーと置換、カタログの言語タグ、未定義の文言 |
-| `tests/extension/build.test.ts` | 出力された Manifest V3 の基本項目、登録画面・worker・worker が読み込むファイル・content script・アイコンの存在、画面が参照する JS/CSS の存在、manifest が参照する文言と全ロケールのキー・プレースホルダーの一致、manifest と `package.json` のバージョンの一致 |
+| `tests/extension/build.test.ts` | 出力された Manifest V3 の基本項目、登録画面・worker・worker が読み込むファイル・content script・アイコンの存在、全 HTML ページが参照する JS/CSS の存在、注入用の content script が import・export のない単独のファイルであること、manifest が参照する文言と全ロケールのキー・プレースホルダーの一致、manifest と `package.json` のバージョンの一致 |
 
 拡張の構成テストは `dist/popup/manifest.json` または `dist/sidepanel/manifest.json` から対象を読み取ります。ポップアップのファイル名、
 個別のサイトの権限、設定画面の有無、サンプルの名称を期待値にしません。
@@ -25,6 +28,7 @@
 
 worker が `src/ui`・Solid を読み込んでいないこと、動的 import を使っていないことは、テストではなくビルドで確認します。
 `vite.config.ts` の `worker-boundary` が worker から静的に読み込まれるファイルをたどり、違反があればビルドを失敗させます。
+`src/content/` の content script も、`content-scripts` が同じ確認をします。
 ページに注入する関数（`executeScript` の `func`）は DOM を使うため worker の出力にも含まれますが、ページ内でだけ実行されます。
 
 API と Chrome のイベントはテスト内の代替実装を注入します。

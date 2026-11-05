@@ -36,7 +36,9 @@ export class MessageError extends Error {
 
 const marker = "chrome-ext-base/message";
 
-export interface MessageEnvelope { [marker]: 1; type: string; payload: unknown }
+// Chrome sends messages as JSON, so a payload of undefined (an operation without input) arrives with no
+// payload key. The receiver treats a missing key as undefined instead of rejecting the message.
+export interface MessageEnvelope { [marker]: 1; type: string; payload?: unknown }
 
 export function envelope(type: string, payload: unknown): MessageEnvelope {
   return { [marker]: 1, type, payload };
@@ -44,5 +46,5 @@ export function envelope(type: string, payload: unknown): MessageEnvelope {
 
 export function isEnvelope(raw: unknown): raw is MessageEnvelope {
   return typeof raw === "object" && raw !== null && !Array.isArray(raw) &&
-    marker in raw && raw[marker] === 1 && "type" in raw && typeof raw.type === "string" && "payload" in raw;
+    marker in raw && raw[marker] === 1 && "type" in raw && typeof raw.type === "string";
 }

@@ -7,8 +7,8 @@
 
 | 区分 | 内容 |
 | --- | --- |
-| ベース | 起動点と画面の枠（ポップアップ・サイドパネル・設定画面）、テーマの設定、service worker の起動と登録の仕組み、メッセージ通信・右クリックメニュー・多言語化・保存・HTTP の基盤、検証の仕組み、ビルドと配布物のテスト、E2E の補助 |
-| サンプル | メモ（保存・REST の取り込み・右クリックからの追加・他画面への追従）、ページ取得（選択テキストの取得の設定を含む）、サイドパネルのサイト単位の許可、`tests/examples/` と `tests/e2e/samples/` の参考テスト |
+| ベース | 起動点と画面の枠（ポップアップ・サイドパネル・設定画面）、テーマの設定と書き出し・読み込み、service worker の起動と登録の仕組み、メッセージ通信・右クリックメニュー・ショートカット・アラーム・インストール時の処理・バッジ・ページ上の通知・content script のビルドの基盤、多言語化・保存・HTTP の基盤、検証の仕組み、ビルドと配布物のテスト、E2E の補助 |
+| サンプル | メモ（保存・REST の取り込み・右クリックとショートカットからの追加・元に戻す・見直しリマインダー・他画面への追従）、コーヒーの新着（定期確認とバッジ）、インストール時の案内ページ、ページ取得（選択テキストの取得の設定を含む）、サイドパネルのサイト単位の許可、`tests/examples/` と `tests/e2e/samples/` の参考テスト |
 
 画面の枠は、起動点が配置した機能の部品を表示します。部品が一つもないときは「ここに機能を追加します」と表示します。
 機能の組み立ては `composition/<機能>.ts` にまとめ、画面と worker の両方から使います。
@@ -41,7 +41,7 @@ pnpm run check:sidepanel
 止まります。`--force` を付けると確認せずに続行します。ZIP で取得した場合は、`git init` してコミットしてから実行するのが安全です。
 
 - サンプルのファイルと、印で囲んだ部分を削除する。
-- manifest からサンプル用の権限（`activeTab`・`scripting`・`contextMenus`）と SampleAPIs の host permission、
+- manifest からサンプル用の権限（`activeTab`・`scripting`・`contextMenus`・`alarms`）と SampleAPIs の host permission、
   サンプルのショートカット（`commands` の `append-selection`）を削除する。拡張を開く `_execute_action` は残ります。
   サイドパネル版の `tabs`・`optional_host_permissions` は `vite.config.ts` の印の中にあり、一緒に消えます。
 - `package.json` からサンプル用のスクリプト（`test:examples`・`samples:remove`・`samples:verify`）を削除する。
@@ -50,7 +50,8 @@ pnpm run check:sidepanel
 - README・ドキュメントのうち、サンプル専用のコマンドや参考テスト、このガイドへの案内を削除する。
 
 削除後に残るのは、テーマを切り替えられる空の画面、設定の書き出し・読み込み、何も登録していない worker、ベースのテストです。
-ショートカット・バッジ・ページ上の通知の仕組み（`infrastructure/commands.ts`・`badge.ts`・`page-toast.ts`）もベースとして残ります。
+ショートカット・アラーム・インストール時の処理・バッジ・ページ上の通知の仕組み（`infrastructure/commands.ts`・`alarms.ts`・`lifecycle.ts`・`badge.ts`・
+`page-toast.ts`・`page-scripts.ts`）と、`src/content/` をビルドする仕組みもベースとして残ります。アラームを使うときは `alarms` 権限を manifest に戻してください。
 ドキュメントのうち印で囲んだ部分は消えますが、サンプルを例にした説明の文章は残るので、必要に応じて整理してください。
 製品名は `_locales` の `appName`（画面の見出しとタブの題名）と、`extensionName*`・`actionTitle*`（manifest）で変えます。
 `docs/screenshots/` もサンプル入りの画面なので、自分の画面で撮り直してください。

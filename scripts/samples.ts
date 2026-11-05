@@ -15,21 +15,32 @@ const SAMPLE_PATHS = [
   "src/features/notes",
   "src/features/page",
   "src/features/site-access",
+  "src/features/arrivals",
+  "src/features/welcome",
   "src/integrations/sampleapis",
   "src/composition/notes.ts",
   "src/composition/page.ts",
+  "src/composition/arrivals.ts",
+  "src/composition/welcome.ts",
+  "src/content/append-notice.ts",
   "src/ui/screens/popup/note.tsx",
   "src/ui/screens/popup/page.tsx",
+  "src/ui/screens/popup/arrivals.tsx",
   "src/ui/screens/sidepanel/note.tsx",
   "src/ui/screens/sidepanel/page.tsx",
   "src/ui/screens/sidepanel/status.tsx",
+  "src/ui/screens/sidepanel/arrivals.tsx",
+  "src/ui/screens/welcome",
+  "src/ui/entrypoints/welcome.tsx",
+  "src/ui/styles/welcome.css",
+  "welcome.html",
   "tests/examples",
   "tests/e2e/samples",
   "docs/samples.md",
   "scripts/samples.ts",
 ];
 // Permissions and hosts only the samples need. The base keeps storage (and sidePanel in that build).
-const SAMPLE_PERMISSIONS = ["activeTab", "scripting", "contextMenus"];
+const SAMPLE_PERMISSIONS = ["activeTab", "scripting", "contextMenus", "alarms"];
 const SAMPLE_HOSTS = ["https://api.sampleapis.com/*"];
 // Keyboard shortcuts only the samples handle. `_execute_action` (open the extension) belongs to the base.
 const SAMPLE_COMMANDS = ["append-selection"];

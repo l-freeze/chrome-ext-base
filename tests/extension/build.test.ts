@@ -69,6 +69,22 @@ it("service worker が静的に読み込むファイルが配布物に揃って�
   expect(seen.size).toBeGreaterThan(0);
 });
 
+// Pages the extension opens itself (e.g. with tabs.create) are not in the manifest; check every page.
+it("配布物の全ての HTML ページが参照する JS/CSS が揃っている", () => {
+  for (const name of readdirSync(output).filter((file) => file.endsWith(".html"))) htmlPage(name);
+});
+
+// executeScript({ files }) runs classic scripts, so a bundled content script must not use import or export.
+it("注入用の content script は単独で動くファイルとして出力されている", () => {
+  const dir = resolve(output, "content");
+  if (!existsSync(dir)) return;
+  for (const name of readdirSync(dir).filter((file) => file.endsWith(".js"))) {
+    const code = readFileSync(localFile(`content/${name}`), "utf8");
+    expect(code, name).not.toMatch(/^\s*(?:import\s*[\w{*"']|export\s)/m);
+    expect(code, name).not.toMatch(/\bimport\s*\(/);
+  }
+});
+
 it("manifest のバージョンは package.json のバージョンと一致する", () => {
   const manifest = JSON.parse(readFileSync(localFile("manifest.json"), "utf8")) as chrome.runtime.ManifestV3;
   const pkg = JSON.parse(readFileSync(fileURLToPath(new URL("../../package.json", import.meta.url)), "utf8")) as { version: string };
