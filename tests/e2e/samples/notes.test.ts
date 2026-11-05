@@ -117,7 +117,7 @@ describe("ショートカットとページ上の通知", () => {
   let copy: ReturnType<typeof withHostPermissions> | undefined;
   afterEach(async () => { await extension?.close(); copy?.dispose(); extension = undefined; copy = undefined; });
 
-  it.each<Variant>(["popup", "sidepanel"])("%s: 選択した文章を追加してページに通知し、選択がなければ失敗を通知してバッジを付ける", async (variant) => {
+  it.each<Variant>(["popup", "sidepanel"])("%s: 選択した文章を追加してページに通知し、選択がなければ失敗を通知してそのタブにバッジを付ける", async (variant) => {
     const site = await serveSite({ "/a.html": '<!doctype html><title>記事</title><p id="text">ショートカットの文章</p>' });
     copy = withHostPermissions(variant, ["http://localhost/*"]);
     extension = await launchExtension({ variant, path: copy.path });
@@ -128,17 +128,22 @@ describe("ショートカットとページ上の通知", () => {
       (chrome.commands.onCommand as unknown as { dispatch(name: string, tab: unknown): void }).dispatch("append-selection", target);
     }, site.url("/a.html"));
     const toastHost = () => tab.evaluate(() => !!document.getElementById("chrome-ext-base-page-toast"));
+    const badges = () => extension!.worker.evaluate(async (url) => {
+      const [target] = await chrome.tabs.query({ url });
+      return [await chrome.action.getBadgeText({ tabId: target!.id! }), await chrome.action.getBadgeText({})];
+    }, site.url("/a.html"));
 
     await tab.evaluate(() => { const range = document.createRange(); range.selectNodeContents(document.querySelector("#text")!); getSelection()!.addRange(range); });
     await press();
     await expect.poll(() => stored(extension!.worker)).toBe("ショートカットの文章");
     await expect.poll(toastHost).toBe(true);
-    expect(await extension.worker.evaluate(() => chrome.action.getBadgeText({}))).toBe("");
+    expect(await badges()).toEqual(["", ""]);
 
     await tab.evaluate(() => getSelection()!.removeAllRanges());
     await tab.evaluate(() => document.getElementById("chrome-ext-base-page-toast")?.remove());
     await press();
-    await expect.poll(() => extension!.worker.evaluate(() => chrome.action.getBadgeText({}))).toBe("!");
+    // The failure marks only that tab; the shared badge is left for other features.
+    await expect.poll(badges).toEqual(["!", ""]);
     await expect.poll(toastHost).toBe(true);
     expect(await stored(extension.worker)).toBe("ショートカットの文章");
     await site.close();

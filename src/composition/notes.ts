@@ -1,9 +1,6 @@
 // Sample: the notes feature, assembled once for screens and the service worker.
 import type { KeyValueStorage } from "../infrastructure/storage/contracts";
-import type { MessageRouter } from "../infrastructure/messaging/router";
-import type { ContextMenuItem } from "../infrastructure/context-menus";
-import type { CommandItem } from "../infrastructure/commands";
-import { createActionBadge } from "../infrastructure/badge";
+import { createTabBadge } from "../infrastructure/badge";
 import { createPageToasts } from "../infrastructure/page-toast";
 import { createMessageClient } from "../infrastructure/messaging/client";
 import { createChromeTransport } from "../infrastructure/messaging/drivers/chrome";
@@ -19,6 +16,7 @@ import { createSampleApisCoffeeSource } from "../features/notes/gateways/coffee"
 import { delegateImportToWorker, importNoteMessage } from "../features/notes/gateways/worker";
 import type { MessageKey } from "./i18n";
 import type { Environment } from "./environment";
+import type { WorkerRegistry } from "./worker";
 
 function createNotes(driver: KeyValueStorage) {
   return createNoteApplication({
@@ -42,27 +40,31 @@ export function createNoteScreens(environment: Environment) {
 
 // Worker: the import message, the "append selection" context menu item, and the same action as a shortcut.
 // The worker has no screen of its own, so results appear as a notice on the page and failures also
-// leave a badge on the toolbar button until the next success.
-export function registerNoteWorker(worker: { driver: KeyValueStorage; router: MessageRouter; menus: ContextMenuItem[]; commands: CommandItem[] }) {
-  const repository = createNoteStorage(worker.driver);
-  const notes = createNotes(worker.driver);
+// mark the tab's toolbar badge until the next success there.
+export function registerNoteWorker(worker: WorkerRegistry) {
+  const { driver } = worker.environment;
+  const repository = createNoteStorage(driver);
+  const notes = createNotes(driver);
   const selection = createNoteSelectionApplication({ reader: createTabSelection(chrome.scripting), repository });
   const { t, language } = createChromeTranslator<MessageKey>(chrome.i18n);
-  const badge = createActionBadge(chrome.action);
+  const tabBadge = createTabBadge(chrome.action);
   const toasts = createPageToasts(chrome.scripting);
   const appendFailures: Record<AppendFailure, MessageKey> = { "no-selection": "toastNoSelection", "too-long": "toastTooLong" };
 
   async function report(tabId: number | undefined, append: () => Promise<unknown>) {
     try {
       await append();
-      await badge.clear();
-      if (tabId !== undefined) await toasts.show(tabId, t("toastAppended"), "success");
+      if (tabId === undefined) return;
+      await tabBadge.clear(tabId);
+      await toasts.show(tabId, t("toastAppended"), "success");
     } catch (error) {
-      await badge.show("!", "#ad334a");
       const message = error instanceof NoteAppendError
         ? t(appendFailures[error.reason], new Intl.NumberFormat(language).format(MAX_NOTE_LENGTH))
         : t("toastAppendFailed");
-      if (tabId !== undefined) await toasts.show(tabId, message, "error");
+      if (tabId !== undefined) {
+        await tabBadge.show(tabId, "!", "#ad334a");
+        await toasts.show(tabId, message, "error");
+      }
       // Expected outcomes are shown to the user; anything else is also logged by the worker.
       if (!(error instanceof NoteAppendError)) throw error;
     }

@@ -4,7 +4,9 @@ export type ToastTone = "success" | "error";
 // Runs inside the page: Chrome serializes it, so it must stay self-contained (no imports, no closures).
 // A closed shadow root keeps the page's CSS and scripts away from the notice, and the host element
 // resets its own styles with !important so page rules cannot move or hide it.
-export function renderPageToast(message: string, tone: ToastTone, durationMs: number): boolean {
+// `action` adds one button, e.g. "Undo". Only a content script bundled from src/content can pass it:
+// executeScript cannot send functions. The timer pauses while the notice is hovered or focused.
+export function renderPageToast(message: string, tone: ToastTone, durationMs: number, action?: { label: string; run(): void }): boolean {
   const id = "chrome-ext-base-page-toast";
   document.getElementById(id)?.remove();
   const host = document.createElement("div");
@@ -19,9 +21,15 @@ export function renderPageToast(message: string, tone: ToastTone, durationMs: nu
       border-left: 4px solid #6951d7; box-shadow: 0 8px 24px rgb(37 34 59 / 18%); overflow-wrap: anywhere;
       animation: enter 160ms ease-out; }
     .toast.error { border-left-color: #ad334a; }
+    .toast { display: flex; align-items: center; gap: 12px; }
+    .text { flex: 1; }
+    button { flex-shrink: 0; font: 600 13px/1 system-ui, sans-serif; color: #5a43c9; background: transparent;
+      border: 1px solid currentColor; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+    button:focus-visible { outline: 2px solid #6951d7; outline-offset: 2px; }
     @media (prefers-color-scheme: dark) {
       .toast { color: #eee9f8; background: #28263b; border-color: #3c3751; border-left-color: #b8a5ff; }
       .toast.error { border-left-color: #f3a2b1; }
+      button { color: #c9bbff; }
     }
     @keyframes enter { from { opacity: 0; transform: translateY(6px); } }
     @media (prefers-reduced-motion: reduce) { .toast { animation: none; } }`;
@@ -29,10 +37,26 @@ export function renderPageToast(message: string, tone: ToastTone, durationMs: nu
   box.className = `toast ${tone}`;
   box.setAttribute("role", "status");
   box.setAttribute("aria-live", "polite");
-  box.textContent = message;
+  const text = document.createElement("span");
+  text.className = "text";
+  text.textContent = message;
+  box.append(text);
+  if (action) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = action.label;
+    button.addEventListener("click", () => { host.remove(); action.run(); });
+    box.append(button);
+  }
   root.append(style, box);
   (document.body ?? document.documentElement).append(host);
-  setTimeout(() => host.remove(), durationMs);
+  let timer = setTimeout(() => host.remove(), durationMs);
+  const pause = () => clearTimeout(timer);
+  const resume = () => { clearTimeout(timer); if (!box.matches(":hover") && !box.contains(root.activeElement)) timer = setTimeout(() => host.remove(), durationMs); };
+  box.addEventListener("pointerenter", pause);
+  box.addEventListener("focusin", pause);
+  box.addEventListener("pointerleave", resume);
+  box.addEventListener("focusout", () => setTimeout(resume));
   return true;
 }
 
