@@ -14,7 +14,7 @@ export function ExtensionShell(props: { children: JSX.Element }) {
         </div>
         <div class="brand-copy">
           <p class="eyebrow">{t("shellEyebrow")}</p>
-          <h1>Quick Note<span class="text-primary">.</span></h1>
+          <h1>{t("appName")}<span class="text-primary">.</span></h1>
         </div>
         <span class="badge badge-sm badge-ghost private-badge" aria-label={t("shellLocalBadgeLabel")}>
           <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">

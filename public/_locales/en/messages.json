@@ -3,6 +3,10 @@
     "message": "en",
     "description": "BCP 47 tag of this catalog. Sets the page lang and number formatting; keep it equal to the locale folder."
   },
+  "appName": {
+    "message": "Quick Note",
+    "description": "Product name shown in headers and tab titles. The manifest name and toolbar title are separate messages because the manifest cannot use placeholders."
+  },
   "extensionName": {
     "message": "Chrome Extension Base",
     "description": "Extension name in the popup build."
@@ -27,13 +31,29 @@
     "description": "Context menu item shown for selected text."
   },
   "documentTitlePopup": {
-    "message": "Quick Note"
+    "message": "$APP$",
+    "description": "Tab title of the popup page.",
+    "placeholders": {
+      "app": {
+        "content": "$1"
+      }
+    }
   },
   "documentTitleOptions": {
-    "message": "Settings · Quick Note"
+    "message": "Settings · $APP$",
+    "placeholders": {
+      "app": {
+        "content": "$1"
+      }
+    }
   },
   "documentTitleSidepanel": {
-    "message": "Quick Note — Side Panel"
+    "message": "$APP$ — Side Panel",
+    "placeholders": {
+      "app": {
+        "content": "$1"
+      }
+    }
   },
   "shellEyebrow": {
     "message": "A LITTLE SPACE FOR YOUR IDEAS"
