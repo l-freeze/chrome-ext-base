@@ -69,6 +69,48 @@
   "toastUndoFailed": {
     "message": "元に戻せませんでした。"
   },
+  "arrivalsSummary": {
+    "message": "コーヒーの新着",
+    "description": "Collapsible section title."
+  },
+  "arrivalsCount": {
+    "message": "$COUNT$ 件",
+    "description": "Number of new items next to the section title.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivalsHelp": {
+    "message": "30 分ごとに SampleAPIs のコーヒー一覧を確認し、増えた件数をツールバーのバッジに表示します。ここを開くと既読になります。"
+  },
+  "arrivalsEmpty": {
+    "message": "前回見てから増えたコーヒーはありません。"
+  },
+  "arrivalsNotChecked": {
+    "message": "まだ確認していません。最初の確認で今の一覧を記録し、次から増えた分を数えます。"
+  },
+  "arrivalsLastChecked": {
+    "message": "最終確認: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivalsCheck": {
+    "message": "今すぐ確認"
+  },
+  "arrivalsChecking": {
+    "message": "確認しています…"
+  },
+  "arrivalsFailed": {
+    "message": "確認できませんでした。時間をおいてもう一度お試しください。"
+  },
+  "arrivalsLoadFailed": {
+    "message": "新着を読み込めませんでした。"
+  },
   "documentTitlePopup": {
     "message": "$APP$",
     "description": "Tab title of the popup page.",

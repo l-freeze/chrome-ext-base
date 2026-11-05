@@ -7,6 +7,7 @@ import type { AlarmItem } from "../infrastructure/alarms";
 import type { InstallTask } from "../infrastructure/lifecycle";
 // @sample-begin
 import { registerNoteWorker } from "./notes";
+import { registerArrivalsWorker } from "./arrivals";
 // @sample-end
 
 // Concrete implementations for the service worker. Each feature registers its messages, menu items,
@@ -24,6 +25,7 @@ export function createWorkerApplication() {
   const worker = { environment, router, badges, menus, commands, alarms, installs, report };
   // @sample-begin
   registerNoteWorker(worker);
+  registerArrivalsWorker(worker);
   // @sample-end
   return worker;
 }

@@ -69,7 +69,7 @@ describe.each<Variant>(["popup", "sidepanel"])("%s", (variant) => {
     await extension.context.route("https://api.sampleapis.com/**", (route) => ++calls === 1
       ? route.fulfill({ status: 503 })
       : route.fulfill({ json: { id: 1, title: "Second Try", description: "Hot.", ingredients: ["Coffee"], image: "https://example.test/x.jpg" } }));
-    await screen.locator("summary").click();
+    await screen.locator("summary", { hasText: "REST" }).click();
     await screen.getByRole("button", { name: "サンプルを取得して保存" }).click();
     await expect.poll(() => editor.inputValue(), { timeout: 10_000 }).toMatch(/^Second Try/);
     expect(calls).toBe(2);
@@ -80,7 +80,7 @@ describe.each<Variant>(["popup", "sidepanel"])("%s", (variant) => {
     await editor.fill("残すメモ");
     await editor.press("Control+Enter");
     await expect.poll(() => stored(extension.worker)).toBe("残すメモ");
-    await screen.locator("summary").click();
+    await screen.locator("summary", { hasText: "REST" }).click();
     const importButton = screen.getByRole("button", { name: "サンプルを取得して保存" });
     const cases: Array<[(route: import("playwright").Route) => Promise<void>, string]> = [
       [(route) => route.abort("internetdisconnected"), "通信できませんでした。"],
@@ -103,7 +103,7 @@ describe.each<Variant>(["popup", "sidepanel"])("%s", (variant) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       await route.fulfill({ json: { id: 1, title: "Fixed Coffee", description: "Hot.", ingredients: ["Coffee"], image: "https://example.test/x.jpg" } });
     });
-    await screen.locator("summary").click();
+    await screen.locator("summary", { hasText: "REST" }).click();
     await screen.getByRole("button", { name: "サンプルを取得して保存" }).click();
     await screen.close();
     await expect.poll(() => stored(extension.worker), { timeout: 10_000 }).toMatch(/^Fixed Coffee/);

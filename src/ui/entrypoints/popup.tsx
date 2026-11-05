@@ -8,6 +8,7 @@ import { Popup } from "../screens/popup/popup";
 // @sample-begin
 import { NoteSection } from "../screens/popup/note";
 import { PageSection } from "../screens/popup/page";
+import { ArrivalsSection } from "../screens/popup/arrivals";
 // @sample-end
 
 const application = createPopupApplication();
@@ -20,6 +21,7 @@ void loadTranslator().then((translator) => {
           {/* @sample-begin */}
           <NoteSection notes={application.notes} noteChanges={application.noteChanges} />
           <PageSection page={application.page} preview={application.preview} />
+          <ArrivalsSection arrivals={application.arrivals} />
           {/* @sample-end */}
         </Popup>
       </ExtensionShell>

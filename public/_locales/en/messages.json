@@ -69,6 +69,48 @@
   "toastUndoFailed": {
     "message": "Couldn't undo."
   },
+  "arrivalsSummary": {
+    "message": "New coffees",
+    "description": "Collapsible section title."
+  },
+  "arrivalsCount": {
+    "message": "$COUNT$",
+    "description": "Number of new items next to the section title.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivalsHelp": {
+    "message": "Checks the SampleAPIs coffee list every 30 minutes and shows how many were added on the toolbar badge. Opening this marks them as seen."
+  },
+  "arrivalsEmpty": {
+    "message": "No new coffees since you last looked."
+  },
+  "arrivalsNotChecked": {
+    "message": "Not checked yet. The first check records the current list; later checks count what was added."
+  },
+  "arrivalsLastChecked": {
+    "message": "Last checked: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivalsCheck": {
+    "message": "Check now"
+  },
+  "arrivalsChecking": {
+    "message": "Checking…"
+  },
+  "arrivalsFailed": {
+    "message": "Couldn't check. Please try again later."
+  },
+  "arrivalsLoadFailed": {
+    "message": "Couldn't load new coffees."
+  },
   "documentTitlePopup": {
     "message": "$APP$",
     "description": "Tab title of the popup page.",

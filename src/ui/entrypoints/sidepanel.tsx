@@ -7,6 +7,7 @@ import { Sidepanel } from "../screens/sidepanel/sidepanel";
 // @sample-begin
 import { NoteSection } from "../screens/sidepanel/note";
 import { PageSection } from "../screens/sidepanel/page";
+import { ArrivalsSection } from "../screens/sidepanel/arrivals";
 // @sample-end
 
 const root = document.querySelector<HTMLElement>("#app")!;
@@ -25,6 +26,7 @@ void loadTranslator().then(async (translator) => {
           {/* @sample-begin */}
           <PageSection page={application.page} access={application.access} accessChanges={application.accessChanges} preview={application.preview} />
           <NoteSection notes={application.notes} noteChanges={application.noteChanges} />
+          <ArrivalsSection arrivals={application.arrivals} />
           {/* @sample-end */}
         </Sidepanel>
       </I18nProvider>
