@@ -1,5 +1,5 @@
 // Sample: the notes feature, assembled once for screens and the service worker.
-import type { KeyValueStorage, StorageChanges } from "../infrastructure/storage/contracts";
+import type { KeyValueStorage } from "../infrastructure/storage/contracts";
 import type { MessageRouter } from "../infrastructure/messaging/router";
 import type { ContextMenuItem } from "../infrastructure/context-menus";
 import { createMessageClient } from "../infrastructure/messaging/client";
@@ -12,6 +12,7 @@ import { createNoteChanges, createNoteStorage } from "../features/notes/gateways
 import { createSampleApisCoffeeSource } from "../features/notes/gateways/coffee";
 import { delegateImportToWorker, importNoteMessage } from "../features/notes/gateways/worker";
 import type { MessageKey } from "./i18n";
+import type { Environment } from "./environment";
 
 function createNotes(driver: KeyValueStorage) {
   return createNoteApplication({
@@ -25,11 +26,11 @@ function createNotes(driver: KeyValueStorage) {
 }
 
 // Screens: in the extension the worker runs the import; the browser preview has no worker and runs it here.
-export function createNoteScreens(context: { driver: KeyValueStorage; events: StorageChanges; extension: boolean }) {
-  const notes = createNotes(context.driver);
+export function createNoteScreens(environment: Environment) {
+  const notes = createNotes(environment.driver);
   return {
-    notes: context.extension ? delegateImportToWorker(notes, createMessageClient(createChromeTransport(chrome.runtime))) : notes,
-    noteChanges: createNoteChanges(context.events),
+    notes: environment.extension ? delegateImportToWorker(notes, createMessageClient(createChromeTransport(chrome.runtime))) : notes,
+    noteChanges: createNoteChanges(environment.events),
   };
 }
 
