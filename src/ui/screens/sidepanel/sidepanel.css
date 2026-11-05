@@ -43,7 +43,7 @@
   .panel-rest { background: var(--ui-coffee); color: var(--ui-coffee-content); border: 1px solid var(--color-base-300); }
   .panel-rest summary { padding: 14px 16px; cursor: pointer; font-size: 13px; font-weight: 650; }
   .panel-rest .card-body { padding-top: 0; }
-  .panel-arrivals-count { margin-left: 6px; vertical-align: 1px; border: 0; color: var(--color-base-100); background: #1f7a5c; }
+  .panel-arrivals-count { margin-left: 6px; vertical-align: 1px; border: 0; color: var(--color-success-content); background: var(--color-success); }
   .panel-arrivals-list { display: grid; gap: 4px; padding-left: 18px; list-style: disc; font-size: 13px; line-height: 1.7; }
   .panel-arrivals-time { font-size: 11px; opacity: .75; }
   @media (max-width: 300px) {

@@ -32,8 +32,15 @@ src/ui/
 │   ├── empty-state.tsx           機能の部品がないときの表示
 │   └── feedback.css              状態表示の見た目
 └── styles/
-    ├── app.css                   CSS エントリーと Tailwind / daisyUI 登録
-    └── themes.css                ライト／ダークのデザイントークン
+    └── app.css                   CSS エントリーと Tailwind / daisyUI 登録（テーマは #palette/theme.css）
+
+src/palettes/                     配色。package.json の palette で選んだ一つだけをビルドする
+├── palette.ts                    CSS 以外で使う色の型（ページ上の通知・バッジ）
+├── purple/                       既定の配色
+│   ├── theme.css                 ライト／ダークのデザイントークン（notebook / notebook-dark）
+│   ├── colors.ts                 ページ上の通知・バッジの色
+│   └── icons/                    この配色のアイコン
+└── coffee/                       コーヒー系の配色（同じ構成）
 ```
 
 `index.html` は拡張のエントリー HTML としてリポジトリ直下に残し、
@@ -91,9 +98,32 @@ CSS の検出範囲は `@source "../"` で `src/ui` に限定しています。
 状態ごとのクラス名は `feedback.tsx` のように完全な文字列で記載し、
 `"alert-" + state` のような実行時の連結で CSS の生成漏れを起こさないようにします。
 
+## 配色を選ぶ
+
+配色はアプリの作成者が決めるもので、利用者は選びません。`package.json` の `palette` に、`src/palettes/` のフォルダー名を書きます。
+
+```json
+"palette": "coffee"
+```
+
+- 省略したときは `purple`（既定）です。存在しない名前はビルドを止めます。
+- ビルドに含まれるのは選んだ配色の `theme.css`・`colors.ts`・`icons/` だけで、他の配色は配布物に入りません。
+  `vite.config.ts` が `#palette` をそのフォルダーに向けます。画面の CSS・worker・content script は `#palette/...` から読み込みます。
+- 配布物のテストが、選んだ配色の色とアイコンだけが出力されていることを確認します。
+- 型チェックは既定の配色（`tsconfig.json` の `paths`）で行います。各配色の `colors.ts` は `satisfies PaletteColors` で同じ形を保証します。
+- ライト／ダーク／端末に合わせるの切り替えは、どの配色でも設定画面に残ります。
+
+### 配色を追加する
+
+1. `src/palettes/purple/` を複製し、フォルダー名を配色の名前にします。
+2. `theme.css` の色を変えます。テーマ名（`notebook`・`notebook-dark`）とトークンの名前は変えません。設定の切り替えが名前で指定するためです。
+3. `colors.ts` を `theme.css` に合わせます（ページ上の通知は拡張の CSS を読めないため、色を別に持ちます）。
+4. `icons/` をその配色のアイコンにします（[アイコンの差し替え](icons.md)）。
+5. `package.json` の `palette` を変えて `pnpm run check` と `pnpm run check:sidepanel` を実行し、両テーマで見た目を確認します。
+
 ## テーマを変更する
 
-`styles/themes.css` に `notebook` と `notebook-dark` の 2 テーマを定義しています。
+選んだ配色の `theme.css` に `notebook` と `notebook-dark` の 2 テーマを定義しています。
 設定の初期値は「端末に合わせる」で `prefers-color-scheme` に追従します。
 保存した設定が light / dark の場合は `data-theme` で指定テーマを適用します。
 ブランド色は `--color-primary` と `--color-primary-content`、

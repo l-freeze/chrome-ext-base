@@ -13,11 +13,18 @@ service worker へのメッセージ通信、右クリックメニュー、キ�
 ## デザインのプレビュー
 
 本番ビルドのポップアップ UI を Chromium で撮影したキャプチャーです。
-テーマは設定画面で変更できます。初期設定では OS の表示設定に追従します。
+テーマ（ライト／ダーク）は設定画面で変更できます。初期設定では OS の表示設定に追従します。
+配色（紫・コーヒー）はアプリ側で一つに決め、`package.json` の `palette` で選んでビルドします（[配色を選ぶ](docs/ui.md#配色を選ぶ)）。
 
 | ライト | ダーク |
 | --- | --- |
 | ![ライトテーマのポップアップ](docs/screenshots/popup-light.png) | ![ダークテーマのポップアップ](docs/screenshots/popup-dark.png) |
+
+`"palette": "coffee"` でビルドした場合のポップアップです。
+
+| コーヒー・ライト | コーヒー・ダーク |
+| --- | --- |
+| ![コーヒー系の配色のポップアップ・ライト](docs/screenshots/coffee-popup-light.png) | ![コーヒー系の配色のポップアップ・ダーク](docs/screenshots/coffee-popup-dark.png) |
 
 設定画面も daisyUI で構成しています。
 
@@ -261,9 +268,13 @@ src/
 ├── features/settings/      設定の保存・リセット・変更通知（notes と同じ役割分け）
 ├── features/page/          現在のページ情報を取得（同じ役割分け。ページ内で動く関数は gateways/content.ts）
 ├── features/site-access/   サイドパネルのサイト確認・許可（同じ役割分け）
+├── features/arrivals/      コーヒーの新着の定期確認（同じ役割分け）
+├── features/welcome/       案内ページが表示するショートカット
+├── content/                ページに注入する content script の入口（content/<名前>.js として出力）
+├── palettes/               配色（purple / coffee）。package.json の palette で選んだ一つだけをビルド
 ├── background/             service worker の入口（方式ごと）と共通の登録処理
 ├── integrations/           サービスごとの型・client・境界検証
-├── infrastructure/         共通の通信・保存・メッセージ・右クリックメニュー・多言語化の基盤
+├── infrastructure/         共通の通信・保存・メッセージ・メニュー・ショートカット・アラーム・バッジ・ページ上の通知・多言語化の基盤
 ├── lib/validation.ts       検証の型と実行ラッパー
 ├── composition/            実行環境（environment.ts）と、機能・入口ごとの具体実装の選択
 └── ui/
@@ -271,7 +282,7 @@ src/
     ├── screens/            画面コンポーネント
     ├── layouts/            画面枠のコンポーネント
     ├── components/         表示部品のコンポーネント
-    └── styles/             daisyUI / Tailwind・テーマ
+    └── styles/             daisyUI / Tailwind の CSS エントリー
 public/_locales/            ja / en の文言（chrome.i18n の messages.json）
 tests/                      共通基盤の契約・配布物の構成テスト、任意の参考例、任意実行の E2E（tests/e2e）
 scripts/                    公開用ビルドとサンプルの削除のスクリプト

@@ -85,6 +85,25 @@ it("注入用の content script は単独で動くファイルとして出力さ
   }
 });
 
+// Each palette's accent colors identify it. The output must carry the selected palette and no other.
+it("package.json で選んだ配色だけが、色とアイコンとして出力されている", async () => {
+  const root = fileURLToPath(new URL("../../", import.meta.url));
+  const { palette = "purple" } = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8")) as { palette?: string };
+  const files = (dir: string): string[] => readdirSync(dir, { withFileTypes: true })
+    .flatMap((entry) => entry.isDirectory() ? files(resolve(dir, entry.name)) : [resolve(dir, entry.name)]);
+  const code = files(output).filter((file) => /\.(?:js|css)$/.test(file)).map((file) => readFileSync(file, "utf8")).join("\n").toLowerCase();
+  const accents = async (name: string) => {
+    const { colors } = await import(`../../src/palettes/${name}/colors.ts`) as typeof import("../../src/palettes/purple/colors");
+    return [colors.notice.light.accent, colors.notice.dark.accent].map((color) => color.toLowerCase());
+  };
+  for (const color of await accents(palette)) expect(code, `${palette} ${color}`).toContain(color);
+  for (const other of readdirSync(resolve(root, "src/palettes"), { withFileTypes: true }).filter((entry) => entry.isDirectory() && entry.name !== palette)) {
+    for (const color of await accents(other.name)) expect(code, `${other.name} ${color}`).not.toContain(color);
+  }
+  const icon = readFileSync(resolve(root, "src/palettes", palette, "icons/icon-128.png"));
+  expect(readFileSync(localFile("icons/icon-128.png")).equals(icon)).toBe(true);
+});
+
 it("manifest のバージョンは package.json のバージョンと一致する", () => {
   const manifest = JSON.parse(readFileSync(localFile("manifest.json"), "utf8")) as chrome.runtime.ManifestV3;
   const pkg = JSON.parse(readFileSync(fileURLToPath(new URL("../../package.json", import.meta.url)), "utf8")) as { version: string };

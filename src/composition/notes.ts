@@ -19,6 +19,7 @@ import { delegateImportToWorker, importNoteMessage, undoAppendMessage } from "..
 import type { MessageKey } from "./i18n";
 import type { Environment } from "./environment";
 import type { WorkerRegistry } from "./worker";
+import { colors } from "#palette/colors";
 
 // The review reminder: an hour after the note last changed, the toolbar badge asks the user to look at it
 // again. Opening a screen clears it. A higher badge priority wins when several features use the badge.
@@ -27,7 +28,6 @@ const REMINDER_MINUTES = 60;
 const REMINDER_PRIORITY = 10;
 // The notice with an Undo button, built from src/content/append-notice.ts.
 const APPEND_NOTICE = "content/append-notice.js";
-const FAILURE_COLOR = "#ad334a";
 
 function createNotes(driver: KeyValueStorage) {
   return createNoteApplication({
@@ -63,7 +63,7 @@ export function registerNoteWorker(worker: WorkerRegistry) {
   const appends = createNoteAppendApplication({ reader: createTabSelection(chrome.scripting), repository, history: createAppendHistory(driver) });
   const { t, language } = createChromeTranslator<MessageKey>(chrome.i18n);
   const tabBadge = createTabBadge(chrome.action);
-  const toasts = createPageToasts(chrome.scripting);
+  const toasts = createPageToasts(chrome.scripting, colors.notice);
   const scripts = createPageScripts(chrome.scripting);
   const reminder = worker.badges.slot(REMINDER, REMINDER_PRIORITY);
   const scheduler = createAlarmScheduler(chrome.alarms);
@@ -80,7 +80,7 @@ export function registerNoteWorker(worker: WorkerRegistry) {
         ? t(appendFailures[error.reason], new Intl.NumberFormat(language).format(MAX_NOTE_LENGTH))
         : t("toastAppendFailed");
       if (tabId !== undefined) {
-        await tabBadge.show(tabId, "!", FAILURE_COLOR);
+        await tabBadge.show(tabId, "!", colors.badge.danger);
         await toasts.show(tabId, message, "error");
       }
       // Expected outcomes are shown to the user; anything else is also logged by the worker.
@@ -112,7 +112,7 @@ export function registerNoteWorker(worker: WorkerRegistry) {
   worker.alarms.push({
     name: REMINDER,
     async run() {
-      if ((await repository.load()).text !== "") await reminder.show("●", "#6951d7");
+      if ((await repository.load()).text !== "") await reminder.show("●", colors.badge.accent);
     },
   });
 }
