@@ -11,12 +11,15 @@ daisyUI は CSS のコンポーネントライブラリで、ディレクトリ�
 src/ui/
 ├── entrypoints/
 │   ├── popup.tsx                 CSS 読み込み・DI・render
-│   └── options.tsx               設定画面の起動と表示方式ごとの文言
+│   ├── options.tsx               設定画面の起動と表示方式ごとの文言
+│   └── welcome.tsx               インストール時の案内ページ（サンプル。両方式で共通）
 ├── screens/popup/
 │   ├── popup.tsx                 画面の枠。テーマの反映と、配置された機能の部品の表示
 │   ├── note.tsx / page.tsx       サンプルの部品（メモと REST、ページ取得）
+│   ├── arrivals.tsx              サンプルの部品（コーヒーの新着）
 │   └── popup.css                 この画面だけの調整。サンプルの部品の分は印で囲む
 ├── screens/options/              設定フォーム・確認ダイアログ・CSS
+├── screens/welcome/              案内ページ（サンプル）。割り当て済みのショートカットの一覧
 ├── settings.ts                   テーマ適用と設定通知への接続（フレームワーク非依存）
 ├── live.ts                       購読してから読み出す共通処理（設定・メモの追従）
 ├── i18n.tsx                      翻訳の Context・useI18n・lang と title の設定

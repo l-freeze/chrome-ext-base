@@ -4,8 +4,9 @@
 - `popup-dark.png`: ダークテーマの初期表示。
 - `options-light.png` / `options-dark.png`: 設定画面の初期表示。
 - `sidepanel-light.png` / `sidepanel-dark.png`: サイドパネル用画面の初期表示。
+- `welcome-light.png` / `welcome-dark.png`: インストール時に開く案内ページ（ブラウザプレビューのため、ショートカットは固定の例）。幅 900 px の全ページ。
 - 末尾が `-en` のファイル: 同じ画面の英語表示。
-- 取得日: 2026-11-05（日本時間）。設定画面は、書き出し・読み込みを追加した後に撮り直しています。
+- 取得日: 2026-11-05（日本時間）。ポップアップ・サイドパネルはコーヒーの新着を、設定画面は書き出し・読み込みを追加した後に撮り直しています。
 - 対象: `pnpm run build:popup` / `pnpm run build:sidepanel` で生成した `dist/popup/` / `dist/sidepanel/` のブラウザプレビュー。
 - ブラウザ: Chromium 153.0.8010.12、デバイススケール 1。
 - ポップアップは文書幅 384 CSS px、高さ上限 600 px の body。設定画面は幅 1100 px の全ページ。

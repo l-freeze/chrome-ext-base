@@ -95,7 +95,10 @@ worker とのメッセージでは、エラーの `reason` も呼び出し側に
 | 読み出し | `controllers/load.ts`: 引数が undefined であること | `use-cases/load.ts` |
 | 保存 | `controllers/save.ts`: メモ入力の構造・文字数 | `use-cases/save.ts` |
 | 取り込み | `controllers/import.ts`: ID が正の安全な整数であること | `use-cases/import.ts` |
-| 追加 | `controllers/append.ts`: 空でない文章と文字数 | `use-cases/append.ts` |
+| 追加 | `controllers/append.ts`: 文章が文字列であること（空・文字数超過は追加の規則で理由付きの失敗） | `use-cases/append.ts` |
+| 選択した文章の追加 | `controllers/append-selection.ts`: タブ ID が 0 以上の安全な整数であること | `use-cases/append-selection.ts` |
+| 追加の取り消し | `controllers/undo-append.ts`: 引数が undefined であること | `use-cases/undo-append.ts` |
+| 新着の確認・表示・既読 | `features/arrivals/controllers/*.ts`: 引数が undefined であること | `features/arrivals/use-cases/*.ts` |
 
 各ファイルの非公開 `input` バリデーターを `validatedAction(input, execute)` に渡します。
 UI が呼ぶ `NoteActions` は unknown を受け、UseCase は検証済みの Input 型を受けます。
@@ -144,9 +147,10 @@ UseCase 入力の検証と、外部から戻るデータの検証は別の境界
 
 | 検証対象 | 所有者 |
 | --- | --- |
-| SampleAPIs へのリクエスト・レスポンス | `integrations/sampleapis/coffee.ts` の `parseRequest` / `parseResponse` |
+| SampleAPIs へのリクエスト・レスポンス | `integrations/sampleapis/coffee.ts` の `parseRequest` / `parseResponse` / `parseList` |
 | 別サービスから取得するメモ形式 | `features/notes/gateways/rest.ts` の `parseResponse` |
-| 保存する値・保存済み文字列 | `features/notes/gateways/storage.ts` の input / output |
+| 保存する値・保存済み文字列 | `features/notes/gateways/storage.ts`・`features/arrivals/gateways/storage.ts` の input / output |
+| 共有のバッジの保存値 | `infrastructure/badge.ts` の `parseSlots`（壊れた枠だけを捨てる） |
 | メモ本文は文字列かつ 2000 文字以内 | `features/notes/note.ts` の `noteText` |
 
 `noteText` は共通の入力スキーマではなく、メモ自体の制約です。
@@ -299,7 +303,7 @@ gateway はタブ URL と Chrome の権限応答を検証し、タブ変更・�
 
 ## service worker の境界
 
-worker は画面と同じ features を使う、もう一つの入口です。`composition/worker.ts` が router とメニューの一覧を作り、
+worker は画面と同じ features を使う、もう一つの入口です。`composition/worker.ts` が router・共有のバッジと、メニュー・ショートカット・アラーム・インストール時の処理の一覧を作り、
 各機能の composition（例: `composition/notes.ts` の `registerNoteWorker`）がメッセージの処理と項目を登録します。
 `background/` はそれを最上位で受信口に接続するだけです。
 
@@ -311,6 +315,11 @@ worker は画面と同じ features を使う、もう一つの入口です。`co
 - worker には画面がないため、結果は `infrastructure/badge.ts`（ツールバーのバッジ）と `infrastructure/page-toast.ts`（ページ上の通知）で示します。
   どちらも文言と表示する条件を知らず、機能の composition が理由のコードから文言を選んで渡します。
 - ショートカットは `infrastructure/commands.ts` が名前で振り分けます。キーと説明は manifest の `commands` に宣言します。
+- アラーム（`alarms.ts`）とインストール時の処理（`lifecycle.ts`）も、機能が composition で項目を登録し、`background/` が最上位で接続します。
+  時刻・間隔・バッジの優先度は composition が決め、features は「確認する」「既読にする」などの操作だけを持ちます（例: `features/arrivals`）。
+- 共有のバッジは機能ごとの枠を storage に保存し、優先度で表示を決めます。画面も同じ枠を消せます。
+- content script（`src/content/`）は、ページの中で動くもう一つの入口です。worker と同じく `src/ui` に依存せず、
+  機能の gateway（例: `requestUndoAppend`）を通して worker に処理を依頼します。保存や業務の判断はページ側で行いません。
 - `NoteChanges` は `SettingsChanges` と同じく、保存基盤の通知を検証して UI に届ける port です。
 
 制約と追加の手順は [service worker ガイド](worker.md) を参照してください。
