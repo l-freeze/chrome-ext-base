@@ -6,8 +6,8 @@ import { createCatalogTranslator, createChromeTranslator } from "../infrastructu
 export type MessageKey = keyof typeof en;
 export const DEFAULT_LOCALE = "en";
 
-// Extensions read _locales through chrome.i18n. The browser preview loads the same catalogs lazily,
-// so extension bundles do not carry them twice.
+// Extensions read _locales through chrome.i18n. The browser preview loads the same catalogs lazily; the
+// catalog chunks are still emitted (so a built dist/ can be previewed) but the extension never loads them.
 export async function loadTranslator(): Promise<Translator<MessageKey>> {
   if (typeof globalThis.chrome?.i18n?.getMessage === "function") return createChromeTranslator(chrome.i18n);
   const catalogs = import.meta.glob<MessageCatalog>("../../public/_locales/*/messages.json", { import: "default" });

@@ -51,6 +51,26 @@ it("Manifest V3 と、登録された画面・スクリプト・アイコンが�
   for (const path of typeof actionIcon === "string" ? [actionIcon] : Object.values(actionIcon ?? {})) localFile(path);
 });
 
+// The worker has no DOM. Following its static imports catches UI code (Solid, screens) pulled in by
+// a shared chunk, which would fail only at runtime.
+it("service worker と、そこから静的に読み込むファイルは DOM を参照しない", () => {
+  const manifest = JSON.parse(readFileSync(localFile("manifest.json"), "utf8")) as chrome.runtime.ManifestV3;
+  const entry = manifest.background?.service_worker;
+  if (!entry) return;
+  const seen = new Set<string>();
+  const pending = [localFile(entry)];
+  while (pending.length > 0) {
+    const file = pending.pop()!;
+    if (seen.has(file)) continue;
+    seen.add(file);
+    const code = readFileSync(file, "utf8");
+    expect(/\b(?:document|window)\s*\./.test(code), relative(output, file)).toBe(false);
+    expect(/\bimport\s*\(/.test(code), `${relative(output, file)} uses dynamic import`).toBe(false);
+    for (const match of code.matchAll(/\b(?:from|import)\s*["']([^"']+)["']/g)) pending.push(localFile(match[1]!, dirname(file)));
+  }
+  expect(seen.size).toBeGreaterThan(0);
+});
+
 it("manifest のバージョンは package.json のバージョンと一致する", () => {
   const manifest = JSON.parse(readFileSync(localFile("manifest.json"), "utf8")) as chrome.runtime.ManifestV3;
   const pkg = JSON.parse(readFileSync(fileURLToPath(new URL("../../package.json", import.meta.url)), "utf8")) as { version: string };
