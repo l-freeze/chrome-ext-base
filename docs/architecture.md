@@ -306,7 +306,11 @@ worker は画面と同じ features を使う、もう一つの入口です。`co
 - `infrastructure/messaging` と `context-menus.ts` は機能を知りません。メッセージの契約は処理を所有する機能の gateway が定義します。
 - 画面からはメッセージを直接送らず、port を実装した gateway（例: `delegateImportToWorker`）を composition が注入します。
   画面は処理がその場で動くか worker で動くかを知りません。
-- worker は `src/ui` を import しません。worker とそこから静的に読み込むファイルが DOM を参照しないことを、配布物のテストで確認しています。
+- worker は `src/ui` を import しません。worker から静的に読み込むファイルに `src/ui`・Solid・動的 import がないことを、
+  ビルド時に `vite.config.ts` の `worker-boundary` が確認します。
+- worker には画面がないため、結果は `infrastructure/badge.ts`（ツールバーのバッジ）と `infrastructure/page-toast.ts`（ページ上の通知）で示します。
+  どちらも文言と表示する条件を知らず、機能の composition が理由のコードから文言を選んで渡します。
+- ショートカットは `infrastructure/commands.ts` が名前で振り分けます。キーと説明は manifest の `commands` に宣言します。
 - `NoteChanges` は `SettingsChanges` と同じく、保存基盤の通知を検証して UI に届ける port です。
 
 制約と追加の手順は [service worker ガイド](worker.md) を参照してください。
