@@ -525,6 +525,16 @@ Actions で公開用 ZIP を作る方法は [CI ガイド](ci.md) にありま�
 
 ### 構成
 
+- **依存の向きはテストが確かめる**。`pnpm run check` の `tests/architecture/dependencies.test.ts` が、ドキュメントの規則に反する import を見つけると、
+  規則と直し方を表示して失敗します。例えば UseCase から gateway を import すると、次のように表示されます。
+
+  ```text
+  src/features/later/use-cases/add.ts → features/later/gateways/storage
+    規則: UseCase はモデルと port だけを参照し、controller・gateway・integrations・infrastructure・ui に依存しない（docs/architecture.md「依存方向と明示的 DI」、AGENTS.md）
+    直し方: 外部とのやり取りは ports.ts の口を通し、具体的な実装は gateway に置きます。
+  ```
+
+  構成そのものを変えたい場合は、`docs/architecture.md` とこのテストの規則を一緒に直します。
 - **機能は自分の features フォルダーに閉じる**。features は他の機能や `infrastructure`・画面に依存しません。共通の仕組みが必要なら `infrastructure` に、外部サービスとのやり取りは `integrations` に置きます。
 - **組み立ては composition に一か所**。画面と worker が同じ機能を使う場合も、`composition/<機能>.ts` で作り分けます。
 - **設定画面の設定はベースのもの**（テーマ）。機能ごとの設定は、その機能の保存先に持たせます（例: ページ取得のサンプルの「選択テキストも取得する」）。

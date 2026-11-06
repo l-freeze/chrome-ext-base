@@ -166,6 +166,9 @@ UseCase 入力の検証と、外部から戻るデータの検証は別の境界
 - integration は機能を知らず、infrastructure は機能と外部サービスを知らない。
 - UI の画面は `NoteActions` とメモの型・制約を使い、UseCase や具体 gateway を呼ばない。
 
+これらの規則は `tests/architecture/dependencies.test.ts` が `src` の全ファイルで確かめます（`pnpm run check` に含まれます）。
+違反すると、ファイル・import・規則・直し方が表示されます。規則を変える場合は、このガイドとテストを一緒に変えます。
+
 `features/notes/compose.ts` は検証付き controller と UseCase を一対一で接続します。
 `composition/notes.ts` は具体 gateway を選んでメモ機能を組み立て、画面用と worker 用の両方を提供します。
 `composition/environment.ts` は実行環境を表します。拡張の中かブラウザプレビューかを判定し、保存先の driver・変更通知・
