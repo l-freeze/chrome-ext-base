@@ -14,7 +14,9 @@ export interface ToastScheme { text: string; background: string; border: string;
 // `action` adds one button, e.g. "Undo". Only a content script bundled from src/content can pass it:
 // executeScript cannot send functions. The timer pauses while the notice is hovered or focused.
 export function renderPageToast(message: string, tone: ToastTone, durationMs: number, colors: ToastColors, action?: { label: string; run(): void }): boolean {
-  const id = "chrome-ext-base-page-toast";
+  // The page's DOM is shared by every extension, so the id includes this extension's id: a new notice
+  // replaces this extension's previous one and never another extension's (even one built from this base).
+  const id = `page-toast-${globalThis.chrome?.runtime?.id ?? "preview"}`;
   document.getElementById(id)?.remove();
   const host = document.createElement("div");
   host.id = id;
