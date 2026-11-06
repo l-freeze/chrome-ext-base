@@ -15,7 +15,7 @@
 | 5. サンプルを外す | 参考にし終えたら、サンプルを消してベースだけにする | `pnpm run samples:remove` |
 | 6. 機能を作る | features → composition → 画面・worker の順に足す | `src/` |
 | 7. 権限を確かめる | 使う API の権限だけを manifest に書く | `public/manifest.json` |
-| 8. 確かめる | 自動テスト・E2E・実際の Chrome | `pnpm run check` など |
+| 8. 確かめる | 自動テスト・E2E・実際の Chrome、画面キャプチャーの撮り直し | `pnpm run check`、`pnpm run screenshots` |
 | 9. 公開する | バージョンを上げ、公開用の ZIP を作ってストアに出す | `pnpm run release` |
 
 ## 1. 始める
@@ -48,7 +48,7 @@ pnpm run check:sidepanel
 | パッケージ名（公開用 ZIP のファイル名になる） | `package.json` の `name` | `"read-later"` → `release/read-later-popup-0.1.0.zip` |
 | バージョン | `package.json` の `version`（manifest にはビルドで書き込まれる） | `"0.1.0"` |
 | 設定のバックアップファイルの形式名 | `src/features/settings/settings.ts` の `SETTINGS_BACKUP_FORMAT` | `"read-later/settings"` |
-| README・画面キャプチャー | `README.md`、`docs/screenshots/` | 自分の製品の説明と画面に差し替える |
+| README・画面キャプチャー | `README.md`、`docs/screenshots/` | 自分の製品の説明に書き換え、画面は `pnpm run screenshots` で撮り直す |
 
 `messages.json` は全ロケールで同じキーを持ちます。例えば `appName` を変えるときは、両方を変えます。
 
@@ -440,6 +440,9 @@ CHROMIUM_PATH=/path/to/chromium pnpm run test:e2e   # 任意。実際の Chromiu
 - 画面を変えたら、ライト・ダークの両方で表示を確かめます（`pnpm run dev`、または `dist/` を拡張として読み込む）。
 - ヘッドレスの Chromium では確かめられないものがあります。ツールバーから開いたときの `activeTab`、許可ダイアログ、実際のキー操作、実時間のアラームです。実際の Chrome で一度は操作してください。
 - テストの方針は [テストのガイド](testing.md) にあります。
+- 画面を変えたら `pnpm run screenshots` で `docs/screenshots/` を撮り直します。撮る画面はビルドした拡張から自動で見つかるため、
+  Read Later のように部品を足しただけなら、スクリプトはそのままで撮れます（[撮り方](screenshots/README.md)）。
+  例えば Read Later のポップアップは `docs/screenshots/purple/popup-light-ja.png` などに出力されます。
 
 ## 9. 公開する
 
@@ -447,7 +450,7 @@ CHROMIUM_PATH=/path/to/chromium pnpm run test:e2e   # 任意。実際の Chromiu
 2. `pnpm run release`（サイドパネル版は `release:sidepanel`）で、`release/<name>-<方式>-<version>.zip` を作ります。ソースマップは含まれません。
 3. Chrome Web Store のデベロッパー ダッシュボードで ZIP をアップロードし、ストアの掲載情報を用意します。
    - 128 px のアイコン（`src/palettes/<配色>/icons/icon-128.png`）
-   - スクリーンショット（1280 × 800 または 640 × 400）
+   - スクリーンショット（1280 × 800 または 640 × 400）。`pnpm run screenshots` の画像は画面ごとの大きさなので、ストア用はこの大きさに合わせて作ります
    - 拡張の目的（一つにまとまっていること）と、各権限が必要な理由
    - 利用者のデータを扱う場合は、その扱いの説明（プライバシーの欄）
 

@@ -54,7 +54,7 @@ pnpm run check:sidepanel
 `page-toast.ts`・`page-scripts.ts`）と、`src/content/` をビルドする仕組みもベースとして残ります。アラームを使うときは `alarms` 権限を manifest に戻してください。
 ドキュメントのうち印で囲んだ部分は消えますが、サンプルを例にした説明の文章は残るので、必要に応じて整理してください。
 製品名は `_locales` の `appName`（画面の見出しとタブの題名）と、`extensionName*`・`actionTitle*`（manifest）で変えます。
-`docs/screenshots/` もサンプル入りの画面なので、自分の画面で撮り直してください。
+`docs/screenshots/` もサンプル入りの画面なので、`pnpm run screenshots` で自分の画面に撮り直してください。
 
 ## サンプルを変更するときの確認
 
