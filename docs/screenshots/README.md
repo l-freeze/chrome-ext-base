@@ -1,36 +1,42 @@
 # UI キャプチャー
 
-配色ごとにフォルダーを分けています。どちらのフォルダーも同じファイル名・同じ撮影条件です。
+`pnpm run screenshots` で撮った画面キャプチャーです。手で撮り直す必要はありません。
 
-| フォルダー | 配色 |
-| --- | --- |
-| `purple/` | 紫（既定。`package.json` の `palette` が `purple`） |
-| `coffee/` | コーヒー（`palette` が `coffee`） |
+```sh
+pnpm run screenshots                                   # 全配色・両方式・全言語
+pnpm run screenshots -- --palettes coffee --locales ja # 一部だけ撮り直す
+```
 
-各フォルダーのファイル:
+## 撮り方
 
-- `popup-light.png` / `popup-dark.png`: ポップアップの初期表示。
-- `sidepanel-light.png` / `sidepanel-dark.png`: サイドパネル用画面の初期表示。
-- `options-light.png` / `options-dark.png`: 設定画面の初期表示。
-- `welcome-light.png` / `welcome-dark.png`: インストール時に開く案内ページ（ブラウザプレビューのため、ショートカットは固定の例）。
-- 末尾が `-en` のファイル: 同じ画面の英語表示。
+- ビルドした拡張を実際に Chromium に読み込み、保存データのない新しいプロファイルで各画面を開いて撮ります。
+  画面は本物の拡張 API で動くため、ブラウザプレビューの固定データではなく、拡張として開いたときの表示です。
+- 撮る画面は、ビルドした拡張から自動で見つけます。機能の名前はスクリプトに書いていません。
 
-撮影条件:
+  | 画面 | 見つけ方 | 大きさ |
+  | --- | --- | --- |
+  | `popup` | manifest の `action.default_popup` | 文書の幅（最大 800 px）× 最大 600 px。Chrome のポップアップと同じ上限 |
+  | `sidepanel` | manifest の `side_panel.default_path` | 幅 380 px、全体 |
+  | `options` | manifest の `options_ui.page` | 幅 1100 px、全体 |
+  | その他（例: `welcome`） | 配布物の直下にある HTML（ファイル名を使う） | 幅 1100 px、全体 |
 
-- 取得日: 2026-11-06（日本時間）。紫の画像は 2026-11-05 の撮影から変化がないことを確認しています。
-- 対象: `package.json` の `palette` をその配色にして `pnpm run build:popup` / `pnpm run build:sidepanel` で生成した
-  `dist/popup/` / `dist/sidepanel/` のブラウザプレビュー。
-- ブラウザ: Chromium 153.0.8010.12、デバイススケール 1。
-- ポップアップは文書幅 384 CSS px、高さ上限 600 px の body（実際のポップアップと同じく、それより下はスクロール）。
-- 設定画面は幅 1100 px、サイドパネルは幅 380 px・高さ 900 px、案内ページは幅 900 px の viewport で全ページを撮影。
-  Chrome のサイドパネル枠そのものの撮影ではありません。
-- 保存データがない新しいブラウザコンテキストを使用し、初期読み込み完了後に撮影。
-- ブラウザの言語は日本語（ja-JP）。`-en` の画像は英語（en-US）。
-- カラースキームを light / dark に切り替えて撮影。表示の加工・合成は行っていません。
+- 配色は `src/palettes/` の全フォルダー、言語は `public/_locales/` の全フォルダー、テーマはライト・ダークです。
+  配色は撮影のときだけ `EXTENSION_PALETTE` で切り替えてビルドし、`package.json` は変えません。
+- 両方式にある画面（設定画面など）は、ポップアップ版のものを使います。
+- ページの読み込み・フォント・`aria-busy`・読み込み中の表示（`.loading`）が終わるまで待ってから撮ります。
+- 使うブラウザは E2E テストと同じで、`CHROMIUM_PATH` で指定できます。撮影時は Chromium 153.0.8010.12、デバイススケール 1。
+- 取得日: 2026-11-06（日本時間）。
+
+## ファイル
+
+```text
+docs/screenshots/<配色>/<画面>-<light|dark>-<言語>.png
+例: purple/popup-light-ja.png、coffee/sidepanel-dark-en.png
+```
 
 画像は見た目を確認するためのドキュメントです。スクリーンショット比較テストには使いません。
-Chrome 拡張としての権限や、外部 API の実通信を検証した証拠ではありません。
+ヘッドレスの Chromium で拡張のページをタブとして開いて撮るため、Chrome のポップアップやサイドパネルの枠は写りません。
+ページ取得のように、開いているタブを対象にする画面は「取得できるページがない」状態で写ります。
 
-更新時は、配色ごとに `palette` を切り替えてビルドし、空の保存状態・同じ幅で両テーマを撮り直してください。
-使わない配色のフォルダーは削除して構いません（README の画像の表も合わせて直します）。
-README に相対パスで埋め込んでいるため、GitHub 上でもリポジトリを取得した後でも閲覧できます。
+このベースから作った拡張でも、画面を足したり名前を変えたりしたまま `pnpm run screenshots` を実行すれば撮れます。
+使わない配色のフォルダーを消すと、その配色は撮りません。README の画像の表は、画面に合わせて直してください。

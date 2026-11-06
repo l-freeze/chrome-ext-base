@@ -34,6 +34,28 @@ export interface AppendHistory {
   load(): Promise<AppendRecord | null>;
 }
 
+// The review reminder. The worker reports every change and the scheduled time; screens dismiss it.
+export interface NoteReminderActions {
+  noteChanged(input: unknown): Promise<void>;
+  remindReview(input: unknown): Promise<void>;
+}
+
+export interface NoteReminderDismissal {
+  dismissReminder(input: unknown): Promise<void>;
+}
+
+// When the reminder fires (an alarm in the extension).
+export interface ReminderSchedule {
+  schedule(delayMinutes: number): Promise<void>;
+  cancel(): Promise<void>;
+}
+
+// How the user sees the reminder without an open screen (the toolbar badge in the extension).
+export interface ReminderIndicator {
+  show(): Promise<void>;
+  clear(): Promise<void>;
+}
+
 // UI event subscription for notes saved by another screen or the service worker.
 export interface NoteChanges {
   subscribe(onValue: (value: Note) => void, onError: (error: unknown) => void): () => void;

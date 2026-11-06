@@ -18,8 +18,10 @@ function extensionVersion(): string {
 
 // package.json "palette" picks one folder under src/palettes (default: purple). Only that palette's theme,
 // colors and icons are built; the others never reach the output. The import alias #palette points at it.
+// EXTENSION_PALETTE overrides it for one run; scripts/screenshots.ts uses it to build every palette.
 function paletteDir(): string {
-  const { palette = "purple" } = JSON.parse(readFileSync("package.json", "utf8")) as { palette?: unknown };
+  const { palette: configured = "purple" } = JSON.parse(readFileSync("package.json", "utf8")) as { palette?: unknown };
+  const palette = process.env.EXTENSION_PALETTE || configured;
   const available = readdirSync("src/palettes", { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name);
   if (typeof palette !== "string" || !available.includes(palette)) {
     throw new Error(`package.json palette "${String(palette)}" is not one of: ${available.join(", ")}.`);

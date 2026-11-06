@@ -25,7 +25,7 @@ void loadTranslator().then(async (translator) => {
         <Sidepanel app={application}>
           {/* @sample-begin */}
           <PageSection page={application.page} access={application.access} accessChanges={application.accessChanges} preview={application.preview} />
-          <NoteSection notes={application.notes} noteChanges={application.noteChanges} />
+          <NoteSection notes={application.notes} noteChanges={application.noteChanges} reminder={application.noteReminder} />
           <ArrivalsSection arrivals={application.arrivals} />
           {/* @sample-end */}
         </Sidepanel>

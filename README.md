@@ -21,26 +21,26 @@ service worker へのメッセージ通信、右クリックメニュー、キ�
 
 | 画面 | ライト | ダーク |
 | --- | --- | --- |
-| ポップアップ | ![紫・ポップアップ・ライト](docs/screenshots/purple/popup-light.png) | ![紫・ポップアップ・ダーク](docs/screenshots/purple/popup-dark.png) |
-| サイドパネル | ![紫・サイドパネル・ライト](docs/screenshots/purple/sidepanel-light.png) | ![紫・サイドパネル・ダーク](docs/screenshots/purple/sidepanel-dark.png) |
-| 設定画面 | ![紫・設定画面・ライト](docs/screenshots/purple/options-light.png) | ![紫・設定画面・ダーク](docs/screenshots/purple/options-dark.png) |
-| 案内ページ | ![紫・案内ページ・ライト](docs/screenshots/purple/welcome-light.png) | ![紫・案内ページ・ダーク](docs/screenshots/purple/welcome-dark.png) |
+| ポップアップ | ![紫・ポップアップ・ライト](docs/screenshots/purple/popup-light-ja.png) | ![紫・ポップアップ・ダーク](docs/screenshots/purple/popup-dark-ja.png) |
+| サイドパネル | ![紫・サイドパネル・ライト](docs/screenshots/purple/sidepanel-light-ja.png) | ![紫・サイドパネル・ダーク](docs/screenshots/purple/sidepanel-dark-ja.png) |
+| 設定画面 | ![紫・設定画面・ライト](docs/screenshots/purple/options-light-ja.png) | ![紫・設定画面・ダーク](docs/screenshots/purple/options-dark-ja.png) |
+| 案内ページ | ![紫・案内ページ・ライト](docs/screenshots/purple/welcome-light-ja.png) | ![紫・案内ページ・ダーク](docs/screenshots/purple/welcome-dark-ja.png) |
 
 ### コーヒー（`"palette": "coffee"`）
 
 | 画面 | ライト | ダーク |
 | --- | --- | --- |
-| ポップアップ | ![コーヒー・ポップアップ・ライト](docs/screenshots/coffee/popup-light.png) | ![コーヒー・ポップアップ・ダーク](docs/screenshots/coffee/popup-dark.png) |
-| サイドパネル | ![コーヒー・サイドパネル・ライト](docs/screenshots/coffee/sidepanel-light.png) | ![コーヒー・サイドパネル・ダーク](docs/screenshots/coffee/sidepanel-dark.png) |
-| 設定画面 | ![コーヒー・設定画面・ライト](docs/screenshots/coffee/options-light.png) | ![コーヒー・設定画面・ダーク](docs/screenshots/coffee/options-dark.png) |
-| 案内ページ | ![コーヒー・案内ページ・ライト](docs/screenshots/coffee/welcome-light.png) | ![コーヒー・案内ページ・ダーク](docs/screenshots/coffee/welcome-dark.png) |
+| ポップアップ | ![コーヒー・ポップアップ・ライト](docs/screenshots/coffee/popup-light-ja.png) | ![コーヒー・ポップアップ・ダーク](docs/screenshots/coffee/popup-dark-ja.png) |
+| サイドパネル | ![コーヒー・サイドパネル・ライト](docs/screenshots/coffee/sidepanel-light-ja.png) | ![コーヒー・サイドパネル・ダーク](docs/screenshots/coffee/sidepanel-dark-ja.png) |
+| 設定画面 | ![コーヒー・設定画面・ライト](docs/screenshots/coffee/options-light-ja.png) | ![コーヒー・設定画面・ダーク](docs/screenshots/coffee/options-dark-ja.png) |
+| 案内ページ | ![コーヒー・案内ページ・ライト](docs/screenshots/coffee/welcome-light-ja.png) | ![コーヒー・案内ページ・ダーク](docs/screenshots/coffee/welcome-dark-ja.png) |
 
 - サイドパネルはページを操作しながら使うため、縦長の画面に合わせています。
-- 案内ページはブラウザプレビューのため、ショートカットは固定の例を表示しています。
 - 上の画像は日本語の表示です。Chrome の表示言語が日本語以外のときは英語で表示します。
-  英語表示の画像は各配色のフォルダーの `-en` のファイルです（例: [紫のポップアップ](docs/screenshots/purple/popup-light-en.png)、
+  英語表示の画像は各配色のフォルダーの `-en` で終わるファイルです（例: [紫のポップアップ](docs/screenshots/purple/popup-light-en.png)、
   [コーヒーのポップアップ](docs/screenshots/coffee/popup-light-en.png)）。
-- 画像はリポジトリに同梱しています（`docs/screenshots/<配色>/`）。[撮影条件](docs/screenshots/README.md)も参照してください。
+- 画像は `pnpm run screenshots` で撮り直せます。拡張を実際に Chromium に読み込み、配色・言語・ライト／ダークごとに全画面を撮ります
+  （`docs/screenshots/<配色>/`。[撮影条件](docs/screenshots/README.md)）。このベースから作った拡張でも、そのまま使えます。
 
 ## セットアップとコマンド
 

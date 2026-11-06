@@ -273,6 +273,7 @@ await scripts.run(tabId, "content/example.js");                       // src/con
   初回（インストールの 1 分後）は一覧を記録するだけで、件数は数えません。画面の「コーヒーの新着」を開くと一覧を表示して既読にし、バッジを消します。
   「今すぐ確認」は worker に `arrivals.check` を依頼します。
 - **メモの見直しリマインダー**（一度だけのアラーム）: メモが保存されるたびに、60 分後のアラームを予約し直します（空にしたら取り消します）。
+  規則は `features/notes/use-cases/reminder.ts` にあり、アラームとバッジは port（`ReminderSchedule`・`ReminderIndicator`）として渡します。
   鳴ると共有のバッジに `●` を出し、画面を開くと消えます。worker は storage の変更通知でどの画面からの保存も受け取ります。通信はしません。
 - **インストール時の案内ページ**: 新規インストールのときだけ `welcome.html` を開きます。Chrome が実際に割り当てたショートカットのキー
   （`commands.getAll`）と、変更画面（`chrome://extensions/shortcuts`）を開くボタンを表示します。更新や再読み込みでは開きません。
