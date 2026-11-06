@@ -1,6 +1,6 @@
 // Sample section: the note editor, the REST import, and following notes saved elsewhere.
-import { createSignal, onCleanup } from "solid-js";
-import type { NoteActions, NoteChanges } from "../../../features/notes/ports";
+import { createSignal, onCleanup, onMount } from "solid-js";
+import type { NoteActions, NoteChanges, NoteReminderDismissal } from "../../../features/notes/ports";
 import { MAX_NOTE_LENGTH } from "../../../features/notes/note";
 import type { ImportFailure, Note } from "../../../features/notes/note";
 import { NoteImportError } from "../../../features/notes/note";
@@ -13,7 +13,9 @@ const importFailures: Record<ImportFailure, MessageKey> = {
   network: "importFailedNetwork", timeout: "importFailedTimeout", server: "importFailedServer", response: "importFailedResponse",
 };
 
-export function NoteSection(props: { notes: NoteActions; noteChanges: NoteChanges }) {
+export function NoteSection(props: { notes: NoteActions; noteChanges: NoteChanges; reminder: NoteReminderDismissal }) {
+  // Opening the note counts as looking at it again.
+  onMount(() => { void props.reminder.dismissReminder(undefined).catch(() => {}); });
   const { t, language } = useI18n();
   const formatter = new Intl.NumberFormat(language);
   let form!: HTMLFormElement;

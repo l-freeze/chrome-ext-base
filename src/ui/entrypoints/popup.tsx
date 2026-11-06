@@ -19,7 +19,7 @@ void loadTranslator().then((translator) => {
       <ExtensionShell>
         <Popup app={application}>
           {/* @sample-begin */}
-          <NoteSection notes={application.notes} noteChanges={application.noteChanges} />
+          <NoteSection notes={application.notes} noteChanges={application.noteChanges} reminder={application.noteReminder} />
           <PageSection page={application.page} preview={application.preview} />
           <ArrivalsSection arrivals={application.arrivals} />
           {/* @sample-end */}

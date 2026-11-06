@@ -2,6 +2,9 @@ import { ValidationError } from "../../lib/validation";
 
 export const MAX_NOTE_LENGTH = 2000;
 
+// The review reminder asks the user to look at the note again this long after it last changed.
+export const REVIEW_DELAY_MINUTES = 60;
+
 export interface Note {
   text: string;
 }

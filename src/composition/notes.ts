@@ -9,7 +9,8 @@ import { createChromeTransport } from "../infrastructure/messaging/drivers/chrom
 import { createChromeTranslator } from "../infrastructure/i18n";
 import { createHttpClient } from "../infrastructure/http";
 import { createSampleApisCoffeeClient } from "../integrations/sampleapis/coffee";
-import { createNoteAppendApplication, createNoteApplication } from "../features/notes/compose";
+import { createNoteAppendApplication, createNoteApplication, createNoteReminderApplication, createNoteReminderDismissal } from "../features/notes/compose";
+import { createAlarmReminderSchedule, createBadgeReminderIndicator, silentReminderIndicator } from "../features/notes/gateways/reminder";
 import { createTabSelection } from "../features/notes/gateways/selection";
 import { MAX_NOTE_LENGTH, NoteAppendError } from "../features/notes/note";
 import type { AppendFailure } from "../features/notes/note";
@@ -21,10 +22,9 @@ import type { Environment } from "./environment";
 import type { WorkerRegistry } from "./worker";
 import { colors } from "#palette/colors";
 
-// The review reminder: an hour after the note last changed, the toolbar badge asks the user to look at it
-// again. Opening a screen clears it. A higher badge priority wins when several features use the badge.
+// The review reminder's alarm and badge slot. Its rules (when to schedule, show and clear) are in
+// features/notes/use-cases/reminder.ts. A higher badge priority wins when several features use the badge.
 const REMINDER = "notes.reminder";
-const REMINDER_MINUTES = 60;
 const REMINDER_PRIORITY = 10;
 // The notice with an Undo button, built from src/content/append-notice.ts.
 const APPEND_NOTICE = "content/append-notice.js";
@@ -43,11 +43,11 @@ function createNotes(driver: KeyValueStorage) {
 // Screens: in the extension the worker runs the import; the browser preview has no worker and runs it here.
 export function createNoteScreens(environment: Environment) {
   const notes = createNotes(environment.driver);
-  if (environment.extension) {
-    // Opening a screen counts as looking at the note again.
-    void createBadgeBoard(chrome.action, environment.driver).slot(REMINDER, REMINDER_PRIORITY).clear().catch(() => {});
-  }
+  const indicator = environment.extension
+    ? createBadgeReminderIndicator(createBadgeBoard(chrome.action, environment.driver).slot(REMINDER, REMINDER_PRIORITY), colors.badge.accent)
+    : silentReminderIndicator;
   return {
+    noteReminder: createNoteReminderDismissal({ indicator }),
     notes: environment.extension ? delegateImportToWorker(notes, createMessageClient(createChromeTransport(chrome.runtime))) : notes,
     noteChanges: createNoteChanges(environment.events),
   };
@@ -65,8 +65,11 @@ export function registerNoteWorker(worker: WorkerRegistry) {
   const tabBadge = createTabBadge(chrome.action);
   const toasts = createPageToasts(chrome.scripting, colors.notice);
   const scripts = createPageScripts(chrome.scripting);
-  const reminder = worker.badges.slot(REMINDER, REMINDER_PRIORITY);
-  const scheduler = createAlarmScheduler(chrome.alarms);
+  const reminders = createNoteReminderApplication({
+    repository,
+    schedule: createAlarmReminderSchedule(createAlarmScheduler(chrome.alarms), REMINDER),
+    indicator: createBadgeReminderIndicator(worker.badges.slot(REMINDER, REMINDER_PRIORITY), colors.badge.accent),
+  });
   const appendFailures: Record<AppendFailure, MessageKey> = { "no-selection": "toastNoSelection", "too-long": "toastTooLong" };
 
   async function report(tabId: number | undefined, append: () => Promise<unknown>) {
@@ -104,15 +107,7 @@ export function registerNoteWorker(worker: WorkerRegistry) {
       : appends.appendSelection({ tabId })),
   });
 
-  // Every change, from any screen or the worker, restarts the reminder. The alarm wakes the worker later.
-  createNoteChanges(events).subscribe((note) => {
-    const next = note.text === "" ? scheduler.cancel(REMINDER) : scheduler.schedule(REMINDER, REMINDER_MINUTES);
-    void Promise.all([next, reminder.clear()]).catch(worker.report);
-  }, worker.report);
-  worker.alarms.push({
-    name: REMINDER,
-    async run() {
-      if ((await repository.load()).text !== "") await reminder.show("●", colors.badge.accent);
-    },
-  });
+  // The worker hears every saved change (from any screen or itself) and fires the alarm when it comes.
+  createNoteChanges(events).subscribe((note) => { void reminders.noteChanged(note).catch(worker.report); }, worker.report);
+  worker.alarms.push({ name: REMINDER, run: () => reminders.remindReview(undefined) });
 }

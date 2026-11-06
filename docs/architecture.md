@@ -316,7 +316,10 @@ worker は画面と同じ features を使う、もう一つの入口です。`co
   どちらも文言と表示する条件を知らず、機能の composition が理由のコードから文言を選んで渡します。
 - ショートカットは `infrastructure/commands.ts` が名前で振り分けます。キーと説明は manifest の `commands` に宣言します。
 - アラーム（`alarms.ts`）とインストール時の処理（`lifecycle.ts`）も、機能が composition で項目を登録し、`background/` が最上位で接続します。
-  時刻・間隔・バッジの優先度は composition が決め、features は「確認する」「既読にする」などの操作だけを持ちます（例: `features/arrivals`）。
+  「いつ予約し、いつ知らせ、いつ消すか」という規則は features の UseCase が持ち、アラームとバッジは port として受け取ります
+  （例: `features/notes/use-cases/reminder.ts`。メモが空なら予約を取り消す、時刻が来てもメモが空なら知らせない）。
+  composition はアラームの名前・バッジの枠と優先度・色を選んでつなぐだけで、判断を書きません。
+  ストレージの変更通知やアラームの発火は、composition が UseCase の操作に渡します。
 - 共有のバッジは機能ごとの枠を storage に保存し、優先度で表示を決めます。画面も同じ枠を消せます。
 - content script（`src/content/`）は、ページの中で動くもう一つの入口です。worker と同じく `src/ui` に依存せず、
   機能の gateway（例: `requestUndoAppend`）を通して worker に処理を依頼します。保存や業務の判断はページ側で行いません。

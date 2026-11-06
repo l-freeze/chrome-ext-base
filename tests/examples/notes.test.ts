@@ -7,11 +7,11 @@
  * 実行: pnpm run test:examples
  */
 import { expect, it } from "vitest";
-import { createNoteAppendApplication, createNoteApplication } from "../../src/features/notes/compose";
+import { createNoteAppendApplication, createNoteApplication, createNoteReminderApplication, createNoteReminderDismissal } from "../../src/features/notes/compose";
 import { createAppendHistory, createNoteStorage } from "../../src/features/notes/gateways/storage";
 import { createMockNoteSource } from "../../src/features/notes/gateways/mock";
 import { createMemoryStorage } from "../../src/infrastructure/storage/drivers/memory";
-import { MAX_NOTE_LENGTH } from "../../src/features/notes/note";
+import { MAX_NOTE_LENGTH, REVIEW_DELAY_MINUTES } from "../../src/features/notes/note";
 import { ValidationError } from "../../src/lib/validation";
 
 function application() {
@@ -76,4 +76,35 @@ it("直前の追加は一度だけ元に戻せ、追加の後にメモが変わ�
   await repository.save({ text: "その後に書き換えたメモ" });
   await expect(app.undoAppend(undefined)).rejects.toMatchObject({ name: "NoteUndoError", reason: "changed" });
   expect(await repository.load()).toEqual({ text: "その後に書き換えたメモ" });
+});
+
+// The alarm and the badge are replaced by records of what the reminder asked for.
+function reminders() {
+  const repository = createNoteStorage(createMemoryStorage());
+  const log: string[] = [];
+  const indicator = { show: async () => { log.push("show"); }, clear: async () => { log.push("clear"); } };
+  const app = createNoteReminderApplication({
+    repository,
+    schedule: { schedule: async (minutes: number) => { log.push(`schedule ${minutes}`); }, cancel: async () => { log.push("cancel"); } },
+    indicator,
+  });
+  return { repository, app, dismissal: createNoteReminderDismissal({ indicator }), log };
+}
+
+it("メモが変わるたびに見直しの予約をやり直し、空になったら取り消す", async () => {
+  const { app, log } = reminders();
+  await app.noteChanged({ text: "見直すメモ" });
+  await app.noteChanged({ text: "" });
+  expect(log).toEqual([`schedule ${REVIEW_DELAY_MINUTES}`, "clear", "cancel", "clear"]);
+  await expect(app.noteChanged({ text: 1 })).rejects.toBeInstanceOf(ValidationError);
+});
+
+it("予約の時刻にメモがあれば知らせ、空なら知らせない。画面を開くと消す", async () => {
+  const { app, repository, dismissal, log } = reminders();
+  await app.remindReview(undefined);
+  expect(log).toEqual([]);
+  await repository.save({ text: "見直すメモ" });
+  await app.remindReview(undefined);
+  await dismissal.dismissReminder(undefined);
+  expect(log).toEqual(["show", "clear"]);
 });
