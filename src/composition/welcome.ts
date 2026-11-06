@@ -11,6 +11,8 @@ export function createWelcomeScreen(environment: Environment) {
     settingsChanges: settings.changes,
     shortcuts: environment.extension ? createChromeShortcutGuide(chrome.commands, chrome.tabs) : createPreviewShortcutGuide(),
     preview: !environment.extension,
+    // The settings page of this build (the variants name it differently), read from the manifest.
+    optionsHref: `./${environment.extension ? chrome.runtime.getManifest().options_ui?.page ?? "options.html" : "options.html"}`,
   };
 }
 
