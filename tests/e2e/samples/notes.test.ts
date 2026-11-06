@@ -127,7 +127,8 @@ describe("ショートカットとページ上の通知", () => {
       const [target] = await chrome.tabs.query({ url });
       (chrome.commands.onCommand as unknown as { dispatch(name: string, tab: unknown): void }).dispatch("append-selection", target);
     }, site.url("/a.html"));
-    const toastHost = () => tab.evaluate(() => !!document.getElementById("chrome-ext-base-page-toast"));
+    const toastId = `page-toast-${extension.id}`;
+    const toastHost = () => tab.evaluate((id) => !!document.getElementById(id), toastId);
     const badges = () => extension!.worker.evaluate(async (url) => {
       const [target] = await chrome.tabs.query({ url });
       return [await chrome.action.getBadgeText({ tabId: target!.id! }), await chrome.action.getBadgeText({})];
@@ -140,7 +141,7 @@ describe("ショートカットとページ上の通知", () => {
     expect(await badges()).toEqual(["", ""]);
 
     await tab.evaluate(() => getSelection()!.removeAllRanges());
-    await tab.evaluate(() => document.getElementById("chrome-ext-base-page-toast")?.remove());
+    await tab.evaluate((id) => document.getElementById(id)?.remove(), toastId);
     await press();
     // The failure marks only that tab; the shared badge is left for other features.
     await expect.poll(badges).toEqual(["!", ""]);
@@ -163,7 +164,7 @@ describe("ショートカットとページ上の通知", () => {
       (chrome.commands.onCommand as unknown as { dispatch(name: string, tab: unknown): void }).dispatch("append-selection", target);
     }, site.url("/a.html"));
     await expect.poll(() => stored(extension!.worker)).toBe("元のメモ\n\n取り消す文章");
-    await expect.poll(() => tab.evaluate(() => !!document.getElementById("chrome-ext-base-page-toast"))).toBe(true);
+    await expect.poll(() => tab.evaluate((id) => !!document.getElementById(id), `page-toast-${extension!.id}`)).toBe(true);
 
     // The notice sits in a closed shadow root, so the test reaches its button with the keyboard, as a user can.
     await tab.bringToFront();
