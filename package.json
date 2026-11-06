@@ -19,6 +19,7 @@
     "test:extension": "vitest run tests/extension",
     "test:extension:sidepanel": "vitest run tests/extension --mode sidepanel",
     "test:e2e": "pnpm run build:popup && pnpm run build:sidepanel && vitest run tests/e2e --testTimeout=60000 --hookTimeout=60000 --no-file-parallelism --passWithNoTests",
+    "screenshots": "node scripts/screenshots.ts",
     "build": "pnpm run build:popup",
     "build:popup": "pnpm run typecheck && vite build --mode popup",
     "build:sidepanel": "pnpm run typecheck && vite build --mode sidepanel",
