@@ -19,6 +19,7 @@
 | `tests/infrastructure/lifecycle.test.ts` | インストール・更新の理由の検証と全処理への受け渡し、一つの失敗で他を止めないこと、名前の重複の拒否 |
 | `tests/infrastructure/badge.test.ts` | 共有のバッジの優先度による表示と切り替え、別の実行環境からの消去と再起動後の描き直し、壊れた保存値の無視、タブごとのバッジの表示と解除 |
 | `tests/infrastructure/i18n.test.ts` | ロケールの選択と既定への切り替え、プレースホルダーと置換、カタログの言語タグ、未定義の文言 |
+| `tests/palettes/palettes.test.ts` | ビルドせずに全配色を確認する。テーマ名と色の項目、アイコンのファイル、CSS の外で使う色の形が既定の配色と揃っていること、`package.json` の配色が存在すること |
 | `tests/extension/build.test.ts` | 出力された Manifest V3 の基本項目、登録画面・worker・worker が読み込むファイル・content script・アイコンの存在、全 HTML ページが参照する JS/CSS の存在、注入用の content script が import・export のない単独のファイルであること、manifest が参照する文言と全ロケールのキー・プレースホルダーの一致、manifest と `package.json` のバージョンの一致 |
 
 拡張の構成テストは `dist/popup/manifest.json` または `dist/sidepanel/manifest.json` から対象を読み取ります。ポップアップのファイル名、
