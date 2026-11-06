@@ -12,47 +12,33 @@ service worker へのメッセージ通信、右クリックメニュー、キ�
 
 ## デザインのプレビュー
 
-本番ビルドのポップアップ UI を Chromium で撮影したキャプチャーです。
-テーマ（ライト／ダーク）は設定画面で変更できます。初期設定では OS の表示設定に追従します。
-配色（紫・コーヒー）はアプリ側で一つに決め、`package.json` の `palette` で選んでビルドします（[配色を選ぶ](docs/ui.md#配色を選ぶ)）。
+本番ビルドの画面を Chromium で撮影したキャプチャーです。配色（紫・コーヒー）はビルド時に一つを選びます（[配色とビルド](#配色とビルド)）。
+テーマ（ライト／ダーク）は、どちらの配色でも設定画面で変更できます。初期設定では OS の表示設定に追従します。
 
-| ライト | ダーク |
-| --- | --- |
-| ![ライトテーマのポップアップ](docs/screenshots/popup-light.png) | ![ダークテーマのポップアップ](docs/screenshots/popup-dark.png) |
+### 紫（既定）
 
-`"palette": "coffee"` でビルドした場合のポップアップです。
-
-| コーヒー・ライト | コーヒー・ダーク |
-| --- | --- |
-| ![コーヒー系の配色のポップアップ・ライト](docs/screenshots/coffee-popup-light.png) | ![コーヒー系の配色のポップアップ・ダーク](docs/screenshots/coffee-popup-dark.png) |
-
-設定画面も daisyUI で構成しています。
-
-| 設定画面・ライト | 設定画面・ダーク |
-| --- | --- |
-| ![設定画面のライトテーマ](docs/screenshots/options-light.png) | ![設定画面のダークテーマ](docs/screenshots/options-dark.png) |
-
-画像はリポジトリに同梱しています。[撮影条件](docs/screenshots/README.md)も参照してください。
-
-サイドパネル版のプレビューです。ページを操作しながら使うため、縦長の画面に合わせています。
-
-| ライト | ダーク |
-| --- | --- |
-| ![サイドパネル・ライト](docs/screenshots/sidepanel-light.png) | ![サイドパネル・ダーク](docs/screenshots/sidepanel-dark.png) |
-
-上の画像は日本語の表示です。Chrome の表示言語が日本語以外のときは英語で表示します。
-
-| 英語表示 | ライト | ダーク |
+| 画面 | ライト | ダーク |
 | --- | --- | --- |
-| ポップアップ | ![英語表示のポップアップ・ライト](docs/screenshots/popup-light-en.png) | ![英語表示のポップアップ・ダーク](docs/screenshots/popup-dark-en.png) |
-| サイドパネル | ![英語表示のサイドパネル・ライト](docs/screenshots/sidepanel-light-en.png) | ![英語表示のサイドパネル・ダーク](docs/screenshots/sidepanel-dark-en.png) |
-| 設定画面 | ![英語表示の設定画面・ライト](docs/screenshots/options-light-en.png) | ![英語表示の設定画面・ダーク](docs/screenshots/options-dark-en.png) |
+| ポップアップ | ![紫・ポップアップ・ライト](docs/screenshots/purple/popup-light.png) | ![紫・ポップアップ・ダーク](docs/screenshots/purple/popup-dark.png) |
+| サイドパネル | ![紫・サイドパネル・ライト](docs/screenshots/purple/sidepanel-light.png) | ![紫・サイドパネル・ダーク](docs/screenshots/purple/sidepanel-dark.png) |
+| 設定画面 | ![紫・設定画面・ライト](docs/screenshots/purple/options-light.png) | ![紫・設定画面・ダーク](docs/screenshots/purple/options-dark.png) |
+| 案内ページ | ![紫・案内ページ・ライト](docs/screenshots/purple/welcome-light.png) | ![紫・案内ページ・ダーク](docs/screenshots/purple/welcome-dark.png) |
 
-インストール時に開く案内ページのプレビューです。ブラウザプレビューのため、ショートカットは固定の例を表示しています。
+### コーヒー（`"palette": "coffee"`）
 
-| 案内ページ・ライト | 案内ページ・ダーク |
-| --- | --- |
-| ![案内ページのライトテーマ](docs/screenshots/welcome-light.png) | ![案内ページのダークテーマ](docs/screenshots/welcome-dark.png) |
+| 画面 | ライト | ダーク |
+| --- | --- | --- |
+| ポップアップ | ![コーヒー・ポップアップ・ライト](docs/screenshots/coffee/popup-light.png) | ![コーヒー・ポップアップ・ダーク](docs/screenshots/coffee/popup-dark.png) |
+| サイドパネル | ![コーヒー・サイドパネル・ライト](docs/screenshots/coffee/sidepanel-light.png) | ![コーヒー・サイドパネル・ダーク](docs/screenshots/coffee/sidepanel-dark.png) |
+| 設定画面 | ![コーヒー・設定画面・ライト](docs/screenshots/coffee/options-light.png) | ![コーヒー・設定画面・ダーク](docs/screenshots/coffee/options-dark.png) |
+| 案内ページ | ![コーヒー・案内ページ・ライト](docs/screenshots/coffee/welcome-light.png) | ![コーヒー・案内ページ・ダーク](docs/screenshots/coffee/welcome-dark.png) |
+
+- サイドパネルはページを操作しながら使うため、縦長の画面に合わせています。
+- 案内ページはブラウザプレビューのため、ショートカットは固定の例を表示しています。
+- 上の画像は日本語の表示です。Chrome の表示言語が日本語以外のときは英語で表示します。
+  英語表示の画像は各配色のフォルダーの `-en` のファイルです（例: [紫のポップアップ](docs/screenshots/purple/popup-light-en.png)、
+  [コーヒーのポップアップ](docs/screenshots/coffee/popup-light-en.png)）。
+- 画像はリポジトリに同梱しています（`docs/screenshots/<配色>/`）。[撮影条件](docs/screenshots/README.md)も参照してください。
 
 ## セットアップとコマンド
 
@@ -155,6 +141,26 @@ pnpm run check:sidepanel
 
 公開用ビルドは、必須テスト・型チェックの後にビルドし、ソースマップが残っていないことと配布物の構成を確認してから ZIP にします。
 ZIP は日時を固定して作るため、同じ内容なら同じファイルになります。ストアへのアップロードは手動です。
+
+## 配色とビルド
+
+配色はアプリの作成者が決めるもので、利用者は選びません。`package.json` の `palette` に書いた一つだけがビルドされます。
+
+```json
+"palette": "purple"
+```
+
+| 値 | 配色 |
+| --- | --- |
+| `purple` | 紫（既定。項目がないときもこれ） |
+| `coffee` | コーヒー |
+
+- 変えたら、いつもどおり `pnpm run build` / `build:sidepanel`、公開用は `pnpm run release` / `release:sidepanel` を実行します。
+  コマンドに配色の指定はありません。どのビルドも `package.json` の値を使うため、CI でも同じ配色になります。
+- 選ばなかった配色の CSS・色・アイコンは配布物に含まれません。`pnpm run check` の配布物テストが、選んだ配色だけが出力されていることを確認します。
+- 存在しない名前を書くとビルドが止まり、選べる名前を表示します。
+- 配色ごとのファイルは `src/palettes/<配色>/`（`theme.css`・`colors.ts`・`icons/`）にあります。
+  配色の追加や中身の変更は [UI ガイド](docs/ui.md#配色を選ぶ)、アイコンの差し替えは [アイコンの差し替え](docs/icons.md) を参照してください。
 
 ## Actions から ZIP を取得
 
